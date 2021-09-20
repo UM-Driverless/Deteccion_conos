@@ -2,17 +2,20 @@ import tensorflow as tf
 import cv2
 import time
 from cone_detection.aux_def import *
-
+from cone_detection.detector_base import ConeDetectorInterface
 
 BLUE_COLOR = (255, 0, 0)
 YELLOW_COLOR = (0, 237, 255)
 ORANGE_COLOR = (0, 137, 255)
 DARK_ORANGE_COLOR = (0, 87, 255)
 
-class ConeDetector:
+class ConeDetector(ConeDetectorInterface):
 
-    def __init__(self, checkpoint_path):
-        self.checkpoint_path = checkpoint_path
+    def __init__(self, checkpoint_path=None):
+        if checkpoint_path is None:
+            checkpoint_path = './cone_detection/saved_models/ResNet50_640x640_synt_2'
+
+        super().__init__(checkpoint_path)
         self.detection_model, self.category_index = self._make_detect_model(self.checkpoint_path)
         self.detect = self._make_detection_func(self.detection_model)
 
@@ -22,12 +25,12 @@ class ConeDetector:
         self.yellow_color = 'yell'
         self.orange_color = 'oran'
 
-    def detect_in_image(self, img, plot=False, min_score_thresh=0.5, real_time=True, im_name='detections'):
+    def detect_cones(self, img, show_detections=False, min_score_thresh=0.5, real_time=True, im_name='cone detections'):
         # cv2.imwrite('imagen_conos.png', img)
         img_resize = cv2.resize(img, (640, 640), interpolation=cv2.INTER_AREA)
         detections = self.detect(img_resize)
-        if plot:
-            self.plot_det(img,
+        if show_detections:
+            self._plot_det(img,
                      detections['detection_boxes'][0].numpy(),
                      detections['detection_classes'][0].numpy().astype(np.uint32)
                      + 1,
@@ -36,9 +39,23 @@ class ConeDetector:
                      min_score_thresh=min_score_thresh,
                      real_time=real_time,
                      im_name=im_name)
-        return detections
 
-    def plot_det(self, image_np,
+        # Cojo rectángulos de las detecciones y filtro los conos por color
+        rectangles = np.array(detections["detection_boxes"])[0]
+        image, cone_centers, cone_bases = self._color_filter_cones(img, rectangles, paint_rectangles=False,
+                                                                      bgr=False)
+        # Creo la imagen de vista de águila
+        orig_image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+        eagle_img = np.zeros((image.shape[0], image.shape[1], image.shape[2]), dtype=np.uint8) + np.uint8(
+            orig_image * 0.5)
+
+        # # Pinto los centros de los conos en las imágenes
+        # image, = self._draw_centers(cone_centers, image)
+        # eagle_img = self._draw_centers(cone_centers, eagle_img)
+
+        return detections, [cone_centers, eagle_img]
+
+    def _plot_det(self, image_np,
                  boxes,
                  classes,
                  scores,
@@ -70,6 +87,20 @@ class ConeDetector:
         else:
             cv2.waitKey(0)
 
+    def _draw_centers(self, cone_centers, image):
+        for center in cone_centers:
+            c = center[0]
+            color = center[1]
+            if color == self.blue_color:
+                color = BLUE_COLOR
+            elif color == self.yellow_color:
+                color = YELLOW_COLOR
+            elif color == self.orange_color:
+                color = ORANGE_COLOR
+
+            image = cv2.circle(image, c, radius=2, color=color, thickness=2)
+        return image
+
     def _make_detection_func(self, detection_model):
         # Again, uncomment this decorator if you want to run inference eagerly
         @tf.function(experimental_relax_shapes=True)
@@ -96,7 +127,7 @@ class ConeDetector:
             return detections
         return run_detect
 
-    def color_filter_cones(self, image, rectangles, paint_rectangles=True, bgr=True):
+    def _color_filter_cones(self, image, rectangles, paint_rectangles=True, bgr=True):
         image = np.array(image)
         im_h = image.shape[0]
         im_w = image.shape[1]
@@ -158,24 +189,24 @@ class ConeDetector:
 
         return image, cone_center, cone_base
 
-    def unit_vector(self, vector):
+    def _unit_vector(self, vector):
         """ Returns the unit vector of the vector.  """
         return vector / np.linalg.norm(vector)
 
-    def angle_between(self, v1, v2):
+    def _angle_between(self, v1, v2):
         """ Returns the angle in radians between vectors 'v1' and 'v2'::
-                angle_between((1, 0, 0), (0, 1, 0))
+                _angle_between((1, 0, 0), (0, 1, 0))
                 1.5707963267948966
-                angle_between((1, 0, 0), (1, 0, 0))
+                _angle_between((1, 0, 0), (1, 0, 0))
                 0.0
-                angle_between((1, 0, 0), (-1, 0, 0))
+                _angle_between((1, 0, 0), (-1, 0, 0))
                 3.141592653589793
         """
-        v1_u = self.unit_vector(v1)
-        v2_u = self.unit_vector(v2)
+        v1_u = self._unit_vector(v1)
+        v2_u = self._unit_vector(v2)
         return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
-    def split_cones(self, cone_centers):
+    def _split_cones(self, cone_centers):
         centers = np.array([c[0] for c in cone_centers])
         x = centers[:, 0]
         y = centers[:, 1]
@@ -201,7 +232,7 @@ class ConeDetector:
         """
 
         if unique_color is None:
-            b_center, y_center, o_center = self.split_cones(cone_centers)
+            b_center, y_center, o_center = self._split_cones(cone_centers)
         else:
             b_center = []
             y_center = []
@@ -257,7 +288,7 @@ class ConeDetector:
                                 v1 = list_oran_left[l_iter - 1] - [list_oran_left[l_iter - 1][0],
                                                                    list_oran_left[l_iter - 1][1] + 10]
                             v2 = o_center_copy[l_index] - list_oran_left[l_iter - 1]
-                            angle = self.angle_between(v1, v2)
+                            angle = self._angle_between(v1, v2)
                         else:
                             angle = 0.
 
@@ -285,7 +316,7 @@ class ConeDetector:
                                 v1 = list_oran_rigth[r_iter - 1] - [list_oran_rigth[r_iter - 1][0],
                                                                    list_oran_rigth[r_iter - 1][1] + 10]
                             v2 = o_center_copy[r_index] - list_oran_rigth[r_iter - 1]
-                            angle = self.angle_between(v1, v2)
+                            angle = self._angle_between(v1, v2)
                         else:
                             angle = 0.
 
@@ -299,7 +330,6 @@ class ConeDetector:
                             o_center_copy = np.delete(o_center_copy, r_index, axis=0)
                 except:
                     pass
-
                 if l_angle_condition:
                     # l_point_select = o_center_copy[l_index]
                     # left_orange = o_center[l_index]
@@ -387,7 +417,7 @@ class ConeDetector:
                         # plt.pause(10e-50)
 
                         v2 = b_center[index_b] - list_blue_center[iter - 1]
-                        angle = self.angle_between(v1, v2)
+                        angle = self._angle_between(v1, v2)
                     else:
                         angle = 0.
 
@@ -401,8 +431,7 @@ class ConeDetector:
 
 
             except:
-                pass
-            # last_point = b_center[index_b]
+                pass            # last_point = b_center[index_b]
             if angle_condition:
                 last_point = point_selected
                 list_blue_center.append(last_point)
