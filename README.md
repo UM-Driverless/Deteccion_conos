@@ -9,8 +9,19 @@ Se debe descomprimir el archivo dentro de la carpeta: /PyUMotorsport/cone_detect
 
 Crea tu entorno virtual en python 3.8 y activalo
 ```bash
-pip install -r requeriments
+conda create -n FormulaStudent python=3.8
+conda activate FormulaStudent
+conda install tensorflow-gpu
+conda install pandas
+pip install opencv-python
+pip install simple-pid
+conda install pillow
+conda install matplotlib
+pip install opencv-contrib-python
+
 ```
+
+[comment]: <> (&#40;pip install -r requeriments.txt&#41;)
 
 A continuación vamos a installar el Model Zoo de detección de Tensorflow
 
