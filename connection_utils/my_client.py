@@ -20,6 +20,9 @@ class ConnectionManager(ComunicationInterface):
         self.imageWidth = None
         self.imageWidth = None
 
+        _, _, _, _, _ = self.get_data()
+        self.send_actions(throttle=0., brake=0., steer=0.)
+
     def _bind2server(self, HOST=None, PORT=12345):
         '''
         Establishes a connection with the server, which is listening on port 12345 of this machine.

@@ -26,6 +26,16 @@ class ConeDetector(ConeDetectorInterface):
         self.orange_color = 'oran'
 
     def detect_cones(self, img, show_detections=False, min_score_thresh=0.5, real_time=True, im_name='cone detections'):
+        """
+        Performs the cones detection task. The detection must include the bounding boxes and classification of each
+        cone.
+        :param input: (3D numpy array) Image to process.
+        :param min_score_thresh: (float in [0., 1.]) Min score of confident on a detection.
+        :param show_detections: (bool) If True: The image with detections id displayed. If False: no image is displayed.
+        :param im_name: (string) Name of the detection image when show_detections=True
+        :return: [ndarray, list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
+                                data.
+        """
         # cv2.imwrite('imagen_conos.png', img)
         img_resize = cv2.resize(img, (640, 640), interpolation=cv2.INTER_AREA)
         detections = self.detect(img_resize)
