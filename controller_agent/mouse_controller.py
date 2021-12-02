@@ -52,6 +52,24 @@ class visualize_pygame:
         :param data: List of base image, detections (bounding boxes of cones) and segmentations (imgae of segmentation)
         """
         image, detections, y_hat = data
+        image = self.make_images(image, detections, y_hat)
+        self.video.append(image)
+        # Drawing
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        im = pygame.surfarray.make_surface(np.transpose(image, (1, 0, 2)))
+        self.screen.fill((0, 0, 0))
+        self.screen.blit(im, (0, 0))
+        pygame.display.flip()
+        pygame.display.update()
+        self.clock.tick(self.ticks)
+
+
+    def save_images(self, path, name='frame_{:0>4d}.jpg'):
+        for i in range(len(self.video)):
+            cv2.imwrite(path + name.format(i), self.video[i])
+        cv2.destroyAllWindows()
+
+    def make_images(self, image, detections, y_hat):
         # Make images
         color_mask = np.argmax(y_hat[0], axis=2)
 
@@ -87,19 +105,6 @@ class visualize_pygame:
             a = tuple(det[1])
             b = tuple(det[2])
             image = cv2.rectangle(image, a, b, color=color, thickness=3)
-
-        self.video.append(image)
-        # Drawing
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        im = pygame.surfarray.make_surface(np.transpose(image, (1, 0, 2)))
-        self.screen.fill((0, 0, 0))
-        self.screen.blit(im, (0, 0))
-        pygame.display.flip()
-        pygame.display.update()
-        self.clock.tick(self.ticks)
         cv2.waitKey(1)
 
-    def save_images(self, path, name='frame_{:0>4d}.jpg'):
-        for i in range(len(self.video)):
-            cv2.imwrite(path + name.format(i), self.video[i])
-        cv2.destroyAllWindows()
+        return image

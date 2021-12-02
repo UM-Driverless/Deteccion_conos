@@ -9,7 +9,6 @@ import cv2
 # from Object
 
 
-
 class ConeDetector(ConeDetectorInterface):
 
     def __init__(self, checkpoint_path="/home/shernandez/PycharmProjects/UMotorsport/v1/UnityTrainerPy-master/PyUMotorsport_v2/ObjectDetectionSegmentation/DetectionData/SNet_3L_saved_model_FP32"):
@@ -39,17 +38,23 @@ class ConeDetector(ConeDetectorInterface):
         y_hat = y_hat.numpy()
 
         all_bboxs = []
+        all_labels = []
         for i in range(y_hat.shape[0]):
             mask = np.argmax(y_hat[i], axis=2)
             bboxs = []
+            labels = []
             for c in range(y_hat.shape[3] - 1):
                 countours, _ = cv2.findContours(np.uint8((mask == c) * 1), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                 for countour in countours:
                     x, y, w, h = cv2.boundingRect(countour)
                     if w * h > 3:  # min_area
-                        p1 = [int(x * _scale2original_size[1]), int(y * _scale2original_size[0])]
-                        p2 = [int((x + w) * _scale2original_size[1]), int((y + h) * _scale2original_size[0])]
-                        bboxs.append([c, p1, p2])
-            all_bboxs.append(bboxs)
+                        p1 = np.array([int(x * _scale2original_size[1]), int(y * _scale2original_size[0])])
+                        p2 = np.array([int((x + w) * _scale2original_size[1]), int((y + h) * _scale2original_size[0])])
+                        # bboxs.append(np.array([c, p1, p2]))
+                        bboxs.append(np.array([p1, p2]))
+                        labels.append(c)
 
-        return all_bboxs, y_hat
+            all_labels.append(np.array(labels))
+            all_bboxs.append(np.array(bboxs))
+
+        return [np.array(all_bboxs), np.array(all_labels)], y_hat

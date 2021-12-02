@@ -10,3 +10,4 @@ class AgentInterface(object, metaclass=ABCMeta):
         :param img_center: centro de la imagen
         :return: throttle, brake, steer, clutch, upgear, downgear
         """
+

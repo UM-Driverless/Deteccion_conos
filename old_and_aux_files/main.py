@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from connection_utils.my_client import ConnectionManager
-from controller_agent import agent
+from controller_agent import agent_v0
 from cone_detection.detection_utils import ConeDetector
 from cone_detection.detection_utils import BLUE_COLOR, YELLOW_COLOR, ORANGE_COLOR, DARK_ORANGE_COLOR
 import utils
@@ -336,7 +336,7 @@ if __name__ == '__main__':
 
                 cv2.waitKey(1)
 
-            actions = agent.testAction(image, speed=0.0, throttle=0.1, steer=giro, brake=0.0)
+            actions = agent_v0.testAction(image, speed=0.0, throttle=0.1, steer=giro, brake=0.0)
 
             connect_mng.send_actions(throttle=actions[0], steer=actions[1], brake=actions[2])
 

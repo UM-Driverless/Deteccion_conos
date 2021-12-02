@@ -1,6 +1,7 @@
 from connection_utils.my_client import ConnectionManager
-from controller_agent.mouse_controller import Agent
+from controller_agent.agent import Agent
 from cone_detection.cone_segmentation import ConeDetector
+from visualization_utils.visualizer_con_det_seg import Visualizer
 import tensorflow as tf
 import os
 import time
@@ -20,11 +21,17 @@ if __name__ == '__main__':
     # Inicializar conexiones
     connect_mng = ConnectionManager()
 
+    ## Controlar con joystick (o ratón)
     # Inicializar Agente (controlador)
-    agent = Agent(connect_mng.imageWidth, connect_mng.imageHeigth)
-
+    # agent = Agent(connect_mng.imageWidth, connect_mng.imageHeigth)
     # Visualización de datos
-    visualizer = agent.visualizer
+    # visualizer = agent.visualizer
+
+    ## Controlador autónomo
+    # Inicializar Agente (controlador)
+    agent = Agent()
+    # Visualización de datos
+    visualizer = Visualizer()
 
     try:
         while True:
@@ -35,12 +42,13 @@ if __name__ == '__main__':
             # Detectar conos
             detections, y_hat = detector.detect_cones(image)
 
-            throttle, brake, steer, clutch, upgear, downgear = agent.get_action()
+            throttle, brake, steer, clutch, upgear, downgear = agent.get_action(detections, y_hat)
             connect_mng.send_actions(throttle=throttle, brake=brake, steer=steer)
 
             print("FPS: ", 1.0 / (time.time() - start_time))
 
-            visualizer.visualize([image, detections, y_hat])
+            if verbose==1:
+                visualizer.visualize([image, detections, y_hat])
 
 
     finally:
