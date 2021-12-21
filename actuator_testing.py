@@ -36,8 +36,16 @@ if __name__ == '__main__':
             # Detectar conos
             # detections, y_hat = detector.detect_cones(image)
 
+            # Actions:
+            # 1 -> steer
+            # 2 -> throttle
+            # 3 -> brake
+            # 4 -> clutch
+            # 5 -> upgear
+            # 6 -> downgear
+
             # Seleccionar acciones
-            throttle, brake, steer, clutch, upgear, downgear = agent.get_action(1)
+            throttle, brake, steer, clutch, upgear, downgear = agent.get_action([1, 2, 4, 5])
 
             # Enviar acciones
             connect_mng.send_actions(throttle=throttle,

@@ -13,7 +13,93 @@ class ConeProcessing(ConeProcessingInterface):
         intialTracbarVals = [[73, 67, 27], [129, 255, 255], [21, 58, 142], [24, 255, 255], [45, 27, 0, 44]]
         self.initializeTrackbars(intialTracbarVals[4])
 
-    def create_cone_map(self, cone_detections, cone_centers, aux_data=None):
+    def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3)):
+        """
+        Performs the cones detection task. The detection must include the bounding boxes and classification of each
+        cone.
+        :param img: (3D numpy array) Image to process.
+        :param min_score_thresh: (float in [0., 1.]) Min score of confident on a detection.
+        :param show_detections: (bool) If True: The image with detections id displayed. If False: no image is displayed.
+        :param im_name: (string) Name of the detection image when show_detections=True
+        :return: [ndarray, list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
+                                data.
+        """
+        eagle_img, _ = aux_data
+
+        src_trapezoide = self.valTrackbars()  # Trapezoide a coger de la imagen original
+
+        if cone_centers[0].shape[0]:
+            list_blue_center = cone_centers[0]
+            # Transformo las coordenadas a vista de águila
+            warp_blue_center = self.perspective_warp_coordinates(list_blue_center,
+                                                                 orig_im_shape,
+                                                                 dst_size=(orig_im_shape[2], orig_im_shape[2]),
+                                                                 src=src_trapezoide)
+        else:
+            list_blue_center = []
+            warp_blue_center = []
+
+        if cone_centers[1].shape[0]:
+            list_yell_center = cone_centers[1]
+            warp_yell_center = self.perspective_warp_coordinates(list_yell_center,
+                                                                 orig_im_shape,
+                                                                 dst_size=(orig_im_shape[2], orig_im_shape[2]),
+                                                                 src=src_trapezoide)
+        else:
+            list_yell_center = []
+            warp_yell_center = []
+
+        if cone_centers[2].shape[0]:
+            list_oran_center = cone_centers[2]
+            if cone_centers[3].shape[0]:
+                list_oran_center = np.concatenate([list_oran_center, cone_centers[3]])
+            warp_oran_center = self.perspective_warp_coordinates(list_oran_center,
+                                                                 orig_im_shape,
+                                                                 dst_size=(orig_im_shape[2], orig_im_shape[2]),
+                                                                 src=src_trapezoide)
+        elif cone_centers[3].shape[0]:
+            list_oran_center = cone_centers[3]
+            warp_oran_center = self.perspective_warp_coordinates(list_oran_center,
+                                                                 orig_im_shape,
+                                                                 dst_size=(orig_im_shape[2], orig_im_shape[2]),
+                                                                 src=src_trapezoide)
+        else:
+            list_oran_center = []
+            warp_oran_center = []
+        # list_blue_center, list_yell_center, list_oran_center = self.split_cones(cone_centers, labels)
+
+
+
+
+
+
+        # # algoritmo para unir conos contiguos. Lo aplicamos sobre los conos en perspectiva
+        # order_warp_blue_center = self.join_cones(warp_blue_center, unique_color='blue')
+        # order_warp_yell_center = self.join_cones(warp_yell_center, unique_color='yell')
+        order_warp_oran_left_center, order_warp_oran_rigth_center = self.join_cones(warp_oran_center,
+                                                                                        unique_color='oran')
+        order_warp_blue_center = warp_blue_center
+        order_warp_yell_center = warp_yell_center
+        order_warp_oran_left_center, order_warp_oran_rigth_center = self.split_orange_cones(warp_oran_center)
+
+        # calcular el centro
+        if len(warp_blue_center) > 1 and len(warp_yell_center) > 1:
+            x1 = np.median(np.array(warp_blue_center)[:, 0])
+            x2 = np.median(np.array(warp_yell_center)[:, 0])
+            center = int((x2 - x1) / 2 + x1)
+        elif len(order_warp_oran_left_center) > 1 and len(order_warp_oran_rigth_center) > 1:
+            x1 = np.median(np.array(order_warp_oran_left_center)[:, 0])
+            x2 = np.median(np.array(order_warp_oran_rigth_center)[:, 0])
+            center = int((x2 - x1) / 2 + x1)
+        else:
+            center = 0.
+
+        return [warp_blue_center, warp_yell_center, warp_oran_center], \
+               [order_warp_blue_center, order_warp_yell_center, order_warp_oran_left_center, order_warp_oran_rigth_center], \
+               center
+
+
+    def create_cone_map_legacy(self, cone_detections, cone_centers, aux_data=None):
         """
         Performs the cones detection task. The detection must include the bounding boxes and classification of each
         cone.
@@ -28,19 +114,19 @@ class ConeProcessing(ConeProcessingInterface):
 
         src_trapezoide = self.valTrackbars()  # Trapezoide a coger de la imagen original
 
-        list_blue_center, list_yell_center, list_oran_center = self.split_cones(cone_centers)
+        list_blue_center, list_yell_center, list_oran_center = self.split_cones_legacy(cone_centers)
 
         # Transformo las coordenadas a vista de águila
-        warp_blue_center = self.perspective_warp_coordinates(list_blue_center,
+        warp_blue_center = self.perspective_warp_coordinates_legacy(list_blue_center,
                                                               eagle_img,
                                                               dst_size=(orig_im_shape[1], orig_im_shape[1]),
                                                               src=src_trapezoide)
-        warp_yell_center = self.perspective_warp_coordinates(list_yell_center,
+        warp_yell_center = self.perspective_warp_coordinates_legacy(list_yell_center,
                                                               eagle_img,
                                                               dst_size=(orig_im_shape[1], orig_im_shape[1]),
                                                               src=src_trapezoide)
 
-        warp_oran_center = self.perspective_warp_coordinates(list_oran_center,
+        warp_oran_center = self.perspective_warp_coordinates_legacy(list_oran_center,
                                                               eagle_img,
                                                               dst_size=(
                                                                   orig_im_shape[1], orig_im_shape[1]),
@@ -67,7 +153,32 @@ class ConeProcessing(ConeProcessingInterface):
                center
 
 
-    def perspective_warp_coordinates(self, coord_list,
+    def perspective_warp_coordinates(self,
+                                    coord_list,
+                                    input_size,
+                                    dst_size=(180, 180),
+                                    src=np.float32([(0.43, 0.65), (0.58, 0.65), (0.1, 1), (1, 1)]),
+                                    dst=np.float32([(0, 0), (1, 0), (0, 1), (1, 1)])):
+        coord_list = np.array(coord_list)
+        if coord_list.shape[0] > 0:
+            # img_size = np.float32([(input_size[1], input_size[0])])
+            img_size = np.float32([input_size[2], input_size[1]])
+            src = src * img_size
+            # For destination points, I'm arbitrarily choosing some points to be
+            # a nice fit for displaying our warped result
+            # again, not exact, but close enough for our purposes
+            dst = dst * np.float32(dst_size)
+            # Given src and dst points, calculate the perspective transform matrix
+            M = cv2.getPerspectiveTransform(src, dst)
+            # Warp the image using OpenCV warpPerspective()
+            # warped = cv2.warpPerspective(img, M, dst_size)
+
+            c = np.float32(coord_list[np.newaxis, :])
+            warped = np.int32(cv2.perspectiveTransform(c, M))
+            return warped[0]
+        return []
+
+    def perspective_warp_coordinates_legacy(self, coord_list,
                                      img,
                                      dst_size=(1280, 720),
                                      src=np.float32([(0.43, 0.65), (0.58, 0.65), (0.1, 1), (1, 1)]),
@@ -90,7 +201,22 @@ class ConeProcessing(ConeProcessingInterface):
             return warped[0]
         return []
 
-    def split_cones(self, cone_centers):
+    def split_cones(self, cone_centers, cone_class):
+        # TODO: reimplementar con numpy sin bucle
+        b_center = []
+        y_center = []
+        o_center = []
+        for center, clase in zip(cone_centers, cone_class):
+            if clase == 0:
+                b_center.append(center)
+            elif clase == 1:
+                y_center.append(center)
+            elif clase == 2 or clase == 3:
+                o_center.append(center)
+
+        return b_center, y_center, o_center
+
+    def split_cones_legacy(self, cone_centers):
         centers = np.array([c[0] for c in cone_centers])
         x = centers[:, 0]
         y = centers[:, 1]
@@ -113,6 +239,7 @@ class ConeProcessing(ConeProcessingInterface):
         cv2.createTrackbar("Width Bottom", "Trackbars", intialTracbarVals[2], 50, self.nothing)
         cv2.createTrackbar("Height Bottom", "Trackbars", intialTracbarVals[3], 100, self.nothing)
 
+
     def valTrackbars(self):
         widthTop = cv2.getTrackbarPos("Width Top", "Trackbars")
         heightTop = cv2.getTrackbarPos("Height Top", "Trackbars")
@@ -121,11 +248,35 @@ class ConeProcessing(ConeProcessingInterface):
 
         src = np.float32([(widthTop / 100, heightTop / 100), (1 - (widthTop / 100), heightTop / 100),
                           (widthBottom / 100, heightBottom / 100), (1 - (widthBottom / 100), heightBottom / 100)])
-
+        # src = np.float32([[0.45, 0.27], [0.55, 0.27], [0., 0.44], [1, 0.44]])
         return src
 
     def nothing(self, x):
         pass
+
+    def split_orange_cones(self, cone_centers):
+        """
+        :cone_centers list: [[(x_1, y_1), color_tag_1], ..., [(x_n, y_n), color_tag_n]]
+        :unique_color string: 'blue'
+                              'yell'
+                              'oran'
+                              Si se selecciona un único color para la lista de conos la entrada esperada para
+                              cone_centers será: [[x_1, y_1], ... , [x_n, y_n]]
+        """
+        if len(cone_centers) > 0:
+
+            median = np.median(cone_centers[:, 0])
+
+
+            list_oran_left = []
+            list_oran_rigth = []
+            for c in cone_centers:
+                if c[0] > median:
+                    list_oran_rigth.append(c)
+                else:
+                    list_oran_left.append(c)
+            return list_oran_left, list_oran_rigth
+        return [], []
 
     def join_cones(self, cone_centers, unique_color=None):
         """
@@ -138,7 +289,7 @@ class ConeProcessing(ConeProcessingInterface):
         """
 
         if unique_color is None:
-            b_center, y_center, o_center = self.split_cones(cone_centers)
+            b_center, y_center, o_center = self.split_cones_legacy(cone_centers)
         else:
             b_center = []
             y_center = []

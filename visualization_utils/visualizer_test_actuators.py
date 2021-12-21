@@ -1,5 +1,7 @@
 import numpy as np
 
+import warnings
+warnings.filterwarnings("ignore")
 from visualization_utils.visualize_base import VisualizeInterface
 import matplotlib.pyplot as plt
 from collections import deque

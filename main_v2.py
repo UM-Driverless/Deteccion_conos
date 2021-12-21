@@ -40,19 +40,21 @@ if __name__ == '__main__':
             image, speed, throttle, steer, brake = connect_mng.get_data(verbose=1)
 
             # Detectar conos
-            detections, y_hat = detector.detect_cones(image)
+            detections, y_hat = detector.detect_cones(image, bbox=False, centers=True)
 
-            throttle, brake, steer, clutch, upgear, downgear = agent.get_action(detections, y_hat)
+            [throttle, brake, steer, clutch, upgear, downgear], data = agent.get_action(detections, y_hat)
+            print(steer)
             connect_mng.send_actions(throttle=throttle, brake=brake, steer=steer)
 
             print("FPS: ", 1.0 / (time.time() - start_time))
 
             if verbose==1:
-                visualizer.visualize([image, detections, y_hat])
+                cenital_map = [data[1], data[2]]
+                visualizer.visualize([image, detections, cenital_map, y_hat], [throttle, brake, steer, clutch, upgear, downgear], save_frames=True)
 
 
     finally:
-        # path = '/home/shernandez/PycharmProjects/UMotorsport/v1/UnityTrainerPy-master/PyUMotorsport_v2/video/'
-        # name = 'video_{:0>4d}.jpg'
-        # visualizer.save_in_video(path, name)
+        path = '/home/shernandez/PycharmProjects/UMotorsport/v1/UnityTrainerPy-master/PyUMotorsport_v2/video/'
+        name = 'video_{:0>4d}.jpg'
+        visualizer.save_in_video(path, name)
         connect_mng.close_connection()

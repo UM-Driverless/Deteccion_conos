@@ -9,7 +9,7 @@ import numpy as np
 class ConnectionManager(ComunicationInterface):
     def __init__(self):
         self.camera = zed.Camera()  # Todavía no se ha implementado, de momento no hace nada.
-        self.can = can.CAN() # Todavía no se ha implementado, de momento no hace nada.
+        self.can = can.CAN()  # Todavía no se ha implementado, de momento no hace nada.
 
     def get_data(self, params=None, verbose=0):
         """

@@ -56,4 +56,4 @@ class Agent(AgentInterface):
         [order_warp_blue_center, order_warp_yell_center, order_warp_oran_left_center, order_warp_oran_rigth_center]
 
     def create_cone_map(self, detections, cone_centers, eagle_img, image_shape):
-        return self.cone_processing.create_cone_map(detections, cone_centers, [eagle_img, image_shape])
+        return self.cone_processing.create_cone_map_legacy(detections, cone_centers, [eagle_img, image_shape])

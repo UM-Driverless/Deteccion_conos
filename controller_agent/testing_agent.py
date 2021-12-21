@@ -39,7 +39,7 @@ class AgentActuatorsTest(AgentInterface):
         """
         Calcula las acciones que hay que realizar
 
-        :param program: (int) Select the testing program to execute.
+        :param program: ([int]) List with the selected actuators to try.
         :return: throttle, brake, steer, clutch, upgear, downgear
         """
         throttle = 0.
@@ -49,17 +49,17 @@ class AgentActuatorsTest(AgentInterface):
         upgear = False
         downgear = False
 
-        if program == 1:  # steer checking
+        if 1 in program:  # steer checking
             steer = self._get_sin_values()
-        elif program == 2:  # throttle checking
+        if 2 in program:  # throttle checking
             throttle = self._get_sin_values(True)
-        elif program == 3:  # brake checking
+        if 3 in program:  # brake checking
             brake = self._get_sin_values(True)
-        elif program == 4:  # clutch checking
+        if 4 in program:  # clutch checking
             clutch = self._get_sin_values(True)
-        elif program == 5:  # upgear checking
+        if 5 in program:  # upgear checking
             upgear = True
-        elif program == 6:  # downgear checking
+        if 6 in program:  # downgear checking
             downgear = True
 
         return throttle, brake, steer, clutch, upgear, downgear
