@@ -11,6 +11,9 @@ class Agent(AgentInterface):
         self.pid = simple_pid.PID
         self.cone_processing = ConeProcessing()
 
+        # Controla a que velocidad se suelta el embrague por completo
+        self.clutch_max_speed = 10.
+
     def initializeTrackbarsPID(self, intialTracbarVals):
         cv2.namedWindow("Trackbars PID")
         cv2.resizeWindow("Trackbars PID", 360, 240)
@@ -28,7 +31,7 @@ class Agent(AgentInterface):
     def nothing(self, x):
         pass
 
-    def get_action(self, detections, segmentations, orig_im_shape=(1, 180, 320, 3)):
+    def get_action(self, detections, segmentations, speed, orig_im_shape=(1, 180, 320, 3)):
         """ Calcular los valores de control
         """
 
@@ -39,7 +42,7 @@ class Agent(AgentInterface):
         img_center = int(orig_im_shape[2] / 2)
         steer = self.horinzontal_control(ref_point=data[-1], img_center=img_center)
 
-        throttle, brake, clutch, upgear, downgear = self.longitudinal_control(cenital_cones=data[1])
+        throttle, brake, clutch, upgear, downgear = self.longitudinal_control(cenital_cones=data[1], speed=speed)
 
         return [throttle, brake, steer, clutch, upgear, downgear], data
 
@@ -54,7 +57,7 @@ class Agent(AgentInterface):
 
         return pid(turn_point)
 
-    def longitudinal_control(self, cenital_cones):
+    def longitudinal_control(self, cenital_cones, speed):
         blue_center, yell_center, oran_left_center, oran_rigth_center = cenital_cones
 
         n_color_cones = len(blue_center) + len(yell_center)
@@ -66,8 +69,23 @@ class Agent(AgentInterface):
         else:
             throttle = 0.0
             brake = 1.0
-        clutch = 0.
+        clutch = self.clutch_func(speed, throttle, brake)
         upgear = 0.
         downgear = 0.
 
         return throttle, brake, clutch, upgear, downgear
+
+    def clutch_func(self, speed, throttle, brake):
+        clutch = 0.
+        if speed < self.clutch_max_speed:
+            speed = speed/self.clutch_max_speed
+            if speed < 0.1:
+                if throttle > 0.25:
+                    clutch = 0.8
+                elif brake > 0.1:
+                    clutch = 1.0
+                else:
+                    clutch = 1.0
+            else:
+                clutch = (0.2 / speed) - 0.2
+        return clutch

@@ -6,11 +6,11 @@ class Visualizer:
         self.saved_frames = []
 
     def visualize(self, data, controls, save_frames=False):
-        image, detections, cenital_map, y_hat = data
-        self.make_images(image, detections, cenital_map, y_hat, controls, save_frames=save_frames)
+        image, detections, cenital_map, y_hat, speed = data
+        self.make_images(image, detections, cenital_map, y_hat, speed, controls, save_frames=save_frames)
 
 
-    def make_images(self, image, detections, cenital_map, y_hat, controls, dim=(1, 180, 320, 3), save_frames=False):
+    def make_images(self, image, detections, cenital_map, y_hat, speed, controls, dim=(1, 180, 320, 3), save_frames=False):
         centers, detections, labels = detections
         cenital_map, estimated_center = cenital_map
         throttle, brake, steer, clutch, upgear, downgear = controls
@@ -81,20 +81,20 @@ class Visualizer:
                 # cv2.circle(image,
                 #            (int(c[0]*_scale2original_size[1]), int(c[1]*_scale2original_size[0])),
                 #            3, (0, 0, 255), -1)
-                cv2.circle(res_image, (int(c[0]), int(c[1])), 0, (0, 0, 255), 3)
+                cv2.circle(res_image, (int(c[0]), int(c[1])), 1, (0, 0, 255), -1)
 
 
         cenital_img = np.zeros((dim[2], dim[2], 3)) * 255
         for c in cenital_map[0]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 0, (255, 0, 0), 3)
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 3, (255, 0, 0), -1)
         for c in cenital_map[1]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 0, (0, 255, 255), 3)
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 3, (0, 255, 255), -1)
         for c in cenital_map[2]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 0, (0, 0, 255), 3)
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 3, (0, 0, 255), -1)
         for c in cenital_map[3]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 0, (100, 0, 255), 3)
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 3, (100, 0, 255), -1)
 
-        cv2.circle(cenital_img, (int(estimated_center), int(100)), 0, (0, 255, 0), 3)
+        cv2.circle(cenital_img, (int(estimated_center), int(100)), 3, (0, 255, 0), -1)
 
         # cv2.imshow("eagle view", cenital_img)
         # cv2.imshow("color cones cones", res_image)
@@ -105,21 +105,25 @@ class Visualizer:
         fontScale = 0.5
         color = (255, 255, 255)
         thickness = 1
-        text = 'throttle:   {:.4f}'.format(throttle)
-        image = cv2.putText(image, text, (10, 350), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'brake:      {:.4f}'.format(brake)
-        image = cv2.putText(image, text, (10, 370), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'steer:      {:.4f}'.format(steer)
-        image = cv2.putText(image, text, (10, 390), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'clutch:     {:.4f}'.format(clutch)
-        image = cv2.putText(image, text, (10, 410), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'upgear:     {:.4f}'.format(upgear)
+        text = 'speed:   {:.2f}'.format(speed)
+        image = cv2.putText(image, text, (10, 470), font, fontScale, color, thickness, cv2.LINE_AA)
+        # text = 'throttle:   {:.4f}'.format(throttle)
+        # image = cv2.putText(image, text, (10, 350), font, fontScale, color, thickness, cv2.LINE_AA)
+        # te{:.4f}'.format(steer)
+        # image = cv2.putText = 'brake:      {:.4f}'.format(brake)
+        #         # image = cv2.putText(image, text, (10, 370), font, fontScale, color, thickness, cv2.LINE_AA)
+        #         # text = 'steer:      xt(image, text, (10, 390), font, fontScale, color, thickness, cv2.LINE_AA)
+        # text = 'clutch:     {:.4f}'.format(clutch)
+        # image = cv2.putText(image, text, (10, 410), font, fontScale, color, thickness, cv2.LINE_AA)
+        text = 'upgear:     {:.2f}'.format(upgear)
         image = cv2.putText(image, text, (10, 430), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'downgear:   {:.4f}'.format(downgear)
+        text = 'downgear:   {:.2f}'.format(downgear)
         image = cv2.putText(image, text, (10, 450), font, fontScale, color, thickness, cv2.LINE_AA)
 
-        image[10:330, 10:330] = cenital_img
-        image[10:190, 973:1293] = res_image
+        ctr_img = self._controls_img(steer, throttle, brake, clutch)
+        image[2:202, 10:210] = cv2.resize(cenital_img, (200, 200))
+        image[220:331, 10:210] = cv2.resize(res_image, (200, 111))
+        image[340:390, 10:210] = ctr_img
         cv2.imshow("Detections", image)
 
         cv2.waitKey(1)
@@ -127,6 +131,50 @@ class Visualizer:
         if save_frames:
             self.saved_frames.append(image)
         return image
+
+    def _controls_img(self, steer, throttle, brake, clutch):
+        text_steer =    'steer:  {:+.3f}'.format(steer)
+        text_throttle = 'throttle: {:.3f}'.format(throttle)
+        text_brake =    'brake:   {:.3f}'.format(brake)
+        text_clutch =   'clutch:  {:.3f}'.format(clutch)
+
+        ste_img = np.ones((5, 41, 3), dtype=np.uint8) * 255
+        thr_img = np.ones((5, 41, 3), dtype=np.uint8) * 255
+        brk_img = np.ones((5, 41, 3), dtype=np.uint8) * 255
+        clutch_img = np.ones((5, 41, 3), dtype=np.uint8) * 255
+
+        ctr_img = np.zeros((36, 87, 3), dtype=np.uint8)
+
+        steer = np.int((steer + 1) / 2 * 41)
+        throttle = np.int(np.clip(throttle, 0.0, 1.0) * 41)
+        brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
+        brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
+        clutch = np.int(np.clip(clutch, 0.0, 1.0) * 41)
+
+
+        ste_img[:, steer:steer + 1, 1:3] = np.zeros((5, 1, 2), dtype=np.uint8)
+        thr_img[:, :throttle, 1] = thr_img[:, :throttle, 1] * 0
+        brk_img[:, :brake, 2] = brk_img[:, :brake, 2] * 0
+        clutch_img[:, :clutch, 0] = clutch_img[:, :clutch, 0] * 0
+
+        ctr_img[3:8, 43:84, :] = ste_img
+        ctr_img[12:17, 43:84, :] = thr_img
+        ctr_img[20:25, 43:84, :] = brk_img
+        ctr_img[28:33, 43:84, :] = clutch_img
+
+
+        ctr_img = cv2.resize(ctr_img, (200, 50))
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        fontScale = 0.4
+        color = (255, 255, 255)
+        thickness = 1
+        ctr_img = cv2.putText(ctr_img, text_steer, (1, 10), font, fontScale, color, thickness, cv2.LINE_AA)
+        ctr_img = cv2.putText(ctr_img, text_throttle, (1, 22), font, fontScale, color, thickness, cv2.LINE_AA)
+        ctr_img = cv2.putText(ctr_img, text_brake, (1, 34), font, fontScale, color, thickness, cv2.LINE_AA)
+        ctr_img = cv2.putText(ctr_img, text_clutch, (1, 46), font, fontScale, color, thickness, cv2.LINE_AA)
+
+        return ctr_img
 
     def save_in_video(self, path, name):
         for i in range(len(self.saved_frames)):

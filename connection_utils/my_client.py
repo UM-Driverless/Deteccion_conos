@@ -21,7 +21,7 @@ class ConnectionManager(ComunicationInterface):
         self.imageWidth = None
 
         _, _, _, _, _ = self.get_data()
-        self.send_actions(throttle=0., brake=0., steer=0.)
+        self.send_actions(throttle=0., brake=1., steer=0., clutch=1.0)
 
     def _bind2server(self, HOST=None, PORT=12345):
         '''
@@ -82,12 +82,23 @@ class ConnectionManager(ComunicationInterface):
             image = image[0]
         return np.array(image), speed, throttle, steer, brake
 
-    def send_actions(self, throttle, steer, brake, clutch=None, upgear=False, downgear=False):
+    def send_actions(self, throttle, steer, brake, clutch, upgear=False, downgear=False):
+        throttle = self._clutch_response_simulation(clutch, throttle)
         msg = f'{throttle} {brake} {steer}'
         self.mySocket.sendall(msg.encode())  # <- Sends the agent's actions
 
     def close_connection(self):
         self.mySocket.close()
+
+    def _clutch_response_simulation(self, clutch, throttle):
+        # Simula la relacion entre aceleracion y embrague de forma que se produzca una acceleracion proporcional a la activacion del embrague
+        # Simulamos con una función lineal y = mx donde el embrague va a controlar la pendiente.
+        m = np.clip(1.5 - clutch, 0., 1.0)
+        if m > 0.1:
+            throttle = m * throttle
+        else:
+            throttle = 0.
+        return throttle
 
 # def bind2server(PORT=12345):
 #     '''
