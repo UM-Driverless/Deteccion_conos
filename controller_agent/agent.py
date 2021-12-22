@@ -31,10 +31,10 @@ class Agent(AgentInterface):
     def nothing(self, x):
         pass
 
-    def get_action(self, detections, segmentations, speed, orig_im_shape=(1, 180, 320, 3)):
-        """ Calcular los valores de control
+    def get_action(self, detections, segmentations, speed, gear, rpm, orig_im_shape=(1, 180, 320, 3)):
         """
-
+        Calcular los valores de control
+        """
         centers, detections, labels = detections
 
         data = self.create_cone_map(centers, labels, None, None)
@@ -42,7 +42,7 @@ class Agent(AgentInterface):
         img_center = int(orig_im_shape[2] / 2)
         steer = self.horinzontal_control(ref_point=data[-1], img_center=img_center)
 
-        throttle, brake, clutch, upgear, downgear = self.longitudinal_control(cenital_cones=data[1], speed=speed)
+        throttle, brake, clutch, upgear, downgear = self.longitudinal_control(cenital_cones=data[1], speed=speed,  gear=gear, rpm=rpm)
 
         return [throttle, brake, steer, clutch, upgear, downgear], data
 
@@ -57,7 +57,7 @@ class Agent(AgentInterface):
 
         return pid(turn_point)
 
-    def longitudinal_control(self, cenital_cones, speed):
+    def longitudinal_control(self, cenital_cones, speed,  gear, rpm):
         blue_center, yell_center, oran_left_center, oran_rigth_center = cenital_cones
 
         n_color_cones = len(blue_center) + len(yell_center)
@@ -70,10 +70,20 @@ class Agent(AgentInterface):
             throttle = 0.0
             brake = 1.0
         clutch = self.clutch_func(speed, throttle, brake)
+
+        upgear, downgear = self.change_gear(gear, rpm, throttle)
+
+        return throttle, brake, clutch, upgear, downgear
+
+    def change_gear(self,  gear, rpm, throttle):
         upgear = 0.
         downgear = 0.
 
-        return throttle, brake, clutch, upgear, downgear
+        if rpm > 4000 and gear >= 0 and gear < 4:
+            upgear = 1.
+        elif rpm < 1000. and gear > 0 and gear <= 4 and throttle <= 0.1:
+            downgear = 1.
+        return upgear, downgear
 
     def clutch_func(self, speed, throttle, brake):
         clutch = 0.

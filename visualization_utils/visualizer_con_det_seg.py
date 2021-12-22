@@ -5,15 +5,15 @@ class Visualizer:
     def __init__(self):
         self.saved_frames = []
 
-    def visualize(self, data, controls, save_frames=False):
+    def visualize(self, data, controls, fps, save_frames=False):
         image, detections, cenital_map, y_hat, speed = data
-        self.make_images(image, detections, cenital_map, y_hat, speed, controls, save_frames=save_frames)
+        self.make_images(image, detections, cenital_map, y_hat, speed, controls, fps, save_frames=save_frames)
 
 
-    def make_images(self, image, detections, cenital_map, y_hat, speed, controls, dim=(1, 180, 320, 3), save_frames=False):
+    def make_images(self, image, detections, cenital_map, y_hat, speed, controls, fps, dim=(1, 180, 320, 3), save_frames=False):
         centers, detections, labels = detections
         cenital_map, estimated_center = cenital_map
-        throttle, brake, steer, clutch, upgear, downgear = controls
+        throttle, brake, steer, clutch, upgear, downgear, gear, rpm = controls
 
         # Make images
         color_mask = np.argmax(y_hat[0], axis=2)
@@ -115,10 +115,12 @@ class Visualizer:
         #         # text = 'steer:      xt(image, text, (10, 390), font, fontScale, color, thickness, cv2.LINE_AA)
         # text = 'clutch:     {:.4f}'.format(clutch)
         # image = cv2.putText(image, text, (10, 410), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'upgear:     {:.2f}'.format(upgear)
+        text = 'gear:     {:d}'.format(gear)
         image = cv2.putText(image, text, (10, 430), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'downgear:   {:.2f}'.format(downgear)
+        text = 'RPM:   {:d}'.format(rpm)
         image = cv2.putText(image, text, (10, 450), font, fontScale, color, thickness, cv2.LINE_AA)
+        text = 'FPS:     {:.2f}'.format(fps)
+        image = cv2.putText(image, text, (10, 490), font, fontScale, color, thickness, cv2.LINE_AA)
 
         ctr_img = self._controls_img(steer, throttle, brake, clutch)
         image[2:202, 10:210] = cv2.resize(cenital_img, (200, 200))

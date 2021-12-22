@@ -8,6 +8,7 @@ import cv2
 from PIL import Image
 import numpy as np
 
+
 class ConnectionManager(ComunicationInterface):
     def __init__(self, ip=None, port=12345):
         self.mySocket = self._bind2server(ip, port)
@@ -15,13 +16,14 @@ class ConnectionManager(ComunicationInterface):
         self.mySocket.sendall("ready".encode())
         print("Established connection")
 
+        self.car_data_sim = carr_data_simulation()
         # Message format [imageWidth, imageHeigth, numberofCameras, decimalAccuracy, throttle, speed, steer, brake, image]
         self.msg_index = [4, 8, 12, 16, 20, 24, 28, 29]
         self.imageWidth = None
         self.imageWidth = None
 
-        _, _, _, _, _ = self.get_data()
-        self.send_actions(throttle=0., brake=1., steer=0., clutch=1.0)
+        _ = self.get_data()
+        self.send_actions(throttle=0., brake=1., steer=0., clutch=1.0, upgear=0., downgear=0.)
 
     def _bind2server(self, HOST=None, PORT=12345):
         '''
@@ -54,9 +56,11 @@ class ConnectionManager(ComunicationInterface):
         imageHeigth = int.from_bytes(msg[self.msg_index[0]:self.msg_index[1]], byteorder='little', signed=False)
         numberOfCameras = int.from_bytes(msg[self.msg_index[1]:self.msg_index[2]], byteorder='little', signed=False)
         decimalAccuracy = int.from_bytes(msg[self.msg_index[2]:self.msg_index[3]], byteorder='little', signed=False)
-        throttle = int.from_bytes(msg[self.msg_index[3]: self.msg_index[4]], byteorder='little', signed=True) / decimalAccuracy
+        throttle = int.from_bytes(msg[self.msg_index[3]: self.msg_index[4]], byteorder='little',
+                                  signed=True) / decimalAccuracy
         speed = int.from_bytes(msg[self.msg_index[4]:self.msg_index[5]], byteorder='little', signed=False)
-        steer = int.from_bytes(msg[self.msg_index[5]:self.msg_index[6]], byteorder='little', signed=True) / decimalAccuracy
+        steer = int.from_bytes(msg[self.msg_index[5]:self.msg_index[6]], byteorder='little',
+                               signed=True) / decimalAccuracy
         brake = int.from_bytes(msg[self.msg_index[6]:self.msg_index[7]], byteorder='little', signed=False)
 
         image = []
@@ -80,15 +84,31 @@ class ConnectionManager(ComunicationInterface):
 
         if numberOfCameras < 2:
             image = image[0]
-        return np.array(image), speed, throttle, steer, brake
 
-    def send_actions(self, throttle, steer, brake, clutch, upgear=False, downgear=False):
-        throttle = self._clutch_response_simulation(clutch, throttle)
+        gear = self.car_data_sim.gear
+        rpm = self.car_data_sim.rpm
+        self.car_data_sim.speed = speed
+        return np.array(image), speed, throttle, steer, brake, gear, rpm
+
+    def send_actions(self, throttle, steer, brake, clutch, upgear, downgear):
+        throttle = self.car_data_sim._clutch_response_simulation(clutch, throttle)
+        self.car_data_sim.update_car_state(throttle, steer, brake, clutch, upgear, downgear)
         msg = f'{throttle} {brake} {steer}'
         self.mySocket.sendall(msg.encode())  # <- Sends the agent's actions
 
     def close_connection(self):
         self.mySocket.close()
+
+
+class carr_data_simulation:
+    def __init__(self):
+        self.gear = 1
+        self.rpm = 1000
+        self.speed = 0.
+
+    def update_car_state(self, throttle, steer, brake, clutch, upgear, downgear):
+        self.gear += int(upgear) - int(downgear)
+        self.rpm = self.calc_rpm(self.gear, self.speed)
 
     def _clutch_response_simulation(self, clutch, throttle):
         # Simula la relacion entre aceleracion y embrague de forma que se produzca una acceleracion proporcional a la activacion del embrague
@@ -99,6 +119,16 @@ class ConnectionManager(ComunicationInterface):
         else:
             throttle = 0.
         return throttle
+
+    def calc_rpm(self, gear, speed):
+        if speed <= 4.:
+            rpm = 800.
+        elif gear == 0:
+            rpm = speed * 400
+        else:
+            rpm = (speed / gear) * 200
+
+        return int(rpm)
 
 # def bind2server(PORT=12345):
 #     '''
