@@ -6,8 +6,9 @@ class Camera(CameraInterface):
     This clase controlls the ZED 2 camera.
     Here we can initialize the camera, get the current frame, depth and normal maps.
     """
-    def __init__(self):
+    def __init__(self, logger=None):
         super(Camera).__init__()
+        self.logger = logger
         self.init_camera()
 
     def init_camera(self):

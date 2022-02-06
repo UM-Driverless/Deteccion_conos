@@ -1,5 +1,4 @@
 from controller_agent.agent_base import AgentInterface
-from trayectory_estimation.cone_processing import ConeProcessing
 
 import numpy as np
 
@@ -16,6 +15,13 @@ class AgentActuatorsTest(AgentInterface):
         # Generamos una secuencia de tiempos
         self.time = np.arange(0, 6.28, 0.1)
         self.iterator = 0
+        self.gear = 0
+        self.max_gear = 4
+        self.min_gear = 0
+        self.throttle = 0.
+        self.brake = 1.
+        self.steer = 0.
+        self.clutch = 1.
 
     def _get_sin_values(self, clip=False):
         """
@@ -25,7 +31,7 @@ class AgentActuatorsTest(AgentInterface):
         sin_amplitude = np.sin(time)
 
         if clip:
-            sin_amplitude = np.clip(sin_amplitude, a_min=0., a_max=1.)
+            sin_amplitude = (sin_amplitude * 0.5) + 0.5
 
         self.iterator += 1
 
@@ -35,6 +41,42 @@ class AgentActuatorsTest(AgentInterface):
 
         return sin_amplitude
 
+    def _get_inv_sin_values(self, clip=False):
+        """
+        Genera una onda sinusoidal
+        """
+        time = self.time[self.iterator]
+        sin_amplitude = 1 - np.sin(time)
+
+        if clip:
+            sin_amplitude = (sin_amplitude * 0.5)
+
+        self.iterator += 1
+
+        # Si sobrepasamos la ultima posición de self.time volvemos al principio.
+        if self.iterator >= self.time.shape[0]:
+            self.iterator = 0
+
+        return sin_amplitude
+
+    def _get_cos_values(self, clip=False):
+        """
+        Genera una onda sinusoidal
+        """
+        time = self.time[self.iterator]
+        cos_amplitude = np.cos(time)
+
+        if clip:
+            cos_amplitude = (cos_amplitude * 0.5) + 0.5
+
+        self.iterator += 1
+
+        # Si sobrepasamos la ultima posición de self.time volvemos al principio.
+        if self.iterator >= self.time.shape[0]:
+            self.iterator = 0
+
+        return cos_amplitude
+
     def get_action(self, program):
         """
         Calcula las acciones que hay que realizar
@@ -42,24 +84,17 @@ class AgentActuatorsTest(AgentInterface):
         :param program: ([int]) List with the selected actuators to try.
         :return: throttle, brake, steer, clutch, upgear, downgear
         """
-        throttle = 0.
-        brake = 0.
-        steer = 0.
-        clutch = 0
-        upgear = False
-        downgear = False
-
         if 1 in program:  # steer checking
-            steer = self._get_sin_values()
+            self.steer = self._get_sin_values()
         if 2 in program:  # throttle checking
-            throttle = self._get_sin_values(True)
+            self.throttle = self._get_inv_sin_values(True)
         if 3 in program:  # brake checking
-            brake = self._get_sin_values(True)
+            self.brake = self._get_cos_values(True)
         if 4 in program:  # clutch checking
-            clutch = self._get_sin_values(True)
+            self.clutch = self._get_sin_values(True)
         if 5 in program:  # upgear checking
-            upgear = True
+            self.gear = np.clip(self.gear + 1, self.min_gear, self.max_gear)
         if 6 in program:  # downgear checking
-            downgear = True
+            self.gear = np.clip(self.gear -1, self.min_gear, self.max_gear)
 
-        return throttle, brake, steer, clutch, upgear, downgear
+        return self.throttle, self.brake, self.steer, self.clutch, self.gear

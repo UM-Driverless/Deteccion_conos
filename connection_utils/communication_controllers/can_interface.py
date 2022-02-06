@@ -16,7 +16,7 @@ class CANInterface(object, metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def send_action_msg(self, throttle, brake, steer, clutch, upgear, downgear):
+    def send_action_msg(self, throttle, brake, steer, clutch, gear):
         """
         Send the actions through CAN message.
 
@@ -24,6 +24,7 @@ class CANInterface(object, metaclass=ABCMeta):
         :param brake: (float in [0., 1.]) Normalized brake value.
         :param steer: (float in [-1., 1.]) Normalized steer. Range of steering in range [-180, 180]. ### Se puede cambiar si esto varía ###
         :param clutch: (float in [0., 1.]) Normalized clutch value.
+        :param gear: (int) Gear to engage.
         :param upgear: (bool) True means up a gear, False do nothing.
         :param downgear: (bool) True means down a gear, False do nothing.
         """

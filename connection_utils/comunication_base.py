@@ -15,7 +15,7 @@ class ComunicationInterface(object, metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def send_actions(self, throttle, steer, brake, clutch, upgear, downgear):
+    def send_actions(self, throttle, steer, brake, clutch, gear):
         """
         Send the actions to performs to the car actuators or to simulator.
         """
