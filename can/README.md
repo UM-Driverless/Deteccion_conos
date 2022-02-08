@@ -18,5 +18,7 @@ Para configural el dispositivo (Jetson Xavier NX) para que al encenderlo arranqu
 Habra que añadir al Startup Applications su ejecución a tarves del comando:
 
 ```bash
-sh ./<path_to_Deteccion_conos>/run_actuator_testing.sh
+sh ./<path_to_Deteccion_conos>/run_can_on_startup.sh
 ```
+
+Finalmente, el archivo enable_CAN_no_sudo solo funcionará en la Jetson Xavier.

@@ -82,7 +82,7 @@ class VisualizeActuators(VisualizeInterface):
         ax.set(xlabel='steps', ylabel='force', title='CAN clutch')
 
         ax = fig.add_subplot(3, 3, 5)
-        ax.plot(lin_space, self.gear_historial)
+        ax.plot(lin_space, self.in_gear_historial)
         ax.set(xlabel='steps', ylabel='force', title='CAN gear')
 
         ax = fig.add_subplot(3, 3, 6)

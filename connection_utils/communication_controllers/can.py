@@ -60,6 +60,7 @@ class CAN(CANInterface):
         :param downgear: (bool) True means down a gear, False do nothing.
         """
         data = [math.trunc(throttle), math.trunc(brake), math.trunc(clutch), math.trunc(steer), 1, 0, 0, 0]
+        self.logger.write_can_log("Send actions message -> " + str(data))
         self.send_message(data)
 
     def send_status_msg(self):
