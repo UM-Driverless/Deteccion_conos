@@ -41,3 +41,15 @@ protoc object_detection/protos/*.proto --python_out=.
 cp object_detection/packages/tf2/setup.py .
 python -m pip install .
 ```
+
+## Instalación ZED
+Descarga la versión del SDK que corresponda según la versión de CUDA y el sistema operativo (o Jetpack) en la página de Stereolabs:
+https://www.stereolabs.com/developers/release/
+
+En la carpeta de descargas ejecuta:
+
+```bash
+sh ./ZED_SDK_Ubuntu20_cuda11.5_v3.6.5.run
+```
+
+Sigue los pasos del instalador aceptando la instalacion de la API de python.
