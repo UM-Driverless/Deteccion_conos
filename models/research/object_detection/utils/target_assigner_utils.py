@@ -126,7 +126,7 @@ def coordinates_to_heatmap(y_grid,
   """Returns the heatmap targets from a set of point coordinates.
 
   This function maps a set of point coordinates to the output heatmap image
-  applied using a Gaussian kernel. Note that this function be can used by both
+  applied using a Gaussian kernel. Note that this function be can_scripts used by both
   object detection and keypoint estimation tasks. For object detection, the
   "channel" refers to the object class. For keypoint estimation, the "channel"
   refers to the number of keypoint types.

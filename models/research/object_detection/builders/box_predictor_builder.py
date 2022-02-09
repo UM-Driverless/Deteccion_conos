@@ -54,7 +54,7 @@ def build_convolutional_box_predictor(is_training,
     num_classes: number of classes.  Note that num_classes *does not*
       include the background category, so if groundtruth labels take values
       in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-      assigned classification targets can range from {0,... K}).
+      assigned classification targets can_scripts range from {0,... K}).
     conv_hyperparams_fn: A function to generate tf-slim arg_scope with
       hyperparameters for convolution ops.
     min_depth: Minimum feature depth prior to predicting box encodings
@@ -139,7 +139,7 @@ def build_convolutional_keras_box_predictor(is_training,
     num_classes: number of classes.  Note that num_classes *does not*
       include the background category, so if groundtruth labels take values
       in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-      assigned classification targets can range from {0,... K}).
+      assigned classification targets can_scripts range from {0,... K}).
     conv_hyperparams: A `hyperparams_builder.KerasLayerHyperparams` object
       containing hyperparameters for convolution ops.
     freeze_batchnorm: Whether to freeze batch norm parameters during
@@ -254,7 +254,7 @@ def build_weight_shared_convolutional_box_predictor(
     num_classes: number of classes.  Note that num_classes *does not*
       include the background category, so if groundtruth labels take values
       in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-      assigned classification targets can range from {0,... K}).
+      assigned classification targets can_scripts range from {0,... K}).
     conv_hyperparams_fn: A function to generate tf-slim arg_scope with
       hyperparameters for convolution ops.
     depth: depth of conv layers.
@@ -340,7 +340,7 @@ def build_weight_shared_convolutional_keras_box_predictor(
     num_classes: number of classes.  Note that num_classes *does not*
       include the background category, so if groundtruth labels take values
       in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-      assigned classification targets can range from {0,... K}).
+      assigned classification targets can_scripts range from {0,... K}).
     conv_hyperparams: A `hyperparams_builder.KerasLayerHyperparams` object
       containing hyperparameters for convolution ops.
     freeze_batchnorm: Whether to freeze batch norm parameters during
@@ -452,7 +452,7 @@ def build_mask_rcnn_keras_box_predictor(is_training,
     num_classes: number of classes.  Note that num_classes *does not*
       include the background category, so if groundtruth labels take values
       in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-      assigned classification targets can range from {0,... K}).
+      assigned classification targets can_scripts range from {0,... K}).
     fc_hyperparams: A `hyperparams_builder.KerasLayerHyperparams` object
       containing hyperparameters for fully connected dense ops.
     freeze_batchnorm: Whether to freeze batch norm parameters during
@@ -554,7 +554,7 @@ def build_mask_rcnn_box_predictor(is_training,
     num_classes: number of classes.  Note that num_classes *does not*
       include the background category, so if groundtruth labels take values
       in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-      assigned classification targets can range from {0,... K}).
+      assigned classification targets can_scripts range from {0,... K}).
     fc_hyperparams_fn: A function to generate tf-slim arg_scope with
       hyperparameters for fully connected ops.
     use_dropout: Option to use dropout or not.  Note that a single dropout

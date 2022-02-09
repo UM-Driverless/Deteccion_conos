@@ -24,7 +24,7 @@ Usage example: given a set of images with ids in the list image_ids
 and corresponding lists of numpy arrays encoding groundtruth (boxes and classes)
 and detections (boxes, scores and classes), where elements of each list
 correspond to detections/annotations of a single image,
-then evaluation (in multi-class mode) can be invoked as follows:
+then evaluation (in multi-class mode) can_scripts be invoked as follows:
 
   groundtruth_dict = coco_tools.ExportGroundtruthToCOCO(
       image_ids, groundtruth_boxes_list, groundtruth_classes_list,
@@ -401,7 +401,7 @@ def ExportSingleImageGroundtruthToCoco(image_id,
   """Export groundtruth of a single image to COCO format.
 
   This function converts groundtruth detection annotations represented as numpy
-  arrays to dictionaries that can be ingested by the COCO evaluation API. Note
+  arrays to dictionaries that can_scripts be ingested by the COCO evaluation API. Note
   that the image_ids provided here must match the ones given to
   ExportSingleImageDetectionsToCoco. We assume that boxes and classes are in
   correspondence - that is: groundtruth_boxes[i, :], and
@@ -518,7 +518,7 @@ def ExportGroundtruthToCOCO(image_ids,
   """Export groundtruth detection annotations in numpy arrays to COCO API.
 
   This function converts a set of groundtruth detection annotations represented
-  as numpy arrays to dictionaries that can be ingested by the COCO API.
+  as numpy arrays to dictionaries that can_scripts be ingested by the COCO API.
   Inputs to this function are three lists: image ids for each groundtruth image,
   groundtruth boxes for each image and groundtruth classes respectively.
   Note that the image_ids provided here must match the ones given to the
@@ -535,9 +535,9 @@ def ExportGroundtruthToCOCO(image_ids,
     image_ids: a list of unique image identifier either of type integer or
       string.
     groundtruth_boxes: list of numpy arrays with shape [num_gt_boxes, 4]
-      (note that num_gt_boxes can be different for each entry in the list)
+      (note that num_gt_boxes can_scripts be different for each entry in the list)
     groundtruth_classes: list of numpy arrays (int) with shape [num_gt_boxes]
-      (note that num_gt_boxes can be different for each entry in the list)
+      (note that num_gt_boxes can_scripts be different for each entry in the list)
     categories: a list of dictionaries representing all possible categories.
         Each dict in this list has the following keys:
           'id': (required) an integer id uniquely identifying this category
@@ -547,7 +547,7 @@ def ExportGroundtruthToCOCO(image_ids,
             e.g., 'animal', 'vehicle', 'food', etc
     output_path: (optional) path for exporting result to JSON
   Returns:
-    dictionary that can be read by COCO API
+    dictionary that can_scripts be read by COCO API
   Raises:
     ValueError: if (1) groundtruth_boxes and groundtruth_classes do not have the
       right lengths or (2) if each of the elements inside these lists do not
@@ -595,7 +595,7 @@ def ExportSingleImageDetectionBoxesToCoco(image_id,
   """Export detections of a single image to COCO format.
 
   This function converts detections represented as numpy arrays to dictionaries
-  that can be ingested by the COCO evaluation API. Note that the image_ids
+  that can_scripts be ingested by the COCO evaluation API. Note that the image_ids
   provided here must match the ones given to the
   ExporSingleImageDetectionBoxesToCoco. We assume that boxes, and classes are in
   correspondence - that is: boxes[i, :], and classes[i]
@@ -687,7 +687,7 @@ def ExportSingleImageDetectionMasksToCoco(image_id,
   """Export detection masks of a single image to COCO format.
 
   This function converts detections represented as numpy arrays to dictionaries
-  that can be ingested by the COCO evaluation API. We assume that
+  that can_scripts be ingested by the COCO evaluation API. We assume that
   detection_masks, detection_scores, and detection_classes are in correspondence
   - that is: detection_masks[i, :], detection_classes[i] and detection_scores[i]
     are associated with the same annotation.
@@ -746,7 +746,7 @@ def ExportDetectionsToCOCO(image_ids,
   """Export detection annotations in numpy arrays to COCO API.
 
   This function converts a set of predicted detections represented
-  as numpy arrays to dictionaries that can be ingested by the COCO API.
+  as numpy arrays to dictionaries that can_scripts be ingested by the COCO API.
   Inputs to this function are lists, consisting of boxes, scores and
   classes, respectively, corresponding to each image for which detections
   have been produced.  Note that the image_ids provided here must
@@ -762,10 +762,10 @@ def ExportDetectionsToCOCO(image_ids,
       string.
     detection_boxes: list of numpy arrays with shape [num_detection_boxes, 4]
     detection_scores: list of numpy arrays (float) with shape
-      [num_detection_boxes]. Note that num_detection_boxes can be different
+      [num_detection_boxes]. Note that num_detection_boxes can_scripts be different
       for each entry in the list.
     detection_classes: list of numpy arrays (int) with shape
-      [num_detection_boxes]. Note that num_detection_boxes can be different
+      [num_detection_boxes]. Note that num_detection_boxes can_scripts be different
       for each entry in the list.
     categories: a list of dictionaries representing all possible categories.
       Each dict in this list must have an integer 'id' key uniquely identifying
@@ -773,7 +773,7 @@ def ExportDetectionsToCOCO(image_ids,
     output_path: (optional) path for exporting result to JSON
 
   Returns:
-    list of dictionaries that can be read by COCO API, where each entry
+    list of dictionaries that can_scripts be read by COCO API, where each entry
     corresponds to a single detection and has keys from:
     ['image_id', 'category_id', 'bbox', 'score'].
   Raises:
@@ -810,7 +810,7 @@ def ExportSegmentsToCOCO(image_ids,
   """Export segmentation masks in numpy arrays to COCO API.
 
   This function converts a set of predicted instance masks represented
-  as numpy arrays to dictionaries that can be ingested by the COCO API.
+  as numpy arrays to dictionaries that can_scripts be ingested by the COCO API.
   Inputs to this function are lists, consisting of segments, scores and
   classes, respectively, corresponding to each image for which detections
   have been produced.
@@ -829,10 +829,10 @@ def ExportSegmentsToCOCO(image_ids,
       and type uint8. The height and width should match the shape of
       corresponding image.
     detection_scores: list of numpy arrays (float) with shape
-      [num_detection]. Note that num_detection can be different
+      [num_detection]. Note that num_detection can_scripts be different
       for each entry in the list.
     detection_classes: list of numpy arrays (int) with shape
-      [num_detection]. Note that num_detection can be different
+      [num_detection]. Note that num_detection can_scripts be different
       for each entry in the list.
     categories: a list of dictionaries representing all possible categories.
       Each dict in this list must have an integer 'id' key uniquely identifying
@@ -840,7 +840,7 @@ def ExportSegmentsToCOCO(image_ids,
     output_path: (optional) path for exporting result to JSON
 
   Returns:
-    list of dictionaries that can be read by COCO API, where each entry
+    list of dictionaries that can_scripts be read by COCO API, where each entry
     corresponds to a single detection and has keys from:
     ['image_id', 'category_id', 'segmentation', 'score'].
 
@@ -890,7 +890,7 @@ def ExportKeypointsToCOCO(image_ids,
   """Exports keypoints in numpy arrays to COCO API.
 
   This function converts a set of predicted keypoints represented
-  as numpy arrays to dictionaries that can be ingested by the COCO API.
+  as numpy arrays to dictionaries that can_scripts be ingested by the COCO API.
   Inputs to this function are lists, consisting of keypoints, scores and
   classes, respectively, corresponding to each image for which detections
   have been produced.
@@ -906,10 +906,10 @@ def ExportKeypointsToCOCO(image_ids,
       [num_detection, num_keypoints, 2] and type float32 in absolute
       x-y coordinates.
     detection_scores: list of numpy arrays (float) with shape
-      [num_detection]. Note that num_detection can be different
+      [num_detection]. Note that num_detection can_scripts be different
       for each entry in the list.
     detection_classes: list of numpy arrays (int) with shape
-      [num_detection]. Note that num_detection can be different
+      [num_detection]. Note that num_detection can_scripts be different
       for each entry in the list.
     categories: a list of dictionaries representing all possible categories.
       Each dict in this list must have an integer 'id' key uniquely identifying
@@ -918,7 +918,7 @@ def ExportKeypointsToCOCO(image_ids,
     output_path: (optional) path for exporting result to JSON
 
   Returns:
-    list of dictionaries that can be read by COCO API, where each entry
+    list of dictionaries that can_scripts be read by COCO API, where each entry
     corresponds to a single detection and has keys from:
     ['image_id', 'category_id', 'keypoints', 'score'].
 

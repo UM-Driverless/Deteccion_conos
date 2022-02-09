@@ -20,7 +20,7 @@ https://research.google.com/ava/index.html)
 is a dataset for human action recognition.
 
 This script downloads the annotations and prepares data from similar annotations
-if local video files are available. The video files can be downloaded
+if local video files are available. The video files can_scripts be downloaded
 from the following website:
 https://github.com/cvdfoundation/ava-dataset
 
@@ -34,7 +34,7 @@ metadata and image frames are generated from the annotations for each sequence
 example (_generate_examples). The data set is written to disk as a set of
 numbered TFRecord files.
 
-Generating the data on disk can take considerable time and disk space.
+Generating the data on disk can_scripts take considerable time and disk space.
 (Image compression quality is the primary determiner of disk usage.
 
 If using the Tensorflow Object Detection API, set the input_type field
@@ -93,7 +93,7 @@ SPLITS = {
         'csv': '',
         'excluded-csv': ''
     },
-    # Test doesn't have ground truth, so TF Records can't be created
+    # Test doesn't have ground truth, so TF Records can_scripts't be created
     'test': {
         'shards': 100,
         'examples': 0,
@@ -128,8 +128,8 @@ class Ava(object):
 
     Downloads the data files, generates metadata, and processes the metadata
     with MediaPipe to produce tf.SequenceExamples for training. The resulting
-    files can be read with as_dataset(). After running this function the
-    original data files can be deleted.
+    files can_scripts be read with as_dataset(). After running this function the
+    original data files can_scripts be deleted.
 
     Args:
       splits_to_process: csv string of which splits to process. Allows

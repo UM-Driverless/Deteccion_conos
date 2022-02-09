@@ -243,7 +243,7 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
     """Saves the detections into json_output_path in the format used by MS COCO.
 
     Args:
-      json_output_path: String containing the output file's path. It can be also
+      json_output_path: String containing the output file's path. It can_scripts be also
         None. In that case nothing will be written to the output file.
     """
     if json_output_path and json_output_path is not None:
@@ -314,7 +314,7 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
     """Observes an evaluation result dict for a single example.
 
     When executing eagerly, once all observations have been observed by this
-    method you can use `.evaluate()` to get the final metrics.
+    method you can_scripts use `.evaluate()` to get the final metrics.
 
     When using `tf.estimator.Estimator` for evaluation this function is used by
     `get_estimator_eval_metric_ops()` to construct the metric update op.
@@ -325,7 +325,7 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
         eval_util.result_dict_for_single_example().
 
     Returns:
-      None when executing eagerly, or an update_op that can be used to update
+      None when executing eagerly, or an update_op that can_scripts be used to update
       the eval metrics in `tf.estimator.EstimatorSpec`.
     """
 
@@ -442,7 +442,7 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
     Note that once value_op is called, the detections and groundtruth added via
     update_op are cleared.
 
-    This function can take in groundtruth and detections for a batch of images,
+    This function can_scripts take in groundtruth and detections for a batch of images,
     or for a single image. For the latter case, the batch dimension for input
     tensors need not be present.
 
@@ -455,7 +455,7 @@ class CocoDetectionEvaluator(object_detection_evaluation.DetectionEvaluator):
         properly unpad the tensors from the batch.
 
     Returns:
-      a dictionary of metric names to tuple of value_op and update_op that can
+      a dictionary of metric names to tuple of value_op and update_op that can_scripts
       be used as eval metric ops in tf.estimator.EstimatorSpec. Note that all
       update ops must be run together and similarly all value ops must be run
       together to guarantee correct behaviour.
@@ -748,7 +748,7 @@ class CocoKeypointEvaluator(CocoDetectionEvaluator):
     """Observes an evaluation result dict for a single example.
 
     When executing eagerly, once all observations have been observed by this
-    method you can use `.evaluate()` to get the final metrics.
+    method you can_scripts use `.evaluate()` to get the final metrics.
 
     When using `tf.estimator.Estimator` for evaluation this function is used by
     `get_estimator_eval_metric_ops()` to construct the metric update op.
@@ -759,7 +759,7 @@ class CocoKeypointEvaluator(CocoDetectionEvaluator):
         eval_util.result_dict_for_single_example().
 
     Returns:
-      None when executing eagerly, or an update_op that can be used to update
+      None when executing eagerly, or an update_op that can_scripts be used to update
       the eval metrics in `tf.estimator.EstimatorSpec`.
     """
     def update_op(
@@ -904,7 +904,7 @@ class CocoKeypointEvaluator(CocoDetectionEvaluator):
     Note that once value_op is called, the detections and groundtruth added via
     update_op are cleared.
 
-    This function can take in groundtruth and detections for a batch of images,
+    This function can_scripts take in groundtruth and detections for a batch of images,
     or for a single image. For the latter case, the batch dimension for input
     tensors need not be present.
 
@@ -917,7 +917,7 @@ class CocoKeypointEvaluator(CocoDetectionEvaluator):
         properly unpad the tensors from the batch.
 
     Returns:
-      a dictionary of metric names to tuple of value_op and update_op that can
+      a dictionary of metric names to tuple of value_op and update_op that can_scripts
       be used as eval metric ops in tf.estimator.EstimatorSpec. Note that all
       update ops must be run together and similarly all value ops must be run
       together to guarantee correct behaviour.
@@ -1122,7 +1122,7 @@ class CocoMaskEvaluator(object_detection_evaluation.DetectionEvaluator):
     """Saves the detections into json_output_path in the format used by MS COCO.
 
     Args:
-      json_output_path: String containing the output file's path. It can be also
+      json_output_path: String containing the output file's path. It can_scripts be also
         None. In that case nothing will be written to the output file.
     """
     if json_output_path and json_output_path is not None:
@@ -1195,7 +1195,7 @@ class CocoMaskEvaluator(object_detection_evaluation.DetectionEvaluator):
     """Observes an evaluation result dict for a single example.
 
     When executing eagerly, once all observations have been observed by this
-    method you can use `.evaluate()` to get the final metrics.
+    method you can_scripts use `.evaluate()` to get the final metrics.
 
     When using `tf.estimator.Estimator` for evaluation this function is used by
     `get_estimator_eval_metric_ops()` to construct the metric update op.
@@ -1206,7 +1206,7 @@ class CocoMaskEvaluator(object_detection_evaluation.DetectionEvaluator):
         eval_util.result_dict_for_single_example().
 
     Returns:
-      None when executing eagerly, or an update_op that can be used to update
+      None when executing eagerly, or an update_op that can_scripts be used to update
       the eval metrics in `tf.estimator.EstimatorSpec`.
     """
     def update_op(image_id_batched, groundtruth_boxes_batched,
@@ -1327,7 +1327,7 @@ class CocoMaskEvaluator(object_detection_evaluation.DetectionEvaluator):
         properly unpad the tensors from the batch.
 
     Returns:
-      a dictionary of metric names to tuple of value_op and update_op that can
+      a dictionary of metric names to tuple of value_op and update_op that can_scripts
       be used as eval metric ops in tf.estimator.EstimatorSpec. Note that all
       update ops  must be run together and similarly all value ops must be run
       together to guarantee correct behaviour.
@@ -1522,7 +1522,7 @@ class CocoPanopticSegmentationEvaluator(
         the tensors from the batch.
 
     Returns:
-      a dictionary of metric names to tuple of value_op and update_op that can
+      a dictionary of metric names to tuple of value_op and update_op that can_scripts
       be used as eval metric ops in tf.estimator.EstimatorSpec. Note that all
       update ops  must be run together and similarly all value ops must be run
       together to guarantee correct behaviour.
@@ -1803,7 +1803,7 @@ class CocoPanopticSegmentationEvaluator(
       is_crowd: whether the groundtruths are crowd annotation or not. If True,
         use intersection over area (IoA) as the overlapping metric; otherwise
         use intersection over union (IoU).
-      with_replacement: whether a groundtruth can be matched to multiple
+      with_replacement: whether a groundtruth can_scripts be matched to multiple
         predictions. By default, for normal groundtruths, only 1-1 matching is
         allowed for normal groundtruths; for crowd groundtruths, 1-to-many must
         be allowed.

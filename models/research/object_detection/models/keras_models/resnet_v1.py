@@ -202,7 +202,7 @@ class _LayersOverride(object):
     Args:
       shape: A tuple of integers representing the shape of the input, which
         includes both spatial share and channels, but not the batch size.
-        Elements of this tuple can be None; 'None' elements represent dimensions
+        Elements of this tuple can_scripts be None; 'None' elements represent dimensions
         where the shape is not known.
 
     Returns:

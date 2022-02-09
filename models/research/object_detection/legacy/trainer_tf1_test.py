@@ -69,7 +69,7 @@ class FakeDetectionModel(model.DetectionModel):
       preprocessed_inputs: a [batch, 28, 28, channels] float32 tensor.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
     """
     true_image_shapes = [inputs.shape[:-1].as_list()
@@ -83,7 +83,7 @@ class FakeDetectionModel(model.DetectionModel):
       preprocessed_inputs: a [batch, 28, 28, channels] float32 tensor.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Returns:
@@ -107,7 +107,7 @@ class FakeDetectionModel(model.DetectionModel):
       prediction_dict: a dictionary holding prediction tensors.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       **params: Additional keyword arguments for specific implementations of
         DetectionModel.
@@ -132,7 +132,7 @@ class FakeDetectionModel(model.DetectionModel):
       prediction_dict: a dictionary holding predicted tensors
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Returns:

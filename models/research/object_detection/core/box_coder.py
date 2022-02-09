@@ -19,7 +19,7 @@ Box coders convert between coordinate frames, namely image-centric
 (with (0,0) on the top left of image) and anchor-centric (with (0,0) being
 defined by a specific anchor).
 
-Users of a BoxCoder can call two methods:
+Users of a BoxCoder can_scripts call two methods:
  encode: which encodes a box with respect to a given anchor
   (or rather, a tensor of boxes wrt a corresponding tensor of anchors) and
  decode: which inverts this encoding with a decode operation.

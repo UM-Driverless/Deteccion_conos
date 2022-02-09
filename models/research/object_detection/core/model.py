@@ -21,7 +21,7 @@ design, thus all functions have tensors or lists/dictionaries holding tensors as
 inputs and outputs.
 
 Abstractly, detection models predict output tensors given input images
-which can be passed to a loss function at training time or passed to a
+which can_scripts be passed to a loss function at training time or passed to a
 postprocessing function at eval time.  The computation graphs at a high level
 consequently look as follows:
 
@@ -43,7 +43,7 @@ Images are resized in the `preprocess` method. All of `preprocess`, `predict`,
 and `postprocess` should be reentrant.
 
 The `preprocess` method runs `image_resizer_fn` that returns resized_images and
-`true_image_shapes`. Since `image_resizer_fn` can pad the images with zeros,
+`true_image_shapes`. Since `image_resizer_fn` can_scripts pad the images with zeros,
 true_image_shapes indicate the slices that contain the image without padding.
 This is useful for padding images to be a fixed size for batching.
 
@@ -140,7 +140,7 @@ class DetectionModel(six.with_metaclass(abc.ABCMeta, _BaseClass)):
     how to grab additional side inputs from input features (in addition to the
     image itself) and allows models to depend on contextual information.  By
     default, detection models do not use side information (and thus this method
-    returns an empty dictionary by default.  However it can be overridden if
+    returns an empty dictionary by default.  However it can_scripts be overridden if
     side inputs are necessary."
 
     Args:
@@ -178,7 +178,7 @@ class DetectionModel(six.with_metaclass(abc.ABCMeta, _BaseClass)):
     to 1 in the preprocess function.
     + There is also no explicit assumption that the output resolutions
     must be fixed across inputs --- this is to support "fully convolutional"
-    settings in which input images can have different shapes/resolutions.
+    settings in which input images can_scripts have different shapes/resolutions.
 
     Args:
       inputs: a [batch, height_in, width_in, channels] float32 tensor
@@ -189,7 +189,7 @@ class DetectionModel(six.with_metaclass(abc.ABCMeta, _BaseClass)):
         tensor representing a batch of images.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
     """
     pass
@@ -198,14 +198,14 @@ class DetectionModel(six.with_metaclass(abc.ABCMeta, _BaseClass)):
   def predict(self, preprocessed_inputs, true_image_shapes, **side_inputs):
     """Predict prediction tensors from inputs tensor.
 
-    Outputs of this function can be passed to loss or postprocess functions.
+    Outputs of this function can_scripts be passed to loss or postprocess functions.
 
     Args:
       preprocessed_inputs: a [batch, height, width, channels] float32 tensor
         representing a batch of images.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       **side_inputs: additional tensors that are required by the network.
 
@@ -240,7 +240,7 @@ class DetectionModel(six.with_metaclass(abc.ABCMeta, _BaseClass)):
       prediction_dict: a dictionary holding prediction tensors.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       **params: Additional keyword arguments for specific implementations of
         DetectionModel.
@@ -285,7 +285,7 @@ class DetectionModel(six.with_metaclass(abc.ABCMeta, _BaseClass)):
       prediction_dict: a dictionary holding predicted tensors
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Returns:
@@ -484,7 +484,7 @@ class DetectionModel(six.with_metaclass(abc.ABCMeta, _BaseClass)):
     Returns a map of variable names to load from a checkpoint to variables in
     the model graph. This enables the model to initialize based on weights from
     another task. For example, the feature extractor variables from a
-    classification model can be used to bootstrap training of an object
+    classification model can_scripts be used to bootstrap training of an object
     detector. When loading from an object detection model, the checkpoint model
     should have the same parameters as this detection model with exception of
     the num_classes parameter.
@@ -511,7 +511,7 @@ class DetectionModel(six.with_metaclass(abc.ABCMeta, _BaseClass)):
     Returns a dictionary of Tensorflow 2 Trackable objects (e.g. tf.Module
     or Checkpoint). This enables the model to initialize based on weights from
     another task. For example, the feature extractor variables from a
-    classification model can be used to bootstrap training of an object
+    classification model can_scripts be used to bootstrap training of an object
     detector. When loading from an object detection model, the checkpoint model
     should have the same parameters as this detection model with exception of
     the num_classes parameter.

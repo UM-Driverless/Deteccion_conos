@@ -45,7 +45,7 @@ if __name__ == '__main__':
             # 6 -> downgear
 
             # Seleccionar acciones
-            throttle, brake, steer, clutch, gear = agent.get_action([1, 2, 3, 4])
+            throttle, brake, steer, clutch, gear, upgear, downgear = agent.get_action([1, 2, 3, 4])
 
             # resize actions
             throttle *= 0.8
@@ -58,7 +58,8 @@ if __name__ == '__main__':
                                      brake=brake,
                                      steer=steer,
                                      clutch=clutch,
-                                     gear=gear)
+                                     upgear=upgear,
+                                     downgear=downgear)
 
             print("FPS: ", 1.0 / (time.time() - start_time))
 

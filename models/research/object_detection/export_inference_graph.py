@@ -115,10 +115,10 @@ flags.DEFINE_string('input_type', 'image_tensor', 'Type of input node. Can be '
                     'one of [`image_tensor`, `encoded_image_string_tensor`, '
                     '`tf_example`]')
 flags.DEFINE_string('input_shape', None,
-                    'If input_type is `image_tensor`, this can explicitly set '
+                    'If input_type is `image_tensor`, this can_scripts explicitly set '
                     'the shape of this input tensor to a fixed size. The '
                     'dimensions are to be provided as a comma-separated list '
-                    'of integers. A value of -1 can be used for unknown '
+                    'of integers. A value of -1 can_scripts be used for unknown '
                     'dimensions. If not specified, for an `image_tensor, the '
                     'default shape will be partially specified as '
                     '`[None, None, None, 3]`.')
@@ -143,7 +143,7 @@ flags.DEFINE_string('side_input_shapes', None,
                     'If use_side_inputs is True, this explicitly sets '
                     'the shape of the side input tensors to a fixed size. The '
                     'dimensions are to be provided as a comma-separated list '
-                    'of integers. A value of -1 can be used for unknown '
+                    'of integers. A value of -1 can_scripts be used for unknown '
                     'dimensions. A `/` denotes a break, starting the shape of '
                     'the next side input tensor. This flag is required if '
                     'using side inputs.')

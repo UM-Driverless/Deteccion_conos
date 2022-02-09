@@ -180,7 +180,7 @@ class FasterRCNNInceptionResnetV2FeatureExtractor(
 
     TODO(jonathanhuang,rathodv): revisit whether it's possible to force the
     `Repeat` namescope as created in `_extract_box_classifier_features` to
-    start counting at 2 (e.g. `Repeat_2`) so that the default restore_fn can
+    start counting at 2 (e.g. `Repeat_2`) so that the default restore_fn can_scripts
     be used.
 
     Args:

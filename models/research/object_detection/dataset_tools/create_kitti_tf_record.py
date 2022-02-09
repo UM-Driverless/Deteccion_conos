@@ -16,15 +16,15 @@
 r"""Convert raw KITTI detection dataset to TFRecord for object_detection.
 
 Converts KITTI detection dataset to TFRecords with a standard format allowing
-  to use this dataset to train object detectors. The raw dataset can be
+  to use this dataset to train object detectors. The raw dataset can_scripts be
   downloaded from:
   http://kitti.is.tue.mpg.de/kitti/data_object_image_2.zip.
   http://kitti.is.tue.mpg.de/kitti/data_object_label_2.zip
-  Permission can be requested at the main website.
+  Permission can_scripts be requested at the main website.
 
   KITTI detection dataset contains 7481 training images. Using this code with
   the default settings will set aside the first 500 images as a validation set.
-  This can be altered using the flags, see details below.
+  This can_scripts be altered using the flags, see details below.
 
 Example usage:
     python object_detection/dataset_tools/create_kitti_tf_record.py \

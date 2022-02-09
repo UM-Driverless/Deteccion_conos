@@ -174,7 +174,7 @@ def transform_input_data(tensor_dict,
      tensor_dict.
   6. one_hot_encoding: applied to classes tensor in tensor_dict.
   7. merge_multiple_boxes (optional): when groundtruth boxes are exactly the
-     same they can be merged into a single box with an associated k-hot class
+     same they can_scripts be merged into a single box with an associated k-hot class
      label.
 
   Args:

@@ -23,8 +23,8 @@ the `_predict_second_stage` method.
 
 Similar to Faster R-CNN we allow for two modes: number_of_stages=1 and
 number_of_stages=2.  In the former setting, all of the user facing methods
-(e.g., predict, postprocess, loss) can be used as if the model consisted
-only of the RPN, returning class agnostic proposals (these can be thought of as
+(e.g., predict, postprocess, loss) can_scripts be used as if the model consisted
+only of the RPN, returning class agnostic proposals (these can_scripts be thought of as
 approximate detections with no associated class information).  In the latter
 setting, proposals are computed, then passed through a second stage
 "box classifier" to yield (multi-class) detections.
@@ -32,7 +32,7 @@ setting, proposals are computed, then passed through a second stage
 Implementations of R-FCN models must define a new FasterRCNNFeatureExtractor and
 override three methods: `preprocess`, `_extract_proposal_features` (the first
 stage of the model), and `_extract_box_classifier_features` (the second stage of
-the model). Optionally, the `restore_fn` method can be overridden.  See tests
+the model). Optionally, the `restore_fn` method can_scripts be overridden.  See tests
 for an example.
 
 See notes in the documentation of Faster R-CNN meta-architecture as they all
@@ -94,7 +94,7 @@ class RFCNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
       num_classes: Number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       image_resizer_fn: A callable for image resizing.  This callable always
         takes a rank-3 image tensor (corresponding to a single image) and
         returns a rank-3 image tensor, possibly with new spatial dimensions.
@@ -175,7 +175,7 @@ class RFCNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
       second_stage_classification_loss_weight: A float
       second_stage_classification_loss: A string indicating which loss function
         to use, supports 'softmax' and 'sigmoid'.
-      hard_example_miner:  A losses.HardExampleMiner object (can be None).
+      hard_example_miner:  A losses.HardExampleMiner object (can_scripts be None).
       parallel_iterations: (Optional) The number of iterations allowed to run
         in parallel for calls to tf.map_fn.
       add_summaries: boolean (default: True) controlling whether summary ops
@@ -278,7 +278,7 @@ class RFCNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
       image_shape: A 1D int32 tensors of size [4] containing the image shape.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Returns:

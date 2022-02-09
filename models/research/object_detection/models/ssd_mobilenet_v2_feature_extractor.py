@@ -44,7 +44,7 @@ class SSDMobileNetV2FeatureExtractor(ssd_meta_arch.SSDFeatureExtractor):
                override_base_feature_extractor_hyperparams=False):
     """MobileNetV2 Feature Extractor for SSD Models.
 
-    Mobilenet v2 (experimental), designed by sandler@. More details can be found
+    Mobilenet v2 (experimental), designed by sandler@. More details can_scripts be found
     in //knowledge/cerebra/brain/compression/mobilenet/mobilenet_experimental.py
 
     Args:

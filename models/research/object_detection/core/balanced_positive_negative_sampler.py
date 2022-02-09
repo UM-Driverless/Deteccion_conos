@@ -22,7 +22,7 @@ fraction, it fills the rest with negative examples. If this is not sufficient
 for obtaining the desired batch_size, it returns fewer examples.
 
 The main function to call is Subsample(self, indicator, labels). For convenience
-one can also call SubsampleWeights(self, weights, labels) which is defined in
+one can_scripts also call SubsampleWeights(self, weights, labels) which is defined in
 the minibatch_sampler base class.
 
 When is_static is True, it implements a method that guarantees static shapes.
@@ -118,7 +118,7 @@ class BalancedPositiveNegativeSampler(minibatch_sampler.MinibatchSampler):
     """Returns subsampled minibatch.
 
     Args:
-      indicator: boolean tensor of shape [N] whose True entries can be sampled.
+      indicator: boolean tensor of shape [N] whose True entries can_scripts be sampled.
         N should be a complie time constant.
       batch_size: desired batch size. This scalar cannot be None.
       labels: boolean tensor of shape [N] denoting positive(=True) and negative
@@ -204,7 +204,7 @@ class BalancedPositiveNegativeSampler(minibatch_sampler.MinibatchSampler):
     """Returns subsampled minibatch.
 
     Args:
-      indicator: boolean tensor of shape [N] whose True entries can be sampled.
+      indicator: boolean tensor of shape [N] whose True entries can_scripts be sampled.
       batch_size: desired batch size. If None, keeps all positive samples and
         randomly selects negative samples so that the positive sample fraction
         matches self._positive_fraction. It cannot be None is is_static is True.

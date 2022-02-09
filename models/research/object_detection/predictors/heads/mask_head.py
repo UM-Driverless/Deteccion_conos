@@ -55,7 +55,7 @@ class MaskRCNNMaskHead(head.Head):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       conv_hyperparams_fn: A function to generate tf-slim arg_scope with
         hyperparameters for convolution ops.
       mask_height: Desired output mask height. The default value is 14.
@@ -303,7 +303,7 @@ class WeightSharedConvolutionalMaskHead(head.Head):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       kernel_size: Size of final convolution kernel.
       use_dropout: Whether to apply dropout to class prediction head.
       dropout_keep_prob: Probability of keeping activiations.

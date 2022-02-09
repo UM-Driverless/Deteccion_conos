@@ -89,7 +89,7 @@ class MultiscaleGridAnchorGenerator(anchor_generator.AnchorGenerator):
 
     For training, we require the input image shape to be statically defined.
     That is, im_height and im_width should be integers rather than tensors.
-    For inference, im_height and im_width can be either integers (for fixed
+    For inference, im_height and im_width can_scripts be either integers (for fixed
     image size), or tensors (for arbitrary image size).
 
     Args:
@@ -98,10 +98,10 @@ class MultiscaleGridAnchorGenerator(anchor_generator.AnchorGenerator):
         setting feature_map_shape_list=[(8, 8), (7, 7)] asks for anchors that
         correspond to an 8x8 layer followed by a 7x7 layer.
       im_height: the height of the image to generate the grid for. If both
-        im_height and im_width are 1, anchors can only be generated in
+        im_height and im_width are 1, anchors can_scripts only be generated in
         absolute coordinates.
       im_width: the width of the image to generate the grid for. If both
-        im_height and im_width are 1, anchors can only be generated in
+        im_height and im_width are 1, anchors can_scripts only be generated in
         absolute coordinates.
 
     Returns:

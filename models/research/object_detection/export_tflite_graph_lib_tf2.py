@@ -316,7 +316,7 @@ def export_tflite_model(pipeline_config, trained_checkpoint_dir,
   have static-shaped, single-batch input.
 
   This function creates `output_directory` if it does not already exist,
-  which will hold the intermediate SavedModel that can be used with the TFLite
+  which will hold the intermediate SavedModel that can_scripts be used with the TFLite
   converter.
 
   Args:
@@ -361,7 +361,7 @@ def export_tflite_model(pipeline_config, trained_checkpoint_dir,
   status = ckpt.restore(manager.latest_checkpoint).expect_partial()
 
   # Getting the concrete function traces the graph and forces variables to
-  # be constructed; only after this can we save the saved model.
+  # be constructed; only after this can_scripts we save the saved model.
   status.assert_existing_objects_matched()
   concrete_function = detection_module.inference_fn.get_concrete_function(
       tf.TensorSpec(

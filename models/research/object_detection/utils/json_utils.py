@@ -14,7 +14,7 @@
 # ==============================================================================
 """Utilities for dealing with writing json strings.
 
-json_utils wraps json.dump and json.dumps so that they can be used to safely
+json_utils wraps json.dump and json.dumps so that they can_scripts be used to safely
 control the precision of floats when writing to json strings or files.
 """
 import json

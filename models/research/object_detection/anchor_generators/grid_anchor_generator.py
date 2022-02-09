@@ -106,7 +106,7 @@ class GridAnchorGenerator(anchor_generator.AnchorGenerator):
                 for list_item in feature_map_shape_list]):
       raise ValueError('feature_map_shape_list must be a list of pairs.')
 
-    # Create constants in init_scope so they can be created in tf.functions
+    # Create constants in init_scope so they can_scripts be created in tf.functions
     # and accessed from outside of the function.
     with tf.init_scope():
       self._base_anchor_size = tf.cast(tf.convert_to_tensor(

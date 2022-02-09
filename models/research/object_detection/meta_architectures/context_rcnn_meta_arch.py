@@ -102,7 +102,7 @@ class ContextRCNNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
       num_classes: Number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       image_resizer_fn: A callable for image resizing.  This callable
         takes a rank-3 image tensor of shape [height, width, channels]
         (corresponding to a single image), an optional rank-3 instance mask
@@ -110,7 +110,7 @@ class ContextRCNNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
         image tensor, a resized mask tensor if one was provided in the input. In
         addition this callable must also return a 1-D tensor of the form
         [height, width, channels] containing the size of the true image, as the
-        image resizer can perform zero padding. See protos/image_resizer.proto.
+        image resizer can_scripts perform zero padding. See protos/image_resizer.proto.
       feature_extractor: A FasterRCNNFeatureExtractor object.
       number_of_stages:  An integer values taking values in {1, 2, 3}. If
         1, the function will construct only the Region Proposal Network (RPN)
@@ -206,7 +206,7 @@ class ContextRCNNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
       second_stage_mask_prediction_loss_weight: A float indicating the scale
         factor for second stage mask prediction loss. This is applicable only if
         second stage box predictor is configured to predict masks.
-      hard_example_miner:  A losses.HardExampleMiner object (can be None).
+      hard_example_miner:  A losses.HardExampleMiner object (can_scripts be None).
       parallel_iterations: (Optional) The number of iterations allowed to run
         in parallel for calls to tf.map_fn.
       add_summaries: boolean (default: True) controlling whether summary ops
@@ -381,7 +381,7 @@ class ContextRCNNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
       image_shape: A 1D int32 tensors of size [4] containing the image shape.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       **side_inputs: additional tensors that are required by the network.
 
@@ -451,7 +451,7 @@ class ContextRCNNMetaArch(faster_rcnn_meta_arch.FasterRCNNMetaArch):
       image_shape: A 1D int32 tensors of size [4] containing the image shape.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       num_proposals: The number of valid box proposals.
       **side_inputs: additional tensors that are required by the network.

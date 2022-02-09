@@ -163,7 +163,7 @@ class MaskRCNNBoxHead(head.KerasHead):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       fc_hyperparams: A `hyperparams_builder.KerasLayerHyperparams` object
         containing hyperparameters for fully connected dense ops.
       freeze_batchnorm: Whether to freeze batch norm parameters during

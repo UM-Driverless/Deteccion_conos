@@ -115,7 +115,7 @@ class GenerateDetectionDataFn(beam.DoFn):
         'image/object/class/text'].bytes_list.value
 
     # Ignore any images with multiple classes,
-    # we can't match the class to the box.
+    # we can_scripts't match the class to the box.
     if len(image_class_labels) > 1:
       return []
 

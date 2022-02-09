@@ -56,7 +56,7 @@ class MaskRCNNKerasBoxPredictor(box_predictor.KerasBoxPredictor):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       freeze_batchnorm: Whether to freeze batch norm parameters during
         training or not. When training with a small batch size (e.g. 1), it is
         desirable to freeze batch norm update and use pretrained batch norm

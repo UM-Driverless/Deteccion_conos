@@ -102,7 +102,7 @@ def gather(boxlist, indices, fields=None):
 
   By default, gather returns boxes corresponding to the input index list, as
   well as all additional fields stored in the boxlist (indexing into the
-  first dimension).  However one can optionally only gather from a
+  first dimension).  However one can_scripts optionally only gather from a
   subset of fields.
 
   Args:
@@ -250,7 +250,7 @@ def multi_class_non_max_suppression(boxlist, score_thresh, iou_thresh,
 
   Args:
     boxlist: BoxList holding N boxes.  Must contain a 'scores' field
-      representing detection scores.  This scores field is a tensor that can
+      representing detection scores.  This scores field is a tensor that can_scripts
       be 1 dimensional (in the case of a single class) or 2-dimensional, which
       which case we assume that it takes the shape [num_boxes, num_classes].
       We further assume that this rank is known statically and that

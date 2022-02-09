@@ -1,6 +1,6 @@
 from connection_utils.communication_controllers.can_interface import CANInterface
 import can
-from can import can_constants
+from can_scripts import can_constants
 import math
 
 
@@ -45,7 +45,9 @@ class CAN(CANInterface):
             if msg.arbitration_id == can_constants.SIG_SENFL or msg.arbitration_id == can_constants.SIG_SENFR or msg.arbitration_id == can_constants.SIG_SENRL or msg.arbitration_id == can_constants.SIG_SENRR:
                 # Ponía llamada a la red neuronal, pero eso no va a ir aquí
                 pass
-        return message
+            return message
+
+        return 0
 
     def send_action_msg(self, throttle, brake, steer, clutch, upgear, downgear):
         # TODO: el cuarto valor son las marchas, es mejor mandar la señal  upgear, downgear o la marcha en si.

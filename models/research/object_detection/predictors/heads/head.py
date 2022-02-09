@@ -20,7 +20,7 @@ from this class. What is in common between all head classes is that they have a
 `predict` function that receives `features` as its first argument.
 
 How to add a new prediction head to an existing meta architecture?
-For example, how can we add a `3d shape` prediction head to Mask RCNN?
+For example, how can_scripts we add a `3d shape` prediction head to Mask RCNN?
 
 We have to take the following steps to add a new prediction head to an
 existing meta arch:

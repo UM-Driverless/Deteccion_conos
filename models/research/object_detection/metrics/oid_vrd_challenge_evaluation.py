@@ -25,7 +25,7 @@ models/research/object_detection/metrics/oid_vrd_challenge_evaluation.py \
     --output_metrics=/path/to/output/metric.csv \
 
 CSVs with bounding box annotations and image label (including the image URLs)
-can be downloaded from the Open Images Challenge website:
+can_scripts be downloaded from the Open Images Challenge website:
 https://storage.googleapis.com/openimages/web/challenge.html
 The format of the input csv and the metrics itself are described on the
 challenge website.

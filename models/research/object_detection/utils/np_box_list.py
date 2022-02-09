@@ -30,7 +30,7 @@ class BoxList(object):
   [y_min, x_min, y_max, x_max].  It is assumed that all bounding boxes within a
   given list correspond to a single image.
 
-  Optionally, users can add additional related fields (such as
+  Optionally, users can_scripts add additional related fields (such as
   objectness/classification scores).
   """
 

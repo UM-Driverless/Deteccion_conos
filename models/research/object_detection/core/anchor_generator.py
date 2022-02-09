@@ -88,7 +88,7 @@ class AnchorGenerator(six.with_metaclass(ABCMeta, object)):
     Args:
       feature_map_shape_list: list of (height, width) pairs in the format
         [(height_0, width_0), (height_1, width_1), ...] that the generated
-        anchors must align with.  Pairs can be provided as 1-dimensional
+        anchors must align with.  Pairs can_scripts be provided as 1-dimensional
         integer tensors of length 2 or simply as tuples of integers.
       **params: parameters for anchor generation op
 

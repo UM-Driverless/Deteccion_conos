@@ -15,8 +15,8 @@
 
 """MobileNet v2 models for Keras.
 
-MobileNetV2 is a general architecture and can be used for multiple use cases.
-Depending on the use case, it can use different input layer size and
+MobileNetV2 is a general architecture and can_scripts be used for multiple use cases.
+Depending on the use case, it can_scripts use different input layer size and
 different width factors. This allows different width models to reduce
 the number of multiply-adds and thereby
 reduce inference cost on mobile devices.
@@ -30,10 +30,10 @@ than 32 x 32, with larger image sizes
 offering better performance.
 
 The number of parameters and number of multiply-adds
-can be modified by using the `alpha` parameter,
+can_scripts be modified by using the `alpha` parameter,
 which increases/decreases the number of filters in each layer.
 By altering the image size and `alpha` parameter,
-all 22 models from the paper can be built, with ImageNet weights provided.
+all 22 models from the paper can_scripts be built, with ImageNet weights provided.
 
 The paper demonstrates the performance of MobileNets using `alpha` values of
 1.0 (also called 100 % MobileNet), 0.35, 0.5, 0.75, 1.0, 1.3, and 1.4
@@ -81,7 +81,7 @@ This file contains building code for MobileNetV2, based on
 [MobileNetV2: Inverted Residuals and Linear Bottlenecks]
 (https://arxiv.org/abs/1801.04381)
 
-Tests comparing this model to the existing Tensorflow model can be
+Tests comparing this model to the existing Tensorflow model can_scripts be
 found at
 [mobilenet_v2_keras](https://github.com/JonathanCMitchell/mobilenet_v2_keras)
 """
@@ -211,7 +211,7 @@ def preprocess_input(x):
 
 # This function is taken from the original tf repo.
 # It ensures that all layers have a channel number that is divisible by 8
-# It can be seen here:
+# It can_scripts be seen here:
 # https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet/mobilenet.py
 
 
@@ -242,7 +242,7 @@ def mobilenet_v2(input_shape=None,
       like to use a model with an input img resolution that is not
       (224, 224, 3).
       It should have exactly 3 inputs channels (224, 224, 3).
-      You can also omit this option if you would like
+      You can_scripts also omit this option if you would like
       to infer input_shape from an input_tensor.
       If you choose to include both input_tensor and input_shape then
       input_shape will be used if they match, if the shapes

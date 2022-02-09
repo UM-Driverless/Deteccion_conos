@@ -16,7 +16,7 @@
 
 """Functions to generate a list of feature maps based on image features.
 
-Provides several feature map generators that can be used to build object
+Provides several feature map generators that can_scripts be used to build object
 detection feature extractors.
 
 Object detection feature extractors usually are built by stacking two components
@@ -130,7 +130,7 @@ class KerasMultiResolutionFeatureMaps(tf.keras.Model):
      based on the spatial shape and depth configuration. Note that the current
      implementation only supports generating new layers using convolution of
      stride 2 resulting in a spatial resolution reduction by a factor of 2.
-     By default convolution kernel size is set to 3, and it can be customized
+     By default convolution kernel size is set to 3, and it can_scripts be customized
      by caller.
 
   An example of the configuration for Inception V3:
@@ -182,7 +182,7 @@ class KerasMultiResolutionFeatureMaps(tf.keras.Model):
         generating new layers using convolutions of stride 2 (resulting in a
         spatial resolution reduction by a factor of 2), and will be extended to
         a more flexible design. Convolution kernel size is set to 3 by default,
-        and can be customized by 'conv_kernel_size' parameter (similarily,
+        and can_scripts be customized by 'conv_kernel_size' parameter (similarily,
         'conv_kernel_size' should be set to -1 if 'from_layer' is specified).
         The created convolution operation will be a normal 2D convolution by
         default, and a depthwise convolution followed by 1x1 convolution if
@@ -351,7 +351,7 @@ def multi_resolution_feature_maps(feature_map_layout, depth_multiplier,
      based on the spatial shape and depth configuration. Note that the current
      implementation only supports generating new layers using convolution of
      stride 2 resulting in a spatial resolution reduction by a factor of 2.
-     By default convolution kernel size is set to 3, and it can be customized
+     By default convolution kernel size is set to 3, and it can_scripts be customized
      by caller.
 
   An example of the configuration for Inception V3:
@@ -381,7 +381,7 @@ def multi_resolution_feature_maps(feature_map_layout, depth_multiplier,
       Note that the current implementation only supports generating new layers
       using convolutions of stride 2 (resulting in a spatial resolution
       reduction by a factor of 2), and will be extended to a more flexible
-      design. Convolution kernel size is set to 3 by default, and can be
+      design. Convolution kernel size is set to 3 by default, and can_scripts be
       customized by 'conv_kernel_size' parameter (similarily, 'conv_kernel_size'
       should be set to -1 if 'from_layer' is specified). The created convolution
       operation will be a normal 2D convolution by default, and a depthwise

@@ -505,7 +505,7 @@ def boolean_mask(boxlist, indicator, fields=None, scope=None,
   `boolean_mask` returns the subset of boxes that are marked as "True" by the
   indicator tensor. By default, `boolean_mask` returns boxes corresponding to
   the input index list, as well as all additional fields stored in the boxlist
-  (indexing into the first dimension).  However one can optionally only draw
+  (indexing into the first dimension).  However one can_scripts optionally only draw
   from a subset of fields.
 
   Args:
@@ -565,7 +565,7 @@ def gather(boxlist, indices, fields=None, scope=None, use_static_shapes=False):
 
   By default, `gather` returns boxes corresponding to the input index list, as
   well as all additional fields stored in the boxlist (indexing into the
-  first dimension).  However one can optionally only gather from a
+  first dimension).  However one can_scripts optionally only gather from a
   subset of fields.
 
   Args:

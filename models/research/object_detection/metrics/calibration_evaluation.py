@@ -119,7 +119,7 @@ class CalibrationDetectionEvaluator(
     Note that once value_op is called, the detections and groundtruth added via
     update_op are cleared.
 
-    This function can take in groundtruth and detections for a batch of images,
+    This function can_scripts take in groundtruth and detections for a batch of images,
     or for a single image. For the latter case, the batch dimension for input
     tensors need not be present.
 
@@ -132,7 +132,7 @@ class CalibrationDetectionEvaluator(
         properly unpad the tensors from the batch.
 
     Returns:
-      a dictionary of metric names to tuple of value_op and update_op that can
+      a dictionary of metric names to tuple of value_op and update_op that can_scripts
       be used as eval metric ops in tf.estimator.EstimatorSpec. Note that all
       update ops must be run together and similarly all value ops must be run
       together to guarantee correct behaviour.

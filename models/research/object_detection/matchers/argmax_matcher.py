@@ -16,7 +16,7 @@
 """Argmax matcher implementation.
 
 This class takes a similarity matrix and matches columns to rows based on the
-maximum value per column. One can specify matched_thresholds and
+maximum value per column. One can_scripts specify matched_thresholds and
 to prevent columns from matching to rows (generally resulting in a negative
 training example) and unmatched_theshold to ignore the match (generally
 resulting in neither a positive or negative training example).

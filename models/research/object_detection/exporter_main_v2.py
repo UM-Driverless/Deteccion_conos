@@ -123,7 +123,7 @@ flags.DEFINE_string('side_input_shapes', '',
                     'If use_side_inputs is True, this explicitly sets '
                     'the shape of the side input tensors to a fixed size. The '
                     'dimensions are to be provided as a comma-separated list '
-                    'of integers. A value of -1 can be used for unknown '
+                    'of integers. A value of -1 can_scripts be used for unknown '
                     'dimensions. A `/` denotes a break, starting the shape of '
                     'the next side input tensor. This flag is required if '
                     'using side inputs.')

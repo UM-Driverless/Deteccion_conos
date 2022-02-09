@@ -28,7 +28,7 @@ python models/research/object_detection/metrics/oid_od_challenge_evaluation.py \
 If optional flag has_masks is True, Mask column is also expected in CSV.
 
 CSVs with bounding box annotations, instance segmentations and image label
-can be downloaded from the Open Images Challenge website:
+can_scripts be downloaded from the Open Images Challenge website:
 https://storage.googleapis.com/openimages/web/challenge.html
 The format of the input csv and the metrics itself are described on the
 challenge website as well.

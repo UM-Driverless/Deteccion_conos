@@ -104,7 +104,7 @@ class SSDFeatureExtractor(object):
         representing a batch of images.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
     """
     pass
@@ -223,7 +223,7 @@ class SSDKerasFeatureExtractor(tf.keras.Model):
         representing a batch of images.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
     """
     raise NotImplementedError
@@ -324,7 +324,7 @@ class SSDMetaArch(model.DetectionModel):
       classification_loss_weight: float
       localization_loss_weight: float
       normalize_loss_by_num_matches: boolean
-      hard_example_miner: a losses.HardExampleMiner object (can be None)
+      hard_example_miner: a losses.HardExampleMiner object (can_scripts be None)
       target_assigner_instance: target_assigner.TargetAssigner instance to use.
       add_summaries: boolean (default: True) controlling whether summary ops
         should be added to tensorflow graph.
@@ -344,11 +344,11 @@ class SSDMetaArch(model.DetectionModel):
         background class.
       explicit_background_class: Set to true if using groundtruth labels with an
         explicit background class, as in multiclass scores.
-      random_example_sampler: a BalancedPositiveNegativeSampler object that can
+      random_example_sampler: a BalancedPositiveNegativeSampler object that can_scripts
         perform random example sampling when computing loss. If None, random
         sampling process is skipped. Note that random example sampler and hard
-        example miner can both be applied to the model. In that case, random
-        sampler will take effect first and hard example miner can only process
+        example miner can_scripts both be applied to the model. In that case, random
+        sampler will take effect first and hard example miner can_scripts only process
         the random sampled examples.
       expected_loss_weights_fn: If not None, use to calculate
         loss by background/foreground weighting. Should take batch_cls_targets
@@ -472,7 +472,7 @@ class SSDMetaArch(model.DetectionModel):
         tensor representing a batch of images.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Raises:
@@ -495,7 +495,7 @@ class SSDMetaArch(model.DetectionModel):
           tensor.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros. Or None if the clip window should cover the full image.
 
     Returns:
@@ -530,13 +530,13 @@ class SSDMetaArch(model.DetectionModel):
 
     A side effect of calling the predict method is that self._anchors is
     populated with a box_list.BoxList of anchors.  These anchors must be
-    constructed before the postprocess or loss functions can be called.
+    constructed before the postprocess or loss functions can_scripts be called.
 
     Args:
       preprocessed_inputs: a [batch, height, width, channels] image tensor.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Returns:
@@ -675,12 +675,12 @@ class SSDMetaArch(model.DetectionModel):
           (logits) for each of the anchors.  Note that this tensor *includes*
           background class predictions.
         4) mask_predictions: (optional) a 5-D float tensor of shape
-          [batch_size, num_anchors, q, mask_height, mask_width]. `q` can be
+          [batch_size, num_anchors, q, mask_height, mask_width]. `q` can_scripts be
           either number of classes or 1 depending on whether a separate mask is
           predicted per class.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros. Or None, if the clip window should cover the full image.
 
     Returns:
@@ -820,7 +820,7 @@ class SSDMetaArch(model.DetectionModel):
           background class predictions.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       scope: Optional scope name.
 
@@ -1298,7 +1298,7 @@ class SSDMetaArch(model.DetectionModel):
     Returns a dictionary of Tensorflow 2 Trackable objects (e.g. tf.Module
     or Checkpoint). This enables the model to initialize based on weights from
     another task. For example, the feature extractor variables from a
-    classification model can be used to bootstrap training of an object
+    classification model can_scripts be used to bootstrap training of an object
     detector. When loading from an object detection model, the checkpoint model
     should have the same parameters as this detection model with exception of
     the num_classes parameter.

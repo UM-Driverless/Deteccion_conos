@@ -44,7 +44,7 @@ class SSDMobileNetV2KerasFeatureExtractor(
                name=None):
     """MobileNetV2 Feature Extractor for SSD Models.
 
-    Mobilenet v2 (experimental), designed by sandler@. More details can be found
+    Mobilenet v2 (experimental), designed by sandler@. More details can_scripts be found
     in //knowledge/cerebra/brain/compression/mobilenet/mobilenet_experimental.py
 
     Args:

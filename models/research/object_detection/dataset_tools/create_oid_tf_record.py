@@ -23,7 +23,7 @@ Example usage:
     --output_tf_record_path_prefix=/path/to/output/prefix.tfrecord
 
 CSVs with bounding box annotations and image metadata (including the image URLs)
-can be downloaded from the Open Images GitHub repository:
+can_scripts be downloaded from the Open Images GitHub repository:
 https://github.com/openimages/dataset
 
 This script will include every image found in the input_images_directory in the

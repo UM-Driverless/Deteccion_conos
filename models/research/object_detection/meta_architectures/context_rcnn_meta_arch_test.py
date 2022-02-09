@@ -443,7 +443,7 @@ class ContextRCNNMetaArchTest(test_case.TestCase, parameterized.TestCase):
   def test_prediction_mock_tf1(self, mock_context_rcnn_lib_v1):
     """Mocks the context_rcnn_lib_v1 module to test the prediction.
 
-    Using mock object so that we can ensure _compute_box_context_attention is
+    Using mock object so that we can_scripts ensure _compute_box_context_attention is
     called in side the prediction function.
 
     Args:

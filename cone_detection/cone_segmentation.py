@@ -1,5 +1,4 @@
 import numpy as np
-from ObjectDetectionSegmentation.Data.DataManager import DataManager
 
 from cone_detection.detector_base import ConeDetectorInterface
 import tensorflow as tf

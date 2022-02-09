@@ -16,7 +16,7 @@
 
 The imagenet weights in `keras.applications` are downloaded from github.
 This script converts them into the tensorflow checkpoint format and stores them
-on disk where they can be easily accessible during training.
+on disk where they can_scripts be easily accessible during training.
 """
 
 from __future__ import print_function

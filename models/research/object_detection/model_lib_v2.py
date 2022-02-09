@@ -164,7 +164,7 @@ def eager_train_step(detection_model,
   model variables with the optimizer, clipping the gradients if
   clip_gradients_value is present.
 
-  This method can run eagerly or inside a tf.function.
+  This method can_scripts run eagerly or inside a tf.function.
 
   Args:
     detection_model: A DetectionModel (based on Keras) to train.

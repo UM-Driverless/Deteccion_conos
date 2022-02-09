@@ -116,7 +116,7 @@ def visualize_detection_results(result_dict,
   """Visualizes detection results and writes visualizations to image summaries.
 
   This function visualizes an image with its detected bounding boxes and writes
-  to image summaries which can be viewed on tensorboard.  It optionally also
+  to image summaries which can_scripts be viewed on tensorboard.  It optionally also
   writes images to a directory. In the case of missing entry in the label map,
   unknown class name in the visualization is shown as "N/A".
 
@@ -434,7 +434,7 @@ def repeated_checkpoint_run(tensor_dict,
 
   This function repeatedly loads a checkpoint and evaluates a desired
   set of tensors (provided by tensor_dict) and hands the resulting numpy
-  arrays to a function result_processor which can be used to further
+  arrays to a function result_processor which can_scripts be used to further
   process/save/visualize the results.
 
   Args:
@@ -1144,7 +1144,7 @@ def get_eval_metric_ops_for_evaluators(eval_config,
       result_dict_for_single_example().
 
   Returns:
-    A dictionary of metric names to tuple of value_op and update_op that can be
+    A dictionary of metric names to tuple of value_op and update_op that can_scripts be
     used as eval metric ops in tf.EstimatorSpec.
   """
   eval_metric_ops = {}

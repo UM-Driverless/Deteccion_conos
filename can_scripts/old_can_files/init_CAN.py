@@ -10,10 +10,10 @@ sys.path.append('/home/xavier/CAN/Deteccion_conos-main/')
 
 import datetime
 import constants
-import can
+import can_scripts
 from listener_CAN import CANListener
 from sender_CAN import CANSender
-from can.actuator_testing import VisualizerTest
+from can_scripts.actuator_testing import VisualizerTest
 
 def main():
 	## Fichero de logs
@@ -23,9 +23,9 @@ def main():
 
 	## Inicializamos el bus CAN
 	# Hay que ver qué interfaz usamos o si nos vale socketcan por defecto
-	# El canal es el can físico (can0) como puede verse al ejecutar 'ifconfig' en la consola
+	# El canal es el can_scripts físico (can0) como puede verse al ejecutar 'ifconfig' en la consola
 	# El bitrate debe ser igual al definido en el script enable_CAN.sh
-	bus = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
+	bus = can_scripts.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
 	with open(log, 'a', encoding="utf-8") as f:
 	    f.write("[DEBUG]: Conectado al bus " + bus.channel_info + " [" + str(datetime.datetime.now()) + "]" + '\n')
 

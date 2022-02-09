@@ -63,7 +63,7 @@ def modify_config(pipeline_config):
   # faster_rcnn.use_static_shapes and faster_rcnn.use_static_shapes_for_eval
   # are set to True in order for detection_model.use_static_shapes to be True.
   # We need to set this so that clip_to_window in _predict_first_stage
-  # can work on TPU. However as a side-effect, the flag forces the use of
+  # can_scripts work on TPU. However as a side-effect, the flag forces the use of
   # padded version of NMS.
   pipeline_config.model.faster_rcnn.use_static_shapes = True
   pipeline_config.model.faster_rcnn.use_static_shapes_for_eval = True

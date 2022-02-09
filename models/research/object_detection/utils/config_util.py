@@ -491,14 +491,14 @@ def merge_external_params_with_configs(configs, hparams=None, kwargs_dict=None):
   This utility is for modifying specific fields in the object detection configs.
   Say that one would like to experiment with different learning rates, momentum
   values, or batch sizes. Rather than creating a new config text file for each
-  experiment, one can use a single base config file, and update particular
+  experiment, one can_scripts use a single base config file, and update particular
   values.
 
   There are two types of field overrides:
   1. Strategy-based overrides, which update multiple relevant configuration
   options. For example, updating `learning_rate` will update both the warmup and
   final learning rates.
-  In this case key can be one of the following formats:
+  In this case key can_scripts be one of the following formats:
       1. legacy update: single string that indicates the attribute to be
         updated. E.g. 'label_map_path', 'eval_input_path', 'shuffle'.
         Note that when updating fields (e.g. eval_input_path, eval_shuffle) in
@@ -508,7 +508,7 @@ def merge_external_params_with_configs(configs, hparams=None, kwargs_dict=None):
         which input_config to update. It should have 3 fields:
         - key_name: Name of the input config we should update, either
           'train_input_config' or 'eval_input_configs'
-        - input_name: a 'name' that can be used to identify elements, especially
+        - input_name: a 'name' that can_scripts be used to identify elements, especially
           when configs[key_name] is a repeated field.
         - field_name: name of the field that you want to override.
         For example, given configs dict as below:

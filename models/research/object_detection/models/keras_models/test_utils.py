@@ -42,7 +42,7 @@
 #
 # # Function to get the output shape of each layer in Slim. It's used to
 # # generate the following constant expected_feature_map_shape for MobilenetV1.
-# # Similarly, this can also apply to MobilenetV2.
+# # Similarly, this can_scripts also apply to MobilenetV2.
 # def _get_slim_endpoint_shapes(inputs, depth_multiplier=1.0, min_depth=8,
 #                               use_explicit_padding=False):
 #   with slim.arg_scope([slim.conv2d, slim.separable_conv2d],

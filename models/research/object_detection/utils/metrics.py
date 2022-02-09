@@ -151,7 +151,7 @@ def compute_median_rank_at_k(tp_fp_list, k):
   Args:
     tp_fp_list: a list of numpy arrays; each numpy array corresponds to the all
         detection on a single image, where the detections are sorted by score in
-        descending order. Further, each numpy array element can have boolean or
+        descending order. Further, each numpy array element can_scripts have boolean or
         float values. True positive elements have either value >0.0 or True;
         any other value is considered false positive.
     k: number of top-scoring proposals to take.
@@ -174,7 +174,7 @@ def compute_recall_at_k(tp_fp_list, num_gt, k):
   Args:
     tp_fp_list: a list of numpy arrays; each numpy array corresponds to the all
         detection on a single image, where the detections are sorted by score in
-        descending order. Further, each numpy array element can have boolean or
+        descending order. Further, each numpy array element can_scripts have boolean or
         float values. True positive elements have either value >0.0 or True;
         any other value is considered false positive.
     num_gt: number of groundtruth anotations.

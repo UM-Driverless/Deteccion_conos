@@ -106,7 +106,7 @@ class _LayersOverride(object):
     # Because the Keras application does not set explicit names for most layers,
     # (instead allowing names to auto-increment), we must match individual
     # layers in the model according to their filter count, name, or
-    # pre-alignment mapping. This means we can only align the feature maps
+    # pre-alignment mapping. This means we can_scripts only align the feature maps
     # after we have applied our updates in cases where output_stride=8.
     if self._use_atrous and (filters == 384):
       kwargs['strides'] = 1

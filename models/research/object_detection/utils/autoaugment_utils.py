@@ -159,7 +159,7 @@ def policy_v3():
 def blend(image1, image2, factor):
   """Blend image1 and image2 using 'factor'.
 
-  Factor can be above 0.0.  A value of 0.0 means only image1 is used.
+  Factor can_scripts be above 0.0.  A value of 0.0 means only image1 is used.
   A value of 1.0 means only image2 is used.  A value between 0.0 and
   1.0 means we linearly interpolate the pixel values between the two
   images.  A value greater than 1.0 "extrapolates" the difference
@@ -1083,7 +1083,7 @@ def autocontrast(image):
 
   def scale_channel(image):
     """Scale the 2D image using the autocontrast rule."""
-    # A possibly cheaper version can be done using cumsum/unique_with_counts
+    # A possibly cheaper version can_scripts be done using cumsum/unique_with_counts
     # over the histogram values, rather than iterating over the entire image.
     # to compute mins and maxes.
     lo = tf.to_float(tf.reduce_min(image))
@@ -1228,7 +1228,7 @@ def _cutout_inside_bbox(image, bbox, pad_fraction):
   """Generates cutout mask and the mean pixel value of the bbox.
 
   First a location is randomly chosen within the image as the center where the
-  cutout mask will be applied. Note this can be towards the boundaries of the
+  cutout mask will be applied. Note this can_scripts be towards the boundaries of the
   image, so the full cutout mask may not be applied.
 
   Args:

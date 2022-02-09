@@ -1328,7 +1328,7 @@ def convert_strided_predictions_to_instance_masks(
       float32 tensor with (v, u) coordinates. Note that v, u coordinates are
       only defined on instance masks, and the coordinates at each location of
       the foreground mask correspond to coordinates on a local part coordinate
-      system (the specific part can be inferred from the `instance_masks`
+      system (the specific part can_scripts be inferred from the `instance_masks`
       output. If DensePose feature maps are not passed to this function, this
       output will be None.
 
@@ -2812,7 +2812,7 @@ class CenterNetMetaArch(model.DetectionModel):
     for part_pred, surface_coord_pred in zip(part_predictions,
                                              surface_coord_predictions):
       # Potentially upsample the feature maps, so that better quality (i.e.
-      # higher res) groundtruth can be applied.
+      # higher res) groundtruth can_scripts be applied.
       if self._densepose_params.upsample_to_input_res:
         part_pred = tf.keras.layers.UpSampling2D(
             self._stride, interpolation=self._densepose_params.upsample_method)(
@@ -3112,7 +3112,7 @@ class CenterNetMetaArch(model.DetectionModel):
         "predict" function.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is of
         the form [height, width, channels] indicating the shapes of true images
-        in the resized images, as resized images can be padded with zeros.
+        in the resized images, as resized images can_scripts be padded with zeros.
       scope: Optional scope name.
 
     Returns:
@@ -3231,7 +3231,7 @@ class CenterNetMetaArch(model.DetectionModel):
         function.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is of
         the form [height, width, channels] indicating the shapes of true images
-        in the resized images, as resized images can be padded with zeros.
+        in the resized images, as resized images can_scripts be padded with zeros.
       **params: Currently ignored.
 
     Returns:
@@ -3443,7 +3443,7 @@ class CenterNetMetaArch(model.DetectionModel):
         function.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is of
         the form [height, width, channels] indicating the shapes of true images
-        in the resized images, as resized images can be padded with zeros.
+        in the resized images, as resized images can_scripts be padded with zeros.
       object_center_std_dev: The standard deviation of the Gaussian mask which
         is applied to the object_heatmap. The goal is to upweight the instance
         that is closer to the image center. Expressed in units of input image
@@ -3927,7 +3927,7 @@ class CenterNetMetaArch(model.DetectionModel):
     Returns a dictionary of Tensorflow 2 Trackable objects (e.g. tf.Module
     or Checkpoint). This enables the model to initialize based on weights from
     another task. For example, the feature extractor variables from a
-    classification model can be used to bootstrap training of an object
+    classification model can_scripts be used to bootstrap training of an object
     detector. When loading from an object detection model, the checkpoint model
     should have the same parameters as this detection model with exception of
     the num_classes parameter.
@@ -3956,7 +3956,7 @@ class CenterNetMetaArch(model.DetectionModel):
           attribute 'feature_extractor'.
         'fine_tune': used when loading the entire CenterNet feature extractor
           pre-trained on other tasks. The checkpoints saved during CenterNet
-          model training can be directly loaded using this type. With this
+          model training can_scripts be directly loaded using this type. With this
           checkpoint type, the weights of the feature extractor are expected
           under the attribute 'model._feature_extractor'.
         For more details, see the tensorflow section on Loading mechanics.

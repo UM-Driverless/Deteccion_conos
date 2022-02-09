@@ -78,7 +78,7 @@ class ConvolutionalBoxPredictor(box_predictor.KerasBoxPredictor):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       box_prediction_heads: A list of heads that predict the boxes.
       class_prediction_heads: A list of heads that predict the classes.
       other_heads: A dictionary mapping head names to lists of convolutional
@@ -244,7 +244,7 @@ class WeightSharedConvolutionalBoxPredictor(box_predictor.KerasBoxPredictor):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       box_prediction_head: The head that predicts the boxes.
       class_prediction_head: The head that predicts the classes.
       other_heads: A dictionary mapping head names to convolutional

@@ -53,7 +53,7 @@ class RfcnBoxPredictor(box_predictor.BoxPredictor):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       conv_hyperparams_fn: A function to construct tf-slim arg_scope with
         hyperparameters for convolutional layers.
       num_spatial_bins: A list of two integers `[spatial_bins_y,

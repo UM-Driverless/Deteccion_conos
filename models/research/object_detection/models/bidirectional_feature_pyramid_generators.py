@@ -14,7 +14,7 @@
 # ==============================================================================
 """Functions to generate bidirectional feature pyramids based on image features.
 
-Provides bidirectional feature pyramid network (BiFPN) generators that can be
+Provides bidirectional feature pyramid network (BiFPN) generators that can_scripts be
 used to build object detection feature extractors, as proposed by Tan et al.
 See https://arxiv.org/abs/1911.09070 for more details.
 """

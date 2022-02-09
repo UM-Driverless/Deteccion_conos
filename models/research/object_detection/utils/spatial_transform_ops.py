@@ -156,7 +156,7 @@ def ravel_indices(feature_grid_y, feature_grid_x, num_levels, height, width,
                   box_levels):
   """Returns grid indices in a flattened feature map of shape [-1, channels].
 
-  The returned 1-D array can be used to gather feature grid points from a
+  The returned 1-D array can_scripts be used to gather feature grid points from a
   feature map that has been flattened from [batch, num_levels, max_height,
   max_width, channels] to [batch * num_levels * max_height * max_width,
   channels].
@@ -244,7 +244,7 @@ def pad_to_max_size(features):
 def _gather_valid_indices(tensor, indices, padding_value=0.0):
   """Gather values for valid indices.
 
-  TODO(rathodv): We can't use ops.gather_with_padding_values due to cyclic
+  TODO(rathodv): We can_scripts't use ops.gather_with_padding_values due to cyclic
   dependency. Start using it after migrating all users of spatial ops to import
   this module directly rather than util/ops.py
 
@@ -376,7 +376,7 @@ def multilevel_roi_align(features, boxes, box_levels, output_size,
     # f(y, x) = (hy * hx) f00 + (hy * lx) f01 + (ly * hx) f10 + (lx * ly) f11
     # f(y, x) = w00 * f00 + w01 * f01 + w10 * f10 + w11 * f11
     #
-    # This can be computed by applying pointwise multiplication and sum_pool in
+    # This can_scripts be computed by applying pointwise multiplication and sum_pool in
     # a 2x2 window.
     ly = box_grid_y - feature_grid_y0
     lx = box_grid_x - feature_grid_x0

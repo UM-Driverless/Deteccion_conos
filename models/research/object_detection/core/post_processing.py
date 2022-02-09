@@ -157,7 +157,7 @@ def _suppression_loop_body(boxes, iou_threshold, output_size, idx):
   """
   num_tiles = tf.shape(boxes)[1] // _NMS_TILE_SIZE
 
-  # Iterates over tiles that can possibly suppress the current tile.
+  # Iterates over tiles that can_scripts possibly suppress the current tile.
   box_slice = tf.slice(boxes, [0, idx * _NMS_TILE_SIZE, 0],
                        [1, _NMS_TILE_SIZE, 4])
   _, box_slice, _, _ = tf.while_loop(
@@ -226,7 +226,7 @@ def partitioned_non_max_suppression_padded(boxes,
       new_iou = _clear_iou(iou, suppressed_boxes)
       iou_changed = (new_iou != iou)
       iou = new_iou
-    # remaining boxes that can still suppress others, are selected boxes.
+    # remaining boxes that can_scripts still suppress others, are selected boxes.
     output_boxes.append(_get_suppressing_boxes(iou))
     if len(output_boxes) >= max_output_size:
       break
@@ -303,7 +303,7 @@ def _validate_boxes_scores_iou_thresh(boxes, scores, iou_thresh,
      and if change_coordinate_frame is True, clip_window must be specified.
 
   Args:
-    boxes: A [k, q, 4] float32 tensor containing k detections. `q` can be either
+    boxes: A [k, q, 4] float32 tensor containing k detections. `q` can_scripts be either
       number of classes or 1 depending on whether a separate box is predicted
       per class.
     scores: A [k, num_classes] float32 tensor containing the scores for each of
@@ -312,7 +312,7 @@ def _validate_boxes_scores_iou_thresh(boxes, scores, iou_thresh,
     iou_thresh: scalar threshold for IOU (new boxes that have high IOU overlap
       with previously selected boxes are removed).
     change_coordinate_frame: Whether to normalize coordinates after clipping
-      relative to clip_window (this can only be set to True if a clip_window is
+      relative to clip_window (this can_scripts only be set to True if a clip_window is
       provided)
     clip_window: A float32 tensor of the form [y_min, x_min, y_max, x_max]
       representing the window to clip and normalize boxes to before performing
@@ -354,7 +354,7 @@ def _clip_window_prune_boxes(sorted_boxes, clip_window, pad_to_max_output_size,
     pad_to_max_output_size: flag indicating whether to pad to max output size or
       not.
     change_coordinate_frame: Whether to normalize coordinates after clipping
-      relative to clip_window (this can only be set to True if a clip_window is
+      relative to clip_window (this can_scripts only be set to True if a clip_window is
       provided).
 
   Returns:
@@ -430,7 +430,7 @@ def multiclass_non_max_suppression(boxes,
   the sort is not guaranteed to be stable).
 
   Args:
-    boxes: A [k, q, 4] float32 tensor containing k detections. `q` can be either
+    boxes: A [k, q, 4] float32 tensor containing k detections. `q` can_scripts be either
       number of classes or 1 depending on whether a separate box is predicted
       per class.
     scores: A [k, num_classes] float32 tensor containing the scores for each of
@@ -446,13 +446,13 @@ def multiclass_non_max_suppression(boxes,
       representing the window to clip and normalize boxes to before performing
       non-max suppression.
     change_coordinate_frame: Whether to normalize coordinates after clipping
-      relative to clip_window (this can only be set to True if a clip_window
+      relative to clip_window (this can_scripts only be set to True if a clip_window
       is provided)
     masks: (optional) a [k, q, mask_height, mask_width] float32 tensor
-      containing box masks. `q` can be either number of classes or 1 depending
+      containing box masks. `q` can_scripts be either number of classes or 1 depending
       on whether a separate mask is predicted per class.
     boundaries: (optional) a [k, q, boundary_height, boundary_width] float32
-      tensor containing box boundaries. `q` can be either number of classes or 1
+      tensor containing box boundaries. `q` can_scripts be either number of classes or 1
       depending on whether a separate boundary is predicted per class.
     pad_to_max_output_size: If true, the output nmsed boxes are padded to be of
       length `max_size_per_class`. Defaults to false.
@@ -661,7 +661,7 @@ def class_agnostic_non_max_suppression(boxes,
   the sort is not guaranteed to be stable).
 
   Args:
-    boxes: A [k, q, 4] float32 tensor containing k detections. `q` can be either
+    boxes: A [k, q, 4] float32 tensor containing k detections. `q` can_scripts be either
       number of classes or 1 depending on whether a separate box is predicted
       per class.
     scores: A [k, num_classes] float32 tensor containing the scores for each of
@@ -678,13 +678,13 @@ def class_agnostic_non_max_suppression(boxes,
       representing the window to clip and normalize boxes to before performing
       non-max suppression.
     change_coordinate_frame: Whether to normalize coordinates after clipping
-      relative to clip_window (this can only be set to True if a clip_window is
+      relative to clip_window (this can_scripts only be set to True if a clip_window is
       provided)
     masks: (optional) a [k, q, mask_height, mask_width] float32 tensor
-      containing box masks. `q` can be either number of classes or 1 depending
+      containing box masks. `q` can_scripts be either number of classes or 1 depending
       on whether a separate mask is predicted per class.
     boundaries: (optional) a [k, q, boundary_height, boundary_width] float32
-      tensor containing box boundaries. `q` can be either number of classes or 1
+      tensor containing box boundaries. `q` can_scripts be either number of classes or 1
       depending on whether a separate boundary is predicted per class.
     pad_to_max_output_size: If true, the output nmsed boxes are padded to be of
       length `max_size_per_class`. Defaults to false.
@@ -897,19 +897,19 @@ def batch_multiclass_non_max_suppression(boxes,
       default returns all boxes retained after capping boxes per class.
     clip_window: A float32 tensor of shape [batch_size, 4]  where each entry is
       of the form [y_min, x_min, y_max, x_max] representing the window to clip
-      boxes to before performing non-max suppression. This argument can also be
+      boxes to before performing non-max suppression. This argument can_scripts also be
       a tensor of shape [4] in which case, the same clip window is applied to
       all images in the batch. If clip_widow is None, all boxes are used to
       perform non-max suppression.
     change_coordinate_frame: Whether to normalize coordinates after clipping
-      relative to clip_window (this can only be set to True if a clip_window is
+      relative to clip_window (this can_scripts only be set to True if a clip_window is
       provided)
     num_valid_boxes: (optional) a Tensor of type `int32`. A 1-D tensor of shape
       [batch_size] representing the number of valid boxes to be considered for
       each image in the batch.  This parameter allows for ignoring zero
       paddings.
     masks: (optional) a [batch_size, num_anchors, q, mask_height, mask_width]
-      float32 tensor containing box masks. `q` can be either number of classes
+      float32 tensor containing box masks. `q` can_scripts be either number of classes
       or 1 depending on whether a separate mask is predicted per class.
     additional_fields: (optional) If not None, a dictionary that maps keys to
       tensors whose dimensions are [batch_size, num_anchors, ...].
@@ -1051,7 +1051,7 @@ def batch_multiclass_non_max_suppression(boxes,
     if num_valid_boxes is None:
       num_valid_boxes = tf.ones([batch_size], dtype=tf.int32) * num_anchors
 
-    # If masks aren't provided, create dummy masks so we can only have one copy
+    # If masks aren't provided, create dummy masks so we can_scripts only have one copy
     # of _single_image_nms_fn and discard the dummy masks after map_fn.
     if masks is None:
       masks_shape = tf.stack([batch_size, num_anchors, q, 1, 1])
@@ -1079,7 +1079,7 @@ def batch_multiclass_non_max_suppression(boxes,
           per_image_scores - A [num_anchors, num_classes] float32 tensor
             containing the scores for each of the `num_anchors` detections.
           per_image_masks - A [num_anchors, q, mask_height, mask_width] float32
-            tensor containing box masks. `q` can be either number of classes
+            tensor containing box masks. `q` can_scripts be either number of classes
             or 1 depending on whether a separate mask is predicted per class.
           per_image_clip_window - A 1D float32 tensor of the form
             [ymin, xmin, ymax, xmax] representing the window to clip the boxes

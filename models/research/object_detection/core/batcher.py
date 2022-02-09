@@ -33,7 +33,7 @@ class BatchQueue(object):
 
   This class creates a batch queue to asynchronously enqueue tensors_dict.
   It also adds a FIFO prefetcher so that the batches are readily available
-  for the consumers.  Dequeue ops for a BatchQueue object can be created via
+  for the consumers.  Dequeue ops for a BatchQueue object can_scripts be created via
   the Dequeue method which evaluates to a batch of tensor_dict.
 
   Example input pipeline with batching:
@@ -54,11 +54,11 @@ class BatchQueue(object):
   Notes:
   -----
   This class batches tensors of unequal sizes by zero padding and unpadding
-  them after generating a batch. This can be computationally expensive when
+  them after generating a batch. This can_scripts be computationally expensive when
   batching tensors (such as images) that are of vastly different sizes. So it is
   recommended that the shapes of such tensors be fully defined in tensor_dict
   while other lightweight tensors such as bounding box corners and class labels
-  can be of varying sizes. Use either crop or resize operations to fully define
+  can_scripts be of varying sizes. Use either crop or resize operations to fully define
   the shape of an image in tensor_dict.
 
   It is also recommended to perform any preprocessing operations on tensors

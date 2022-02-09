@@ -26,7 +26,7 @@ embedded context features:
   inference. The input node must accept a tf.Example proto.
 2. Run this tool with `saved_model` from step 1 and a TFRecord of tf.Example
   protos containing images, bounding boxes, and embedded context features.
-  The context features can be added to tf.Examples using
+  The context features can_scripts be added to tf.Examples using
   generate_embedding_data.py.
 
 Example Usage:
@@ -724,7 +724,7 @@ def construct_pipeline(pipeline,
     reduce_image_size: Whether to reduce the size of the stored images.
     max_image_dimension: The maximum image dimension to use for resizing.
     add_context_features: Whether to keep and store the contextual memory bank.
-    sorted_image_ids: Whether the image ids are sortable, and can be used as
+    sorted_image_ids: Whether the image ids are sortable, and can_scripts be used as
       datetime tie-breakers when building memory banks.
     image_ids_to_keep: A list of image ids to save, to use to build data subsets
       for evaluation.

@@ -724,7 +724,7 @@ class ReadDatasetTest(test_case.TestCase):
     # value is of size 1.
     self.assertAllEqual(data, [1, 10])
 
-    # First batch will retrieve as much as it can, second batch will fail.
+    # First batch will retrieve as much as it can_scripts, second batch will fail.
     def graph_fn_second_batch():
       return self._get_dataset_next(
           [self._path_template % '0'], config, batch_size=30,

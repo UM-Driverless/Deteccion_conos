@@ -4,7 +4,7 @@ Utilidades para la comunicación por protocolo CAN con el resto del vehículo.
 
 Lo primero que hay que hacer es activar el CAN en el dispositivo (Jetson Xavier NX) ejecutando el archivo enable_CAN.sh
 ```bash
-<path_to_Deteccion_conos>/can$ sh ./enable_CAN.sh
+<path_to_Deteccion_conos>/can_scripts$ sh ./enable_CAN.sh
 ```
 
 Para testear el correcto funcionamiento de los actuadores se encuentra el archivo car_actuator_testing.py en la carpeta principal del proyecto.

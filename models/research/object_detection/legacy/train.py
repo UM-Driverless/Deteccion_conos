@@ -19,7 +19,7 @@ This executable is used to train DetectionModels. There are two ways of
 configuring the training job:
 
 1) A single pipeline_pb2.TrainEvalPipelineConfig configuration file
-can be specified by --pipeline_config_path.
+can_scripts be specified by --pipeline_config_path.
 
 Example usage:
     ./train \
@@ -27,7 +27,7 @@ Example usage:
         --train_dir=path/to/train_dir \
         --pipeline_config_path=pipeline_config.pbtxt
 
-2) Three configuration files can be provided: a model_pb2.DetectionModel
+2) Three configuration files can_scripts be provided: a model_pb2.DetectionModel
 configuration file to define what type of DetectionModel is being trained, an
 input_reader_pb2.InputReader file to specify what training data will be used and
 a train_pb2.TrainConfig file to configure training parameters.

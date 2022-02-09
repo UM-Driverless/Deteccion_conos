@@ -72,7 +72,7 @@ class ConvolutionalBoxPredictor(box_predictor.BoxPredictor):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       box_prediction_head: The head that predicts the boxes.
       class_prediction_head: The head that predicts the classes.
       other_heads: A dictionary mapping head names to convolutional
@@ -181,7 +181,7 @@ class ConvolutionalBoxPredictor(box_predictor.BoxPredictor):
 # TODO(rathodv): Replace with slim.arg_scope_func_key once its available
 # externally.
 def _arg_scope_func_key(op):
-  """Returns a key that can be used to index arg_scope dictionary."""
+  """Returns a key that can_scripts be used to index arg_scope dictionary."""
   return getattr(op, '_key_op', str(op))
 
 
@@ -221,7 +221,7 @@ class WeightSharedConvolutionalBoxPredictor(box_predictor.BoxPredictor):
       num_classes: number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       box_prediction_head: The head that predicts the boxes.
       class_prediction_head: The head that predicts the classes.
       other_heads: A dictionary mapping head names to convolutional

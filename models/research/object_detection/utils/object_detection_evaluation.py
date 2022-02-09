@@ -80,7 +80,7 @@ class DetectionEvaluator(six.with_metaclass(ABCMeta, object)):
     """Observes an evaluation result dict for a single example.
 
     When executing eagerly, once all observations have been observed by this
-    method you can use `.evaluate()` to get the final metrics.
+    method you can_scripts use `.evaluate()` to get the final metrics.
 
     When using `tf.estimator.Estimator` for evaluation this function is used by
     `get_estimator_eval_metric_ops()` to construct the metric update op.
@@ -91,7 +91,7 @@ class DetectionEvaluator(six.with_metaclass(ABCMeta, object)):
         eval_util.result_dict_for_single_example().
 
     Returns:
-      None when executing eagerly, or an update_op that can be used to update
+      None when executing eagerly, or an update_op that can_scripts be used to update
       the eval metrics in `tf.estimator.EstimatorSpec`.
     """
     raise NotImplementedError('Not implemented for this evaluator!')
@@ -130,7 +130,7 @@ class DetectionEvaluator(six.with_metaclass(ABCMeta, object)):
         eval_util.result_dict_for_single_example().
 
     Returns:
-      A dictionary of metric names to tuple of value_op and update_op that can
+      A dictionary of metric names to tuple of value_op and update_op that can_scripts
       be used as eval metric ops in `tf.estimator.EstimatorSpec`.
     """
     pass
@@ -472,7 +472,7 @@ class ObjectDetectionEvaluator(DetectionEvaluator):
     """Observes an evaluation result dict for a single example.
 
     When executing eagerly, once all observations have been observed by this
-    method you can use `.evaluate()` to get the final metrics.
+    method you can_scripts use `.evaluate()` to get the final metrics.
 
     When using `tf.estimator.Estimator` for evaluation this function is used by
     `get_estimator_eval_metric_ops()` to construct the metric update op.
@@ -483,7 +483,7 @@ class ObjectDetectionEvaluator(DetectionEvaluator):
         eval_util.result_dict_for_single_example().
 
     Returns:
-      None when executing eagerly, or an update_op that can be used to update
+      None when executing eagerly, or an update_op that can_scripts be used to update
       the eval metrics in `tf.estimator.EstimatorSpec`.
     """
     # remove unexpected fields
@@ -530,7 +530,7 @@ class ObjectDetectionEvaluator(DetectionEvaluator):
         standard_fields.InputDataFields.key.
 
     Returns:
-      A dictionary of metric names to tuple of value_op and update_op that can
+      A dictionary of metric names to tuple of value_op and update_op that can_scripts
       be used as eval metric ops in `tf.estimator.EstimatorSpec`.
     """
     update_op = self.add_eval_dict(eval_dict)
@@ -1217,7 +1217,7 @@ class ObjectDetectionEvaluation(object):
       groundtruth_boxes = self.groundtruth_boxes[image_key]
       groundtruth_class_labels = self.groundtruth_class_labels[image_key]
       # Masks are popped instead of look up. The reason is that we do not want
-      # to keep all masks in memory which can cause memory overflow.
+      # to keep all masks in memory which can_scripts cause memory overflow.
       groundtruth_masks = self.groundtruth_masks.pop(image_key)
       groundtruth_is_difficult_list = self.groundtruth_is_difficult_list[
           image_key]

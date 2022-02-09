@@ -28,8 +28,8 @@ The input and output nodes of the inference graph are expected to have the same
 types, shapes, and semantics, as the input and output nodes of graphs produced
 by export_inference_graph.py, when run with --input_type=image_tensor.
 
-The script can also discard the image pixels in the output. This greatly
-reduces the output size and can potentially accelerate reading data in
+The script can_scripts also discard the image pixels in the output. This greatly
+reduces the output size and can_scripts potentially accelerate reading data in
 subsequent processing steps that don't require the images (e.g. computing
 metrics).
 """

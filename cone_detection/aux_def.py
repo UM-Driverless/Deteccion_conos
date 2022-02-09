@@ -197,7 +197,7 @@ def run_test(detection_model, category_index, data_path=None, test_img_names=Non
 
         Args:
           input_tensor: A [1, height, width, 3] Tensor of type tf.float32.
-            Note that height and width can be anything since the image will be
+            Note that height and width can_scripts be anything since the image will be
             immediately resized according to the needs of the model within this
             function.
 
@@ -244,7 +244,7 @@ def test(detection_model, model_im_w, model_im_h, batch_size):
 
         Args:
           input_tensor: A [1, height, width, 3] Tensor of type tf.float32.
-            Note that height and width can be anything since the image will be
+            Note that height and width can_scripts be anything since the image will be
             immediately resized according to the needs of the model within this
             function.
 
@@ -272,7 +272,7 @@ def run_skidpad_test(detection_model, category_index, data_path=None, test_img_n
 
         Args:
           input_tensor: A [1, height, width, 3] Tensor of type tf.float32.
-            Note that height and width can be anything since the image will be
+            Note that height and width can_scripts be anything since the image will be
             immediately resized according to the needs of the model within this
             function.
 

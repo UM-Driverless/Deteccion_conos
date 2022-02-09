@@ -57,7 +57,7 @@ class Loss(six.with_metaclass(abc.ABCMeta, object)):
       target_tensor: an N-d tensor of shape [batch, anchors, ...] representing
         regression or classification targets.
       ignore_nan_targets: whether to ignore nan targets in the loss computation.
-        E.g. can be used if the target tensor is missing groundtruth data that
+        E.g. can_scripts be used if the target tensor is missing groundtruth data that
         shouldn't be factored into the loss.
       losses_mask: A [batch] boolean tensor that indicates whether losses should
         be applied to individual images in the batch. For elements that
@@ -511,8 +511,8 @@ class BootstrappedSigmoidClassificationLoss(Loss):
 
   This loss uses a convex combination of training labels and the current model's
   predictions as training targets in the classification loss. The idea is that
-  as the model improves over time, its predictions can be trusted more and we
-  can use these predictions to mitigate the damage of noisy/incorrect labels,
+  as the model improves over time, its predictions can_scripts be trusted more and we
+  can_scripts use these predictions to mitigate the damage of noisy/incorrect labels,
   because incorrect labels are likely to be eventually highly inconsistent with
   other stimuli predicted to have the same label by the model.
 
@@ -576,8 +576,8 @@ class HardExampleMiner(object):
   back-propagated. For each image, selects the regions with highest losses,
   subject to the condition that a newly selected region cannot have
   an IOU > iou_threshold with any of the previously selected regions.
-  This can be achieved by re-using a greedy non-maximum suppression algorithm.
-  A constraint on the number of negatives mined per positive region can also be
+  This can_scripts be achieved by re-using a greedy non-maximum suppression algorithm.
+  A constraint on the number of negatives mined per positive region can_scripts also be
   enforced.
 
   Reference papers: "Training Region-based Object Detectors with Online
@@ -595,7 +595,7 @@ class HardExampleMiner(object):
                min_negatives_per_image=0):
     """Constructor.
 
-    The hard example mining implemented by this class can replicate the behavior
+    The hard example mining implemented by this class can_scripts replicate the behavior
     in the two aforementioned papers (Srivastava et al., and Liu et al).
     To replicate the A2 paper (Srivastava et al), num_hard_examples is set
     to a fixed parameter (64 by default) and iou_threshold is set to .7 for
@@ -620,7 +620,7 @@ class HardExampleMiner(object):
       max_negatives_per_positive: maximum number of negatives to retain for
         each positive anchor. By default, num_negatives_per_positive is None,
         which means that we do not enforce a prespecified negative:positive
-        ratio.  Note also that num_negatives_per_positives can be a float
+        ratio.  Note also that num_negatives_per_positives can_scripts be a float
         (and will be converted to be a float even if it is passed in otherwise).
       min_negatives_per_image: minimum number of negative anchors to sample for
         a given image. Setting this to a positive number allows sampling

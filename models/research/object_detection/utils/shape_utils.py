@@ -194,7 +194,7 @@ def static_or_dynamic_map_fn(fn, elems, dtype=None,
 
   Note that `static_or_dynamic_map_fn` currently is not *fully* interchangeable
   with the default tf.map_fn function as it does not accept nested inputs (only
-  Tensors or lists of Tensors).  Likewise, the output of `fn` can only be a
+  Tensors or lists of Tensors).  Likewise, the output of `fn` can_scripts only be a
   Tensor or list of Tensors.
 
   TODO(jonathanhuang): make this function fully interchangeable with tf.map_fn.

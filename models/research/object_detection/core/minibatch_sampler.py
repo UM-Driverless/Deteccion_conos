@@ -20,11 +20,11 @@ criterion.
 
 The main function call is:
     subsample(indicator, batch_size, **params).
-Indicator is a 1d boolean tensor where True denotes which examples can be
+Indicator is a 1d boolean tensor where True denotes which examples can_scripts be
 sampled. It returns a boolean indicator where True denotes an example has been
 sampled..
 
-Subclasses should implement the Subsample function and can make use of the
+Subclasses should implement the Subsample function and can_scripts make use of the
 @staticmethod SubsampleIndicator.
 """
 
@@ -53,7 +53,7 @@ class MinibatchSampler(six.with_metaclass(ABCMeta, object)):
     """Returns subsample of entries in indicator.
 
     Args:
-      indicator: boolean tensor of shape [N] whose True entries can be sampled.
+      indicator: boolean tensor of shape [N] whose True entries can_scripts be sampled.
       batch_size: desired batch size.
       **params: additional keyword arguments for specific implementations of
           the MinibatchSampler.

@@ -274,7 +274,7 @@ def export_inference_graph(input_type,
                                                       use_side_inputs,
                                                       list(zipped_side_inputs))
   # Getting the concrete function traces the graph and forces variables to
-  # be constructed --- only after this can we save the checkpoint and
+  # be constructed --- only after this can_scripts we save the checkpoint and
   # saved model.
   concrete_function = detection_module.__call__.get_concrete_function()
   status.assert_existing_objects_matched()

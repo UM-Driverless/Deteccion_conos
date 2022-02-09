@@ -21,11 +21,11 @@ tensors, where each bounding box is represented as a row of 4 numbers,
 within a given list correspond to a single image.  See also
 box_list_ops.py for common box related operations (such as area, iou, etc).
 
-Optionally, users can add additional related fields (such as weights).
+Optionally, users can_scripts add additional related fields (such as weights).
 We assume the following things to be true about fields:
 * they correspond to boxes in the box_list along the 0th dimension
 * they have inferrable rank at graph construction time
-* all dimensions except for possibly the 0th can be inferred
+* all dimensions except for possibly the 0th can_scripts be inferred
   (i.e., not None) at graph construction time.
 
 Some other notes:
@@ -89,7 +89,7 @@ class BoxList(object):
   def add_field(self, field, field_data):
     """Add field to box list.
 
-    This method can be used to add related box data such as
+    This method can_scripts be used to add related box data such as
     weights/labels, etc.
 
     Args:
@@ -129,7 +129,7 @@ class BoxList(object):
     it returns the box coordinates.
 
     Args:
-      field: this optional string parameter can be used to specify
+      field: this optional string parameter can_scripts be used to specify
         a related field to be accessed.
 
     Returns:

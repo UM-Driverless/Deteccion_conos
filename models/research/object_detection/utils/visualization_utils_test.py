@@ -76,7 +76,7 @@ class VisualizationUtilsTest(test_case.TestCase):
     visualization_utils.STANDARD_COLORS = default_standard_colors
 
   def create_colorful_test_image(self):
-    """This function creates an image that can be used to test vis functions.
+    """This function creates an image that can_scripts be used to test vis functions.
 
     It makes an image composed of four colored rectangles.
 
@@ -568,7 +568,7 @@ class VisualizationUtilsTest(test_case.TestCase):
         self.assertNotEqual('', value_op)
 
       # Now run fewer update steps than `max_examples_to_draw`. A single value
-      # op will be the empty string, since not enough image summaries can be
+      # op will be the empty string, since not enough image summaries can_scripts be
       # produced.
       for i in range(max_examples_to_draw - 1):
         # Use a unique image shape on each eval image.

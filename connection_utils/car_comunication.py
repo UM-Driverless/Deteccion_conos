@@ -3,14 +3,14 @@ Control the flow of information from the sensor (Camera and CAN data) to the mai
 """
 
 from connection_utils.comunication_base import ComunicationInterface
-from connection_utils.communication_controllers import zed, can
+from connection_utils.communication_controllers import zed, can_utils
 import numpy as np
 
 class ConnectionManager(ComunicationInterface):
     def __init__(self, logger=None):
         self.logger = logger
         self.camera = zed.Camera(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
-        self.can = can.CAN(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
+        self.can = can_utils.CAN(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
 
     def get_data(self, params=None, verbose=0):
         """
@@ -43,7 +43,7 @@ class ConnectionManager_dummy(ComunicationInterface):
     def __init__(self, logger=None):
         self.logger = logger
         self.camera = zed.Camera(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
-        self.can = can.CAN_dummy(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
+        self.can = can_utils.CAN_dummy(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
 
     def get_data(self, params=None, verbose=0):
         """

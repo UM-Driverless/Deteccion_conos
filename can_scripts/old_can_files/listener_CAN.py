@@ -5,7 +5,7 @@
 Script de escucha del bus CAN
 """
 
-import can
+import can_scripts
 import constants
 
 class CANListener(object):
@@ -19,8 +19,8 @@ class CANListener(object):
 		## Implementamos la clase abstracta Listener (https://python-can.readthedocs.io/en/master/listeners.html)
 		# De momento usamos BufferedReader, que es una implementación por defecto de la librería, con un buffer de mensajes. Si necesitamos que sea async podemos
 		# usar AsyncBufferedReader.
-		self.buffer = can.BufferedReader()
-		self.notifier = can.Notifier(self.bus, [self.buffer])
+		self.buffer = can_scripts.BufferedReader()
+		self.notifier = can_scripts.Notifier(self.bus, [self.buffer])
 		with open(log, 'a', encoding="utf-8") as f:
 		    f.write("[DEBUG]: Conectamos al listener" + '\n')
 

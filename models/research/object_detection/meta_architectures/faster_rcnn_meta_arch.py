@@ -21,9 +21,9 @@ See Faster R-CNN: Ren, Shaoqing, et al.
 networks." Advances in neural information processing systems. 2015.
 
 We allow for three modes: number_of_stages={1, 2, 3}. In case of 1 stage,
-all of the user facing methods (e.g., predict, postprocess, loss) can be used as
+all of the user facing methods (e.g., predict, postprocess, loss) can_scripts be used as
 if the model consisted only of the RPN, returning class agnostic proposals
-(these can be thought of as approximate detections with no associated class
+(these can_scripts be thought of as approximate detections with no associated class
 information).  In case of 2 stages, proposals are computed, then passed
 through a second stage "box classifier" to yield (multi-class) detections.
 Finally, in case of 3 stages which is only used during eval, proposals are
@@ -36,7 +36,7 @@ Implementations of Faster R-CNN models must define a new
 FasterRCNNFeatureExtractor and override three methods: `preprocess`,
 `_extract_proposal_features` (the first stage of the model), and
 `_extract_box_classifier_features` (the second stage of the model). Optionally,
-the `restore_fn` method can be overridden.  See tests for an example.
+the `restore_fn` method can_scripts be overridden.  See tests for an example.
 
 A few important notes:
 + Batching conventions:  We support batched inference and training where
@@ -71,7 +71,7 @@ Images are resized in the `preprocess` method.
 The Faster R-CNN meta architecture has two post-processing methods
 `_postprocess_rpn` which is applied after first stage and
 `_postprocess_box_classifier` which is applied after second stage. There are
-three different ways post-processing can happen depending on number_of_stages
+three different ways post-processing can_scripts happen depending on number_of_stages
 configured in the meta architecture:
 
 1. When number_of_stages is 1:
@@ -314,7 +314,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       num_classes: Number of classes.  Note that num_classes *does not*
         include the background category, so if groundtruth labels take values
         in {0, 1, .., K-1}, num_classes=K (and not K+1, even though the
-        assigned classification targets can range from {0,... K}).
+        assigned classification targets can_scripts range from {0,... K}).
       image_resizer_fn: A callable for image resizing.  This callable
         takes a rank-3 image tensor of shape [height, width, channels]
         (corresponding to a single image), an optional rank-3 instance mask
@@ -322,7 +322,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         image tensor, a resized mask tensor if one was provided in the input. In
         addition this callable must also return a 1-D tensor of the form
         [height, width, channels] containing the size of the true image, as the
-        image resizer can perform zero padding. See protos/image_resizer.proto.
+        image resizer can_scripts perform zero padding. See protos/image_resizer.proto.
       feature_extractor: A FasterRCNNFeatureExtractor object.
       number_of_stages:  An integer values taking values in {1, 2, 3}. If
         1, the function will construct only the Region Proposal Network (RPN)
@@ -418,7 +418,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       second_stage_mask_prediction_loss_weight: A float indicating the scale
         factor for second stage mask prediction loss. This is applicable only if
         second stage box predictor is configured to predict masks.
-      hard_example_miner:  A losses.HardExampleMiner object (can be None).
+      hard_example_miner:  A losses.HardExampleMiner object (can_scripts be None).
       parallel_iterations: (Optional) The number of iterations allowed to run
         in parallel for calls to tf.map_fn.
       add_summaries: boolean (default: True) controlling whether summary ops
@@ -679,7 +679,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         tensor representing a batch of images.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
     Raises:
       ValueError: if inputs tensor does not have type tf.float32
@@ -752,7 +752,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         representing a batch of images.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       **side_inputs: additional tensors that are required by the network.
 
@@ -775,7 +775,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
           tensor *includes* background class predictions (at class index 0).
         6) anchors: A 2-D tensor of shape [num_anchors, 4] representing anchors
           for the first stage RPN (in absolute coordinates).  Note that
-          `num_anchors` can differ depending on whether the model is created in
+          `num_anchors` can_scripts differ depending on whether the model is created in
           training or inference mode.
         7) feature_maps: A single element list containing a 4-D float32 tensor
           with shape batch_size, height, width, depth] representing the RPN
@@ -864,7 +864,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
           background class predictions (at class index 0).
         6) anchors: A 2-D tensor of shape [num_anchors, 4] representing anchors
           for the first stage RPN (in absolute coordinates).  Note that
-          `num_anchors` can differ depending on whether the model is created in
+          `num_anchors` can_scripts differ depending on whether the model is created in
           training or inference mode.
         7) feature_maps: A single element list containing a 4-D float32 tensor
           with shape batch_size, height, width, depth] representing the RPN
@@ -952,7 +952,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       image_shape: A 1D int32 tensors of size [4] containing the image shape.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       **side_inputs: additional tensors that are required by the network.
 
@@ -1019,7 +1019,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
       image_shape: A 1D int32 tensors of size [4] containing the image shape.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       **side_inputs: additional tensors that are required by the network.
 
@@ -1117,7 +1117,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         coordinates.
       true_image_shapes: [batch, 3] int32 tensor where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Returns:
@@ -1473,7 +1473,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
 
     If number_of_stages=1, the returned results represent proposals from the
     first stage RPN and are padded to have self.max_num_proposals for each
-    image; otherwise, the results can be interpreted as multiclass detections
+    image; otherwise, the results can_scripts be interpreted as multiclass detections
     from the full two-stage model and are padded to self._max_detections.
 
     Args:
@@ -1487,7 +1487,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         `proposal_boxes` and, optionally, `mask_predictions` fields.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Returns:
@@ -1698,13 +1698,13 @@ class FasterRCNNMetaArch(model.DetectionModel):
         (logits) for each of the anchors with 0 corresponding to background
         and 1 corresponding to object.
       anchors: A 2-D tensor of shape [num_anchors, 4] representing anchors
-        for the first stage RPN.  Note that `num_anchors` can differ depending
+        for the first stage RPN.  Note that `num_anchors` can_scripts differ depending
         on whether the model is created in training or inference mode.
       image_shapes: A 2-D tensor of shape [batch, 3] containing the shapes of
         images in the batch.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
 
     Returns:
@@ -2249,7 +2249,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         `proposal_boxes` fields.
       true_image_shapes: int32 tensor of shape [batch, 3] where each row is
         of the form [height, width, channels] indicating the shapes
-        of true images in the resized images, as resized images can be padded
+        of true images in the resized images, as resized images can_scripts be padded
         with zeros.
       scope: Optional scope name.
 
@@ -2304,7 +2304,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
         (logits) for each of the anchors with 0 corresponding to background
         and 1 corresponding to object.
       anchors: A 2-D tensor of shape [num_anchors, 4] representing anchors
-        for the first stage RPN.  Note that `num_anchors` can differ depending
+        for the first stage RPN.  Note that `num_anchors` can_scripts differ depending
         on whether the model is created in training or inference mode.
       groundtruth_boxlists: A list of BoxLists containing coordinates of the
         groundtruth boxes.
@@ -2866,7 +2866,7 @@ class FasterRCNNMetaArch(model.DetectionModel):
     Returns a dictionary of Tensorflow 2 Trackable objects (e.g. tf.Module
     or Checkpoint). This enables the model to initialize based on weights from
     another task. For example, the feature extractor variables from a
-    classification model can be used to bootstrap training of an object
+    classification model can_scripts be used to bootstrap training of an object
     detector. When loading from an object detection model, the checkpoint model
     should have the same parameters as this detection model with exception of
     the num_classes parameter.

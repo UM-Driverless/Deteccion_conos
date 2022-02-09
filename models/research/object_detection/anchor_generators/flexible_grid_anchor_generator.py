@@ -29,8 +29,8 @@ class FlexibleGridAnchorGenerator(anchor_generator.AnchorGenerator):
     """Constructs a FlexibleGridAnchorGenerator.
 
     This generator is more flexible than the multiple_grid_anchor_generator
-    and multiscale_grid_anchor_generator, and can generate any of the anchors
-    that they can generate, plus additional anchor configurations. In
+    and multiscale_grid_anchor_generator, and can_scripts generate any of the anchors
+    that they can_scripts generate, plus additional anchor configurations. In
     particular, it allows the explicit specification of scale and aspect ratios
     at each layer without making any assumptions between the relationship
     between scales and aspect ratios between layers.
@@ -91,10 +91,10 @@ class FlexibleGridAnchorGenerator(anchor_generator.AnchorGenerator):
         setting feature_map_shape_list=[(8, 8), (7, 7)] asks for anchors that
         correspond to an 8x8 layer followed by a 7x7 layer.
       im_height: the height of the image to generate the grid for. If both
-        im_height and im_width are 1, anchors can only be generated in
+        im_height and im_width are 1, anchors can_scripts only be generated in
         absolute coordinates.
       im_width: the width of the image to generate the grid for. If both
-        im_height and im_width are 1, anchors can only be generated in
+        im_height and im_width are 1, anchors can_scripts only be generated in
         absolute coordinates.
 
     Returns:

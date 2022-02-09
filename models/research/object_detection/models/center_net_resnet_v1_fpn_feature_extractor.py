@@ -45,7 +45,7 @@ class CenterNetResnetV1FpnFeatureExtractor(CenterNetFeatureExtractor):
   of the net. This design does not exactly follow the original FPN design,
   specifically:
   - Since only one output map is necessary for heatmap prediction (stride 4
-    output), the top-down feature maps can have different numbers of channels.
+    output), the top-down feature maps can_scripts have different numbers of channels.
     Specifically, the top down feature maps have the following sizes:
     [h/4, w/4, 64], [h/8, w/8, 128], [h/16, w/16, 256], [h/32, w/32, 256].
   - No additional coarse features are used after conv5_x.

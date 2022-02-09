@@ -65,7 +65,7 @@ class BalancedPositiveNegativeSamplerTest(test_case.TestCase):
 
   def test_subsample_selection(self):
     if self.has_tpu(): return
-    # Test random sampling when only some examples can be sampled:
+    # Test random sampling when only some examples can_scripts be sampled:
     # 100 samples, 20 positives, 10 positives cannot be sampled.
     numpy_labels = np.arange(100)
     numpy_indicator = numpy_labels < 90
@@ -88,7 +88,7 @@ class BalancedPositiveNegativeSamplerTest(test_case.TestCase):
 
   def test_subsample_selection_static(self):
     if not self.has_tpu(): return
-    # Test random sampling when only some examples can be sampled:
+    # Test random sampling when only some examples can_scripts be sampled:
     # 100 samples, 20 positives, 10 positives cannot be sampled.
     numpy_labels = np.arange(100)
     numpy_indicator = numpy_labels < 90
@@ -112,7 +112,7 @@ class BalancedPositiveNegativeSamplerTest(test_case.TestCase):
 
   def test_subsample_selection_larger_batch_size(self):
     if self.has_tpu(): return
-    # Test random sampling when total number of examples that can be sampled are
+    # Test random sampling when total number of examples that can_scripts be sampled are
     # less than batch size:
     # 100 samples, 50 positives, 40 positives cannot be sampled, batch size 64.
     # It should still return 64 samples, with 4 of them that couldn't have been
@@ -138,7 +138,7 @@ class BalancedPositiveNegativeSamplerTest(test_case.TestCase):
 
   def test_subsample_selection_larger_batch_size_static(self):
     if not self.has_tpu(): return
-    # Test random sampling when total number of examples that can be sampled are
+    # Test random sampling when total number of examples that can_scripts be sampled are
     # less than batch size:
     # 100 samples, 50 positives, 40 positives cannot be sampled, batch size 64.
     # It should still return 64 samples, with 4 of them that couldn't have been
@@ -165,8 +165,8 @@ class BalancedPositiveNegativeSamplerTest(test_case.TestCase):
 
   def test_subsample_selection_no_batch_size(self):
     if self.has_tpu(): return
-    # Test random sampling when only some examples can be sampled:
-    # 1000 samples, 6 positives (5 can be sampled).
+    # Test random sampling when only some examples can_scripts be sampled:
+    # 1000 samples, 6 positives (5 can_scripts be sampled).
     numpy_labels = np.arange(1000)
     numpy_indicator = numpy_labels < 999
     numpy_labels = (numpy_labels - 994) >= 0

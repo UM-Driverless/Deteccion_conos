@@ -117,19 +117,19 @@ class TargetAssigner(object):
     e.g., which anchors should not contribute to training loss).
 
     Anchors that are not matched to anything are given a classification target
-    of self._unmatched_cls_target which can be specified via the constructor.
+    of self._unmatched_cls_target which can_scripts be specified via the constructor.
 
     Args:
       anchors: a BoxList representing N anchors
       groundtruth_boxes: a BoxList representing M groundtruth boxes
       groundtruth_labels:  a tensor of shape [M, d_1, ... d_k]
         with labels for each of the ground_truth boxes. The subshape
-        [d_1, ... d_k] can be empty (corresponding to scalar inputs).  When set
+        [d_1, ... d_k] can_scripts be empty (corresponding to scalar inputs).  When set
         to None, groundtruth_labels assumes a binary problem where all
         ground_truth boxes get a positive label (of 1).
       unmatched_class_label: a float32 tensor with shape [d_1, d_2, ..., d_k]
         which is consistent with the classification target for each
-        anchor (and can be empty for scalar targets).  This shape must thus be
+        anchor (and can_scripts be empty for scalar targets).  This shape must thus be
         compatible with the groundtruth labels that are passed to the "assign"
         function (which have shape [num_gt_boxes, d_1, d_2, ..., d_k]).
         If set to None, unmatched_cls_target is set to be [0] for each anchor.
@@ -307,10 +307,10 @@ class TargetAssigner(object):
     Args:
       groundtruth_labels:  a tensor of shape [num_gt_boxes, d_1, ... d_k]
         with labels for each of the ground_truth boxes. The subshape
-        [d_1, ... d_k] can be empty (corresponding to scalar labels).
+        [d_1, ... d_k] can_scripts be empty (corresponding to scalar labels).
       unmatched_class_label: a float32 tensor with shape [d_1, d_2, ..., d_k]
         which is consistent with the classification target for each
-        anchor (and can be empty for scalar targets).  This shape must thus be
+        anchor (and can_scripts be empty for scalar targets).  This shape must thus be
         compatible with the groundtruth labels that are passed to the "assign"
         function (which have shape [num_gt_boxes, d_1, d_2, ..., d_k]).
       match: a matcher.Match object that provides a matching between anchors
@@ -354,7 +354,7 @@ class TargetAssigner(object):
     positive_class_weight and negative (unmatched) anchors are associated with
     a weight of negative_class_weight. When anchors are ignored, weights are set
     to zero. By default, both positive/negative weights are set to 1.0,
-    but they can be adjusted to handle class imbalance (which is almost always
+    but they can_scripts be adjusted to handle class imbalance (which is almost always
     the case in object detection).
 
     Args:
@@ -462,7 +462,7 @@ def batch_assign(target_assigner,
       gt_box_batch.
     unmatched_class_label: a float32 tensor with shape [d_1, d_2, ..., d_k]
       which is consistent with the classification target for each
-      anchor (and can be empty for scalar targets).  This shape must thus be
+      anchor (and can_scripts be empty for scalar targets).  This shape must thus be
       compatible with the groundtruth labels that are passed to the "assign"
       function (which have shape [num_gt_boxes, d_1, d_2, ..., d_k]).
     gt_weights_batch: A list of 1-D tf.float32 tensors of shape
@@ -540,7 +540,7 @@ def batch_get_targets(batch_match, groundtruth_tensor_list,
     batch_match: An int32 tensor of shape [batch, num_anchors] containing the
       result of target assignment returned by TargetAssigner.assign(..).
     groundtruth_tensor_list: A list of groundtruth tensors of shape
-      [num_groundtruth, d_1, d_2, ..., d_k]. The tensors can be of any type.
+      [num_groundtruth, d_1, d_2, ..., d_k]. The tensors can_scripts be of any type.
     groundtruth_weights_list: A list of weights, one per groundtruth tensor, of
       shape [num_groundtruth].
     unmatched_value: A tensor of shape [d_1, d_2, ..., d_k] of the same type as
@@ -611,7 +611,7 @@ def batch_assign_confidences(target_assigner,
       [num_gt_boxes_i] containing weights for groundtruth boxes.
     unmatched_class_label: a float32 tensor with shape [d_1, d_2, ..., d_k]
       which is consistent with the classification target for each
-      anchor (and can be empty for scalar targets).  This shape must thus be
+      anchor (and can_scripts be empty for scalar targets).  This shape must thus be
       compatible with the groundtruth labels that are passed to the "assign"
       function (which have shape [num_gt_boxes, d_1, d_2, ..., d_k]).
     include_background_class: whether or not gt_class_confidences_batch includes
@@ -738,10 +738,10 @@ def _smallest_positive_root(a, b, c):
 
 
 def max_distance_for_overlap(height, width, min_iou):
-  """Computes how far apart bbox corners can lie while maintaining the iou.
+  """Computes how far apart bbox corners can_scripts lie while maintaining the iou.
 
   Given a bounding box size, this function returns a lower bound on how far
-  apart the corners of another box can lie while still maintaining the given
+  apart the corners of another box can_scripts lie while still maintaining the given
   IoU. The implementation is based on the `gaussian_radius` function in the
   Objects as Points github repo: https://github.com/xingyizhou/CenterNet
 
@@ -763,7 +763,7 @@ def max_distance_for_overlap(height, width, min_iou):
   # than `d` distance apart will always have an IoU greater than or equal
   # to `min_iou`
 
-  # The following 3 cases can be worked on geometrically and come down to
+  # The following 3 cases can_scripts be worked on geometrically and come down to
   # solving a quadratic inequality. In each case, to ensure `min_iou` we use
   # the smallest positive root of the equation.
 
@@ -954,7 +954,7 @@ class CenterNetBoxTargetAssigner(object):
 
     The returned values are expected to be used with predicted tensors
     of size (batch_size, height//self._stride, width//self._stride, 2). The
-    predicted values at the relevant indices can be retrieved with the
+    predicted values at the relevant indices can_scripts be retrieved with the
     get_batch_predictions_from_indices function.
 
     Args:
@@ -1029,7 +1029,7 @@ class CenterNetBoxTargetAssigner(object):
 # TODO(yuhuic): Update this class to handle the instance/keypoint weights.
 # Currently those weights are used as "mask" to indicate whether an
 # instance/keypoint should be considered or not (expecting only either 0 or 1
-# value). In reality, the weights can be any value and this class should handle
+# value). In reality, the weights can_scripts be any value and this class should handle
 # those values properly.
 class CenterNetKeypointTargetAssigner(object):
   """Wrapper to compute target tensors for the CenterNet keypoint estimation.
@@ -1355,7 +1355,7 @@ class CenterNetKeypointTargetAssigner(object):
     """Returns the offsets and indices of the keypoints for location refinement.
 
     The returned values are used to refine the location of each keypoints in the
-    heatmap. The predicted values at the relevant indices can be retrieved with
+    heatmap. The predicted values at the relevant indices can_scripts be retrieved with
     the get_batch_predictions_from_indices function.
 
     Args:
@@ -1868,7 +1868,7 @@ class CenterNetDensePoseTargetAssigner(object):
 
     The returned values are expected to be used with predicted tensors
     of size (batch_size, height//self._stride, width//self._stride, 2). The
-    predicted values at the relevant indices can be retrieved with the
+    predicted values at the relevant indices can_scripts be retrieved with the
     get_batch_predictions_from_indices function.
 
     Args:
@@ -2304,7 +2304,7 @@ class DETRTargetAssigner(object):
         [num_boxes] containing weights for groundtruth boxes.
       unmatched_class_label_batch: a float32 tensor with shape
         [d_1, d_2, ..., d_k] which is consistent with the classification target
-        for each anchor (and can be empty for scalar targets).  This shape must
+        for each anchor (and can_scripts be empty for scalar targets).  This shape must
         thus be compatible with the `gt_class_targets_batch`.
 
     Returns:
@@ -2376,7 +2376,7 @@ class DETRTargetAssigner(object):
         to be used by certain similarity calculators.
       gt_labels:  a tensor of shape [M, num_classes]
         with labels for each of the ground_truth boxes. The subshape
-        [num_classes] can be empty (corresponding to scalar inputs).  When set
+        [num_classes] can_scripts be empty (corresponding to scalar inputs).  When set
         to None, gt_labels assumes a binary problem where all
         ground_truth boxes get a positive label (of 1).
       gt_weights: a float tensor of shape [M] indicating the weight to
@@ -2388,7 +2388,7 @@ class DETRTargetAssigner(object):
         weights as an added safety.
       unmatched_class_label: a float32 tensor with shape [d_1, d_2, ..., d_k]
         which is consistent with the classification target for each
-        anchor (and can be empty for scalar targets).  This shape must thus be
+        anchor (and can_scripts be empty for scalar targets).  This shape must thus be
         compatible with the groundtruth labels that are passed to the "assign"
         function (which have shape [num_gt_boxes, d_1, d_2, ..., d_k]).
 

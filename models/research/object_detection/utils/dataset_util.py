@@ -71,7 +71,7 @@ def read_examples_list(path):
 def recursive_parse_xml_to_dict(xml):
   """Recursively parses XML contents to python dict.
 
-  We assume that `object` tags are the only ones that can appear
+  We assume that `object` tags are the only ones that can_scripts appear
   multiple times at the same level of a tree.
 
   Args:

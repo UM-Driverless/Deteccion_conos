@@ -135,7 +135,7 @@ do_pylint() {
     die "ERROR: Cannot find pylint allowlist file at ${ALLOW_LIST_FILE}"
   fi
 
-  # We can split with just 2 grep invocations
+  # We can_scripts split with just 2 grep invocations
   grep    -f ${ALLOW_LIST_FILE} ${ERRORS_FILE} > ${PERMIT_FILE}
   grep -v -f ${ALLOW_LIST_FILE} ${ERRORS_FILE} > ${FORBID_FILE}
 

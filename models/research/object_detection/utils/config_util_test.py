@@ -89,7 +89,7 @@ class ConfigUtilTest(tf.test.TestCase):
     return config_util.get_configs_from_pipeline_file(pipeline_config_path)
 
   def test_get_configs_from_pipeline_file(self):
-    """Test that proto configs can be read from pipeline config file."""
+    """Test that proto configs can_scripts be read from pipeline config file."""
     pipeline_config_path = os.path.join(self.get_temp_dir(), "pipeline.config")
 
     pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
@@ -133,7 +133,7 @@ class ConfigUtilTest(tf.test.TestCase):
                            configs["eval_input_configs"])
 
   def test_create_pipeline_proto_from_configs(self):
-    """Tests that proto can be reconstructed from configs dictionary."""
+    """Tests that proto can_scripts be reconstructed from configs dictionary."""
     pipeline_config_path = os.path.join(self.get_temp_dir(), "pipeline.config")
 
     pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
@@ -167,7 +167,7 @@ class ConfigUtilTest(tf.test.TestCase):
     self.assertEqual(pipeline_config, pipeline_config_reconstructed)
 
   def test_get_configs_from_multiple_files(self):
-    """Tests that proto configs can be read from multiple files."""
+    """Tests that proto configs can_scripts be read from multiple files."""
     temp_dir = self.get_temp_dir()
 
     # Write model config file.
@@ -520,7 +520,7 @@ class ConfigUtilTest(tf.test.TestCase):
     self.assertEqual(desired_num_train_steps, train_steps)
 
   def testGetNumberOfClasses(self):
-    """Tests that number of classes can be retrieved."""
+    """Tests that number of classes can_scripts be retrieved."""
     pipeline_config_path = os.path.join(self.get_temp_dir(), "pipeline.config")
     pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
     pipeline_config.model.faster_rcnn.num_classes = 20
@@ -531,7 +531,7 @@ class ConfigUtilTest(tf.test.TestCase):
     self.assertEqual(20, number_of_classes)
 
   def testNewTrainInputPath(self):
-    """Tests that train input path can be overwritten with single file."""
+    """Tests that train input path can_scripts be overwritten with single file."""
     original_train_path = ["path/to/data"]
     new_train_path = "another/path/to/data"
     pipeline_config_path = os.path.join(self.get_temp_dir(), "pipeline.config")
@@ -550,7 +550,7 @@ class ConfigUtilTest(tf.test.TestCase):
     self.assertEqual([new_train_path], final_path)
 
   def testNewTrainInputPathList(self):
-    """Tests that train input path can be overwritten with multiple files."""
+    """Tests that train input path can_scripts be overwritten with multiple files."""
     original_train_path = ["path/to/data"]
     new_train_path = ["another/path/to/data", "yet/another/path/to/data"]
     pipeline_config_path = os.path.join(self.get_temp_dir(), "pipeline.config")
@@ -569,7 +569,7 @@ class ConfigUtilTest(tf.test.TestCase):
     self.assertEqual(new_train_path, final_path)
 
   def testNewLabelMapPath(self):
-    """Tests that label map path can be overwritten in input readers."""
+    """Tests that label map path can_scripts be overwritten in input readers."""
     original_label_map_path = "path/to/original/label_map"
     new_label_map_path = "path//to/new/label_map"
     pipeline_config_path = os.path.join(self.get_temp_dir(), "pipeline.config")
@@ -613,7 +613,7 @@ class ConfigUtilTest(tf.test.TestCase):
                      configs["eval_input_configs"][0].label_map_path)
 
   def testNewMaskType(self):
-    """Tests that mask type can be overwritten in input readers."""
+    """Tests that mask type can_scripts be overwritten in input readers."""
     original_mask_type = input_reader_pb2.NUMERICAL_MASKS
     new_mask_type = input_reader_pb2.PNG_MASKS
     pipeline_config_path = os.path.join(self.get_temp_dir(), "pipeline.config")
@@ -647,7 +647,7 @@ class ConfigUtilTest(tf.test.TestCase):
     self.assertEqual(True, configs["eval_config"].use_moving_averages)
 
   def  testGetImageResizerConfig(self):
-    """Tests that number of classes can be retrieved."""
+    """Tests that number of classes can_scripts be retrieved."""
     model_config = model_pb2.DetectionModel()
     model_config.faster_rcnn.image_resizer.fixed_shape_resizer.height = 100
     model_config.faster_rcnn.image_resizer.fixed_shape_resizer.width = 300

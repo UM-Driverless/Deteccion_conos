@@ -37,7 +37,7 @@ their coordinate values range in [0, 1]
 
 To preprocess multiple images with the same operations in cases where
 nondeterministic operations are used, a preprocessor_cache.PreprocessorCache
-object can be passed into the preprocess function or individual operations.
+object can_scripts be passed into the preprocess function or individual operations.
 All nondeterministic operations except random_jitter_boxes support caching.
 E.g.
 Let tensor_dict{1,2,3,4,5} be copies of the same inputs.
@@ -235,7 +235,7 @@ def _rgb_to_grayscale(images, name=None):
   """
   with tf.name_scope(name, 'rgb_to_grayscale', [images]) as name:
     images = tf.convert_to_tensor(images, name='images')
-    # Remember original dtype to so we can convert back if needed
+    # Remember original dtype to so we can_scripts convert back if needed
     orig_dtype = images.dtype
     flt_image = tf.image.convert_image_dtype(images, tf.float32)
 
@@ -846,7 +846,7 @@ def random_rotation90(image,
                       preprocess_vars_cache=None):
   """Randomly rotates the image and detections 90 degrees counter-clockwise.
 
-  The probability of rotating the image is 50%. This can be combined with
+  The probability of rotating the image is 50%. This can_scripts be combined with
   random_horizontal_flip and random_vertical_flip to produce an output with a
   uniform distribution of the eight possible 90 degree rotation / reflection
   combinations.
@@ -1314,9 +1314,9 @@ def random_jitter_boxes(boxes, ratio=0.05, seed=None):
            Boxes are in normalized form meaning their coordinates vary
            between [0, 1].
            Each row is in the form of [ymin, xmin, ymax, xmax].
-    ratio: The ratio of the box width and height that the corners can jitter.
+    ratio: The ratio of the box width and height that the corners can_scripts jitter.
            For example if the width is 100 pixels and ratio is 0.05,
-           the corners can jitter up to 5 pixels in the x direction.
+           the corners can_scripts jitter up to 5 pixels in the x direction.
     seed: random seed.
 
   Returns:
@@ -2029,7 +2029,7 @@ def random_crop_pad_image(image,
   final output image size.  Specifically, the final image size will have a size
   in the range of min_padded_size_ratio * tf.shape(image) and
   max_padded_size_ratio * tf.shape(image). Note that these ratios are with
-  respect to the size of the original image, so we can't capture the same
+  respect to the size of the original image, so we can_scripts't capture the same
   effect easily by independently applying RandomCropImage
   followed by RandomPadImage.
 
@@ -2902,8 +2902,8 @@ def resize_to_range(image,
                     per_channel_pad_value=(0, 0, 0)):
   """Resizes an image so its dimensions are within the provided value.
 
-  The output size can be described by two cases:
-  1. If the image can be rescaled so its minimum dimension is equal to the
+  The output size can_scripts be described by two cases:
+  1. If the image can_scripts be rescaled so its minimum dimension is equal to the
      provided value without the other dimension exceeding max_dimension,
      then do so.
   2. Otherwise, resize so the largest dimension is equal to max_dimension.
@@ -4582,7 +4582,7 @@ def preprocess(tensor_dict,
   is None, no preprocessing is done.
 
   Args:
-    tensor_dict: dictionary that contains images, boxes, and can contain other
+    tensor_dict: dictionary that contains images, boxes, and can_scripts contain other
                  things as well.
                  images-> rank 4 float32 tensor contains
                           1 image -> [1, height, width, 3].

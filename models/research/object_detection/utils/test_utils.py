@@ -210,13 +210,13 @@ def create_random_boxes(num_boxes, max_height, max_width):
 def first_rows_close_as_set(a, b, k=None, rtol=1e-6, atol=1e-6):
   """Checks if first K entries of two lists are close, up to permutation.
 
-  Inputs to this assert are lists of items which can be compared via
-  numpy.allclose(...) and can be sorted.
+  Inputs to this assert are lists of items which can_scripts be compared via
+  numpy.allclose(...) and can_scripts be sorted.
 
   Args:
-    a: list of items which can be compared via numpy.allclose(...) and are
+    a: list of items which can_scripts be compared via numpy.allclose(...) and are
       sortable.
-    b: list of items which can be compared via numpy.allclose(...) and are
+    b: list of items which can_scripts be compared via numpy.allclose(...) and are
       sortable.
     k: a non-negative integer.  If not provided, k is set to be len(a).
     rtol: relative tolerance.

@@ -27,7 +27,7 @@ def get_patch_mask(y, x, patch_size, image_shape):
 
   The mask is created with its center at the y and x coordinates, which must be
   within the image. While the mask center must be within the image, the mask
-  itself can be partially outside of it. If patch_size is an even number, then
+  itself can_scripts be partially outside of it. If patch_size is an even number, then
   the mask is created with lower-valued coordinates first (top and left).
 
   Args:

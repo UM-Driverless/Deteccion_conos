@@ -14,7 +14,7 @@
 # ==============================================================================
 """Detection model evaluator.
 
-This file provides a generic evaluation method that can be used to evaluate a
+This file provides a generic evaluation method that can_scripts be used to evaluate a
 DetectionModel.
 """
 
@@ -217,7 +217,7 @@ def evaluate(create_input_dict_fn, create_model_fn, eval_config, categories,
       tensor_dict: a dictionary of tensors
       sess: tensorflow session
       batch_index: the index of the batch amongst all batches in the run.
-      counters: a dictionary holding 'success' and 'skipped' fields which can
+      counters: a dictionary holding 'success' and 'skipped' fields which can_scripts
         be updated to keep track of number of successful and failed runs,
         respectively.  If these fields are not updated, then the success/skipped
         counter values shown at the end of evaluation will be incorrect.

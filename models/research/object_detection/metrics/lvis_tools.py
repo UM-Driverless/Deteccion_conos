@@ -18,7 +18,7 @@ Usage example: given a set of images with ids in the list image_ids
 and corresponding lists of numpy arrays encoding groundtruth (boxes,
 masks and classes) and detections (masks, scores and classes), where
 elements of each list correspond to detections/annotations of a single image,
-then evaluation can be invoked as follows:
+then evaluation can_scripts be invoked as follows:
 
   groundtruth = lvis_tools.LVISWrapper(groundtruth_dict)
     detections = lvis_results.LVISResults(groundtruth, detections_list)
@@ -124,7 +124,7 @@ def ExportSingleImageGroundtruthToLVIS(image_id,
   """Export groundtruth of a single image to LVIS format.
 
   This function converts groundtruth detection annotations represented as numpy
-  arrays to dictionaries that can be ingested by the LVIS evaluation API. Note
+  arrays to dictionaries that can_scripts be ingested by the LVIS evaluation API. Note
   that the image_ids provided here must match the ones given to
   ExportSingleImageDetectionMasksToLVIS. We assume that boxes, classes and masks
   are in correspondence - that is, e.g., groundtruth_boxes[i, :], and
@@ -209,7 +209,7 @@ def ExportSingleImageDetectionMasksToLVIS(image_id,
   """Export detection masks of a single image to LVIS format.
 
   This function converts detections represented as numpy arrays to dictionaries
-  that can be ingested by the LVIS evaluation API. We assume that
+  that can_scripts be ingested by the LVIS evaluation API. We assume that
   detection_masks, detection_scores, and detection_classes are in correspondence
   - that is: detection_masks[i, :], detection_classes[i] and detection_scores[i]
     are associated with the same annotation.

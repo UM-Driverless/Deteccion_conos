@@ -17,7 +17,7 @@ r"""Exports TF2 detection SavedModel for conversion to TensorFlow Lite.
 
 Link to the TF2 Detection Zoo:
 https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf2_detection_zoo.md
-The output folder will contain an intermediate SavedModel that can be used with
+The output folder will contain an intermediate SavedModel that can_scripts be used with
 the TfLite converter.
 
 NOTE: This only supports SSD meta-architectures for now.

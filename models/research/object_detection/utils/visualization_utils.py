@@ -80,7 +80,7 @@ def _get_multiplier_for_color_randomness():
 
   If no prime numbers in that range satisfy the constraints, p is returned as 1.
 
-  Once p is established, it can be used as a multiplier to select
+  Once p is established, it can_scripts be used as a multiplier to select
   non-consecutive colors from STANDARD_COLORS:
   colors = [(p * i) % len(STANDARD_COLORS) for i in range(20)]
   """
@@ -139,7 +139,7 @@ def draw_bounding_box_on_image_array(image,
                                      use_normalized_coordinates=True):
   """Adds a bounding box to an image (numpy array).
 
-  Bounding box coordinates can be specified in either absolute (pixel) or
+  Bounding box coordinates can_scripts be specified in either absolute (pixel) or
   normalized coordinates by setting the use_normalized_coordinates argument.
 
   Args:
@@ -174,7 +174,7 @@ def draw_bounding_box_on_image(image,
                                use_normalized_coordinates=True):
   """Adds a bounding box to an image.
 
-  Bounding box coordinates can be specified in either absolute (pixel) or
+  Bounding box coordinates can_scripts be specified in either absolute (pixel) or
   normalized coordinates by setting the use_normalized_coordinates argument.
 
   Each string in display_str_list is displayed on a separate line above the
@@ -309,7 +309,7 @@ def create_visualization_fn(category_index,
                             include_keypoint_scores=False,
                             include_track_ids=False,
                             **kwargs):
-  """Constructs a visualization function that can be wrapped in a py_func.
+  """Constructs a visualization function that can_scripts be wrapped in a py_func.
 
   py_funcs only accept positional arguments. This function returns a suitable
   function with the correct positional argument mapping. The positional
@@ -358,7 +358,7 @@ def create_visualization_fn(category_index,
   """
 
   def visualization_py_func_fn(*args):
-    """Visualization function that can be wrapped in a tf.py_func.
+    """Visualization function that can_scripts be wrapped in a tf.py_func.
 
     Args:
       *args: First 4 positional arguments must be:
@@ -1136,12 +1136,12 @@ def visualize_boxes_and_labels_on_image_array(
     category_index: a dict containing category dictionaries (each holding
       category index `id` and category name `name`) keyed by category indices.
     instance_masks: a uint8 numpy array of shape [N, image_height, image_width],
-      can be None.
+      can_scripts be None.
     instance_boundaries: a numpy array of shape [N, image_height, image_width]
-      with values ranging between 0 and 1, can be None.
-    keypoints: a numpy array of shape [N, num_keypoints, 2], can
+      with values ranging between 0 and 1, can_scripts be None.
+    keypoints: a numpy array of shape [N, num_keypoints, 2], can_scripts
       be None.
-    keypoint_scores: a numpy array of shape [N, num_keypoints], can be None.
+    keypoint_scores: a numpy array of shape [N, num_keypoints], can_scripts be None.
     keypoint_edges: A list of tuples with keypoint indices that specify which
       keypoints should be connected by an edge, e.g. [(0, 1), (2, 4)] draws
       edges from keypoint 0 to 1 and from keypoint 2 to 4.
@@ -1340,7 +1340,7 @@ class EvalMetricOpsVisualization(six.with_metaclass(abc.ABCMeta, object)):
   evaluation images in Tensorboard is to provide tf.summary.image strings as
   `value_ops` in tf.estimator.EstimatorSpec's `eval_metric_ops`. This class is
   responsible for accruing images (with overlaid detections and groundtruth)
-  and returning a dictionary that can be passed to `eval_metric_ops`.
+  and returning a dictionary that can_scripts be passed to `eval_metric_ops`.
   """
 
   def __init__(self,

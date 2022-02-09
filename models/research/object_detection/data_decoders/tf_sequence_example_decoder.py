@@ -94,7 +94,7 @@ class TfSequenceExampleDecoder(data_decoder.DataDecoder):
   """Tensorflow Sequence Example proto decoder for Object Detection.
 
   Sequence examples contain sequences of images which share common
-  features. The structure of TfSequenceExamples can be seen in
+  features. The structure of TfSequenceExamples can_scripts be seen in
   dataset_tools/seq_example_util.py
 
   For the TFODAPI, the following fields are required:
@@ -103,7 +103,7 @@ class TfSequenceExampleDecoder(data_decoder.DataDecoder):
       'image/height'
       'image/width'
 
-    Features with an entry for each image, where bounding box features can
+    Features with an entry for each image, where bounding box features can_scripts
     be empty lists if the image does not contain any objects:
       'image/encoded'
       'image/source_id'
@@ -113,7 +113,7 @@ class TfSequenceExampleDecoder(data_decoder.DataDecoder):
       'region/bbox/ymax'
       'region/label/string'
 
-  Optionally, the sequence example can include context_features for use in
+  Optionally, the sequence example can_scripts include context_features for use in
   Context R-CNN (see https://arxiv.org/abs/1912.03538):
     'image/context_features'
     'image/context_feature_length'

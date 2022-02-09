@@ -1281,7 +1281,7 @@ class FasterRCNNMetaArchTestBase(test_case.TestCase, parameterized.TestCase):
                                    [1, 1, 1],
                                    [1, 1, 1],
                                    [0, 0, 0]]]
-    # Note that a single anchor can be used for multiple detections (predictions
+    # Note that a single anchor can_scripts be used for multiple detections (predictions
     # are made independently per class).
     expected_anchor_indices = [[0, 1, 2, 0, 1],
                                [0, 1, 0, 1]]
