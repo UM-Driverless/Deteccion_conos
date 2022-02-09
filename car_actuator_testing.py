@@ -1,5 +1,6 @@
 from connection_utils.car_comunication import ConnectionManager
 # from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
+# from cone_detection.cone_segmentation import ConeDetector
 from controller_agent.testing_agent import AgentActuatorsTest as Agent
 from visualization_utils.visualizer_test_actuators import VisualizeActuators as Visualizer
 from visualization_utils.logger import Logger
@@ -22,7 +23,7 @@ if __name__ == '__main__':
     # detector = ConeDetector()
 
     # Inicializar conexiones
-    connect_mng = ConnectionManager(logger)
+    connect_mng = ConnectionManager(logger=logger)
 
     # Inicializar Agente (controlador)
     agent = Agent()
@@ -33,7 +34,6 @@ if __name__ == '__main__':
     try:
         while True:
             start_time = time.time()
-
             # Pedir datos al simulador o al coche
             image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear = connect_mng.get_data(verbose=1)
 
@@ -49,7 +49,7 @@ if __name__ == '__main__':
             # 6 -> downgear
 
             # Seleccionar acciones
-            throttle, brake, steer, clutch, gear = agent.get_action([1, 2, 3, 4])
+            throttle, brake, steer, clutch, gear, upgear, downgear = agent.get_action([1, 2, 3, 4])
 
             # resize actions
             throttle *= 0.8
@@ -62,7 +62,8 @@ if __name__ == '__main__':
                                      brake=brake,
                                      steer=steer,
                                      clutch=clutch,
-                                     gear=gear)
+                                     upgear=upgear,
+                                     downgear=downgear)
 
             print("FPS: ", 1.0 / (time.time() - start_time))
 

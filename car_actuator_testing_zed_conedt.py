@@ -18,7 +18,7 @@ if __name__ == '__main__':
     detector = ConeDetector("Net_7_FP32/")
 
     # Inicializar conexiones
-    connect_mng = ConnectionManager(logger)
+    connect_mng = ConnectionManager(logger=logger)
 
     # Inicializar Agente (controlador)
     agent = Agent()

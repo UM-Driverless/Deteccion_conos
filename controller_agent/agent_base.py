@@ -2,6 +2,9 @@ from abc import ABCMeta, abstractmethod
 
 
 class AgentInterface(object, metaclass=ABCMeta):
+    def __init__(self, logger=None):
+        self.logger = logger
+
     @abstractmethod
     def get_action(self, ref_point, img_center):
         """

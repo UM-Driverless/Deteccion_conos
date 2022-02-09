@@ -4,7 +4,9 @@ import numpy as np
 import pygame
 
 class Agent(AgentInterface):
-    def __init__(self, im_width=1295, im_height=638):
+    def __init__(self, im_width=1295, im_height=638, logger=None):
+        super().__init__(logger=logger)
+
         # external control
         self.visualizer = visualize_pygame(im_width, im_height)
         self.mouse_init = (0., 0.)  # pygame.mouse.get_pos()

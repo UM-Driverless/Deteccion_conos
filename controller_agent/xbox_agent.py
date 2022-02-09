@@ -9,8 +9,8 @@ class AgentXboxController(AgentInterface):
 
     Genrates a sin  wave to send to the actuators
     """
-    def __init__(self):
-        super(AgentXboxController).__init__()
+    def __init__(self, logger):
+        super(AgentXboxController).__init__(logger=logger)
 
         self.gear = 0
         self.max_gear = 4
@@ -97,13 +97,18 @@ class AgentXboxController(AgentInterface):
         pygame.draw.rect(self.screen, self.my_square_color_sel, self.mag_square_sel)
         pygame.draw.rect(self.screen, self.my_square_color_star, self.mag_square_star)
 
+        upgear = False
+        downgear = False
+
         for event in pygame.event.get():
             if event.type == locals.JOYBUTTONDOWN:
                 if event.button == self.A_BUTTON:
                     self.my_square_color_a = self.colors[5]
+                    upgear = self.gear < self.max_gear
                     self.gear = np.clip(self.gear + 1, self.min_gear, self.max_gear)
                 if event.button == self.X_BUTTON:
                     self.my_square_color_x = self.colors[5]
+                    downgear = self.gear > self.min_gear
                     self.gear = np.clip(self.gear - 1, self.min_gear, self.max_gear)
                 if event.button == self.Y_BUTTON:
                     self.my_square_color_y = self.colors[5]
@@ -158,4 +163,4 @@ class AgentXboxController(AgentInterface):
 
                 pygame.display.update()
                 self.clock.tick(100)
-        return self.throttle, self.brake, self.steer, self.clutch, self.gear
+        return self.throttle, self.brake, self.steer, self.clutch, self.gear, upgear, downgear

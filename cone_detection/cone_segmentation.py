@@ -11,9 +11,12 @@ import cv2
 
 class ConeDetector(ConeDetectorInterface):
 
-    def __init__(self, checkpoint_path="/home/shernandez/PycharmProjects/UMotorsport/v1/UnityTrainerPy-master/PyUMotorsport_v2/ObjectDetectionSegmentation/DetectionData/SNet_3L_saved_model_FP32"):
+    def __init__(self, checkpoint_path="/home/shernandez/PycharmProjects/UMotorsport/v1/UnityTrainerPy-master/PyUMotorsport_v2/ObjectDetectionSegmentation/DetectionData/SNet_3L_saved_model_FP32", logger=None):
         self.saved_model_loaded = tf.saved_model.load(checkpoint_path, tags=[tag_constants.SERVING])
         self.detection_model = self.saved_model_loaded.signatures['serving_default']
+
+        self.logger = logger
+
     def saved_model(self):
         return self.saved_model_loaded, self.detection_model
 

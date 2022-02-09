@@ -22,10 +22,10 @@ if __name__ == '__main__':
     # detector = ConeDetector()
 
     # Inicializar conexiones
-    connect_mng = ConnectionManager(logger)
+    connect_mng = ConnectionManager(logger=logger)
 
     # Inicializar Agente (controlador)
-    agent = Agent()
+    agent = Agent(logger=logger)
 
     # Visualización de datos
     visualizer = Visualizer(max_data_to_store=10000)
@@ -49,14 +49,16 @@ if __name__ == '__main__':
             # 6 -> downgear
 
             # Seleccionar acciones
-            throttle, brake, steer, clutch, gear = agent.get_action([0.9])
+            throttle, brake, steer, clutch, gear, upgear, downgear = agent.get_action([0.9])
 
             # Enviar acciones
             connect_mng.send_actions(throttle=throttle,
                                      brake=brake,
                                      steer=steer,
                                      clutch=clutch,
-                                     gear=gear)
+                                     upgear=upgear,
+                                     downgear=downgear
+                                     )
 
             print("FPS: ", 1.0 / (time.time() - start_time))
 

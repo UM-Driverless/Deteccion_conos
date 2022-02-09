@@ -6,7 +6,7 @@ import math
 
 class CAN(CANInterface):
     def __init__(self, logger=None):
-        super(CAN).__init__()
+        super().__init__()
         self.logger = logger
         self.init_can()
         self.n_good_messages = 0  # TODO: variable para depurar la recepción de mensajes CAN. Eliminar cuando ya este testeado
@@ -163,7 +163,7 @@ class CAN(CANInterface):
 
 class CAN_dummy(CANInterface):
     def __init__(self, logger=None):
-        super(CAN).__init__()
+        super().__init__()
         self.logger = logger
         self.init_can()
         self.n_good_messages = 0  # TODO: variable para depurar la recepción de mensajes CAN. Eliminar cuando ya este testeado
@@ -199,7 +199,7 @@ class CAN_dummy(CANInterface):
 
         return message
 
-    def send_action_msg(self, throttle, brake, steer, clutch, gear):
+    def send_action_msg(self, throttle, brake, steer, clutch, upgear, downgear):
         pass
 
     def send_status_msg(self):

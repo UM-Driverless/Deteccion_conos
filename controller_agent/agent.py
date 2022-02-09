@@ -6,13 +6,26 @@ import numpy as np
 
 
 class Agent(AgentInterface):
-    def __init__(self):
-        self.initializeTrackbarsPID([4, 7, 15])
-        self.pid = simple_pid.PID
+    def __init__(self, logger, target_speed=20.):
+        super().__init__(logger=logger)
+
+        self.initializeTrackbarsPID([4, 7, 15, 700, 300, 500, 10, 25, 40])
+        self.pid_steer = simple_pid.PID
+        self.pid_throttle = simple_pid.PID
+        self.pid_brake = simple_pid.PID
+
         self.cone_processing = ConeProcessing()
+
+        self.max_gear = 4
+        self.min_gear = 0
+        self.upgear_rpm = 5000.
+        self.downgear_rpm = 2000.
 
         # Controla a que velocidad se suelta el embrague por completo
         self.clutch_max_speed = 10.
+        self.clutch_max_rpm = 2000.
+
+        self.target_speed = target_speed
 
     def initializeTrackbarsPID(self, intialTracbarVals):
         cv2.namedWindow("Trackbars PID")
@@ -20,13 +33,27 @@ class Agent(AgentInterface):
         cv2.createTrackbar("Kp/1000", "Trackbars PID", intialTracbarVals[0], 500, self.nothing)
         cv2.createTrackbar("Ki/1000", "Trackbars PID", intialTracbarVals[1], 500, self.nothing)
         cv2.createTrackbar("Kd/1000", "Trackbars PID", intialTracbarVals[2], 500, self.nothing)
+        cv2.createTrackbar("Throttle Kp/100", "Trackbars PID", intialTracbarVals[3], 1000, self.nothing)
+        cv2.createTrackbar("Throttle Ki/100", "Trackbars PID", intialTracbarVals[4], 1000, self.nothing)
+        cv2.createTrackbar("Throttle Kd/100", "Trackbars PID", intialTracbarVals[5], 1000, self.nothing)
+        cv2.createTrackbar("Brake Kp/100", "Trackbars PID", intialTracbarVals[6], 1000, self.nothing)
+        cv2.createTrackbar("Brake Ki/1000", "Trackbars PID", intialTracbarVals[7], 1000, self.nothing)
+        cv2.createTrackbar("Brake Kd/1000", "Trackbars PID", intialTracbarVals[8], 1000, self.nothing)
+
 
     def valTrackbarsPID(self):
+
         kp = cv2.getTrackbarPos("Kp/1000", "Trackbars PID") / 1000
         ki = cv2.getTrackbarPos("Ki/1000", "Trackbars PID") / 1000
         kd = cv2.getTrackbarPos("Kd/1000", "Trackbars PID") / 1000
+        throttle_kp = cv2.getTrackbarPos("Throttle Kp/100", "Trackbars PID") / 1000
+        throttle_ki = cv2.getTrackbarPos("Throttle Ki/100", "Trackbars PID") / 1000
+        throttle_kd = cv2.getTrackbarPos("Throttle Kd/100", "Trackbars PID") / 1000
+        brake_kp = cv2.getTrackbarPos("Brake Kp/100", "Trackbars PID") / 1000
+        brake_ki = cv2.getTrackbarPos("Brake Ki/1000", "Trackbars PID") / 1000
+        brake_kd = cv2.getTrackbarPos("Brake Kd/1000", "Trackbars PID") / 1000
 
-        return kp, ki, kd
+        return kp, ki, kd, throttle_kp, throttle_ki, throttle_kd, brake_kp, brake_ki, brake_kd
 
     def nothing(self, x):
         pass
@@ -53,7 +80,7 @@ class Agent(AgentInterface):
     def horinzontal_control(self, ref_point, img_center):
         turn_point = img_center - ref_point
         val = self.valTrackbarsPID()
-        pid = self.pid(Kp=val[0], Ki=val[1], Kd=val[2], setpoint=0, output_limits=(-1., 1.))
+        pid = self.pid_steer(Kp=val[0], Ki=val[1], Kd=val[2], setpoint=0, output_limits=(-1., 1.))
 
         return pid(turn_point)
 
@@ -63,13 +90,31 @@ class Agent(AgentInterface):
         n_color_cones = len(blue_center) + len(yell_center)
         n_oran_cones = len(oran_left_center) + len(oran_rigth_center)
 
+        # if n_color_cones > n_oran_cones:
+        #     throttle = 1.0
+        #     brake = 0.0
+        # else:
+        #     throttle = 0.0
+        #     brake = 1.0
+
+        val = self.valTrackbarsPID()
+        pid_throttle = self.pid_throttle(Kp=val[3], Ki=val[4], Kd=val[5], setpoint=0, output_limits=(0., 1.))
+        pid_brake = self.pid_brake(Kp=val[6], Ki=val[7], Kd=val[8], setpoint=0, output_limits=(0., 1.))
+
         if n_color_cones > n_oran_cones:
-            throttle = 1.0
-            brake = 0.0
+            target_speed = self.target_speed
+
+            ref_point = speed - target_speed
+            throttle = pid_throttle(ref_point)
+            brake = 0.
         else:
-            throttle = 0.0
-            brake = 1.0
-        clutch = self.clutch_func(speed, throttle, brake)
+            throttle = 0.
+            ref_point = - speed
+            brake = pid_brake(ref_point)
+
+        print(throttle, brake, ref_point, val[3], val[4], val[5], val[6], val[7], val[8])
+
+        clutch = self.clutch_func(speed, throttle, brake, rpm)
 
         upgear, downgear = self.change_gear(gear, rpm, throttle)
 
@@ -79,15 +124,15 @@ class Agent(AgentInterface):
         upgear = 0.
         downgear = 0.
 
-        if rpm > 4000 and gear >= 0 and gear < 4:
+        if rpm > self.upgear_rpm and gear >= self.min_gear and gear < self.max_gear:
             upgear = 1.
-        elif rpm < 1000. and gear > 0 and gear <= 4 and throttle <= 0.1:
+        elif rpm < self.downgear_rpm and gear > self.min_gear and gear <= self.max_gear and throttle <= 0.1:
             downgear = 1.
         return upgear, downgear
 
-    def clutch_func(self, speed, throttle, brake):
+    def clutch_func(self, speed, throttle, brake, rpm):
         clutch = 0.
-        if speed < self.clutch_max_speed:
+        if speed < self.clutch_max_speed and rpm < self.clutch_max_rpm:
             speed = speed/self.clutch_max_speed
             if speed < 0.1:
                 if throttle > 0.25:
@@ -97,5 +142,8 @@ class Agent(AgentInterface):
                 else:
                     clutch = 1.0
             else:
-                clutch = (0.2 / speed) - 0.2
+                rpm = rpm / self.clutch_max_rpm
+                clutch = (0.2 / rpm) - 0.2
+
+
         return clutch

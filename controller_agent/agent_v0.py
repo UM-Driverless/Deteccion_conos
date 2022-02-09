@@ -6,7 +6,9 @@ import numpy as np
 
 
 class Agent(AgentInterface):
-    def __init__(self):
+    def __init__(self, logger=None):
+        super().__init__(logger=logger)
+
         self.initializeTrackbarsPID([4, 7, 15])
         self.pid = simple_pid.PID
         self.cone_processing = ConeProcessing()

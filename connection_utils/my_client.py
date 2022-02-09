@@ -10,7 +10,9 @@ import numpy as np
 
 
 class ConnectionManager(ComunicationInterface):
-    def __init__(self, ip=None, port=12345):
+    def __init__(self, ip=None, port=12345, logger=None):
+
+        self.logger = logger
         self.mySocket = self._bind2server(ip, port)
         self.msg_size, self.channels, self.parameters_size = 8, 3, 29
         self.mySocket.sendall("ready".encode())

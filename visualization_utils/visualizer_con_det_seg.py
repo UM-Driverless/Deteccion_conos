@@ -150,7 +150,7 @@ class Visualizer:
         steer = np.int((steer + 1) / 2 * 41)
         throttle = np.int(np.clip(throttle, 0.0, 1.0) * 41)
         brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
-        brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
+        # brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
         clutch = np.int(np.clip(clutch, 0.0, 1.0) * 41)
 
 

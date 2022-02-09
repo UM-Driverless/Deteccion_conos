@@ -9,8 +9,8 @@ class AgentActuatorsTest(AgentInterface):
 
     Genrates a sin  wave to send to the actuators
     """
-    def __init__(self):
-        super(AgentActuatorsTest).__init__()
+    def __init__(self, logger=None):
+        super().__init__(logger=logger)
 
         # Generamos una secuencia de tiempos
         self.time = np.arange(0, 6.28, 0.1)
@@ -84,6 +84,9 @@ class AgentActuatorsTest(AgentInterface):
         :param program: ([int]) List with the selected actuators to try.
         :return: throttle, brake, steer, clutch, upgear, downgear
         """
+        upgear = False
+        downgear = False
+
         if 1 in program:  # steer checking
             self.steer = self._get_sin_values()
         if 2 in program:  # throttle checking
@@ -93,8 +96,10 @@ class AgentActuatorsTest(AgentInterface):
         if 4 in program:  # clutch checking
             self.clutch = self._get_sin_values(True)
         if 5 in program:  # upgear checking
+            upgear = self.gear < self.max_gear
             self.gear = np.clip(self.gear + 1, self.min_gear, self.max_gear)
         if 6 in program:  # downgear checking
+            downgear = self.gear > self.min_gear
             self.gear = np.clip(self.gear -1, self.min_gear, self.max_gear)
 
-        return self.throttle, self.brake, self.steer, self.clutch, self.gear
+        return self.throttle, self.brake, self.steer, self.clutch, self.gear, upgear, downgear

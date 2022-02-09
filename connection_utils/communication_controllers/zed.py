@@ -7,7 +7,7 @@ class Camera(CameraInterface):
     Here we can initialize the camera, get the current frame, depth and normal maps.
     """
     def __init__(self, logger=None):
-        super(Camera).__init__()
+        super().__init__()
         self.logger = logger
         self.init_camera()
 
