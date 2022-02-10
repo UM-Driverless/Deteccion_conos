@@ -5,7 +5,7 @@ import simple_pid
 import numpy as np
 
 
-class Agent(AgentInterface):
+class AgentAcceleration(AgentInterface):
     def __init__(self, logger, target_speed=20.):
         super().__init__(logger=logger)
 
@@ -16,6 +16,7 @@ class Agent(AgentInterface):
 
         self.cone_processing = ConeProcessing()
 
+        self.gear = 0.
         self.max_gear = 4
         self.min_gear = 0
         self.upgear_rpm = 5000.
@@ -69,9 +70,9 @@ class Agent(AgentInterface):
         img_center = int(orig_im_shape[2] / 2)
         steer = self.horinzontal_control(ref_point=data[-1], img_center=img_center)
 
-        throttle, brake, clutch, upgear, downgear = self.longitudinal_control(cenital_cones=data[1], speed=speed,  gear=gear, rpm=rpm)
+        throttle, brake, clutch, upgear, downgear, gear = self.longitudinal_control(cenital_cones=data[1], speed=speed,  gear=gear, rpm=rpm)
 
-        return [throttle, brake, steer, clutch, upgear, downgear], data
+        return [throttle, brake, steer, clutch, upgear, downgear, gear], data
 
 
     def create_cone_map(self, centers, labels, eagle_img, image_shape):
@@ -116,9 +117,9 @@ class Agent(AgentInterface):
 
         clutch = self.clutch_func(speed, throttle, brake, rpm)
 
-        upgear, downgear = self.change_gear(gear, rpm, throttle)
+        upgear, downgear, gear = self.change_gear(gear, rpm, throttle)
 
-        return throttle, brake, clutch, upgear, downgear
+        return throttle, brake, clutch, upgear, downgear, gear
 
     def change_gear(self,  gear, rpm, throttle):
         upgear = 0.
@@ -126,9 +127,13 @@ class Agent(AgentInterface):
 
         if rpm > self.upgear_rpm and gear >= self.min_gear and gear < self.max_gear:
             upgear = 1.
+            if self.gear < self.max_gear:
+                self.gear +=1
         elif rpm < self.downgear_rpm and gear > self.min_gear and gear <= self.max_gear and throttle <= 0.1:
             downgear = 1.
-        return upgear, downgear
+            if self.gear > self.min_gear:
+                self.gear -= 1
+        return upgear, downgear, self.gear
 
     def clutch_func(self, speed, throttle, brake, rpm):
         clutch = 0.
@@ -144,6 +149,74 @@ class Agent(AgentInterface):
             else:
                 rpm = rpm / self.clutch_max_rpm
                 clutch = (0.2 / rpm) - 0.2
+
+
+        return clutch
+
+class AgentTestClutchThrottle(AgentAcceleration):
+    def __init__(self, logger, target_speed=10.):
+        super().__init__(logger=logger, target_speed=target_speed)
+        # Controla a que velocidad se suelta el embrague por completo
+        self.clutch_max_speed = 10.
+        self.clutch_max_rpm = 2000.
+
+        self.iter_arranque = 0.
+        self.max_iter_arranque = 10.
+        self.clutch_max_rpm_arranque = 3000.
+
+
+    def get_action(self, detections, segmentations, speed, gear, rpm, orig_im_shape=(1, 180, 320, 3)):
+        """
+        Calcular los valores de control
+        """
+        steer = 0.
+
+        throttle, brake, clutch, upgear, downgear, gear = self.longitudinal_control(None, speed=speed,  gear=gear, rpm=rpm)
+
+        return [throttle, brake, steer, clutch, upgear, downgear, gear], None
+
+
+    def longitudinal_control(self, cenital_cones, speed,  gear, rpm):
+        val = self.valTrackbarsPID()
+
+
+        if self.iter_arranque  > self.max_iter_arranque:
+            brake = 0.9
+        else:
+            brake = 0.
+        throttle = self.throttle_func(speed, brake, rpm)
+
+        clutch = self.clutch_func(speed, throttle, brake, rpm)
+
+        upgear, downgear, gear = self.change_gear(gear, rpm, throttle)
+
+        return throttle, brake, clutch, upgear, downgear, gear
+
+    def throttle_func(self, speed, brake, rpm):
+        if rpm < self.clutch_max_rpm_arranque:
+            if brake < 0.1:
+                rpm = (rpm / self.clutch_max_rpm_arranque) * 10 - 10
+                throttle = -1 / (rpm) - 0.1
+            else:
+                throttle = 0.
+        else:
+            throttle = 0.
+        return throttle
+
+    def clutch_func(self, speed, throttle, brake, rpm):
+        clutch = 0.
+        if speed < self.clutch_max_speed and rpm < self.clutch_max_rpm_arranque:
+            speed = speed/self.clutch_max_speed
+            if speed < 0.1:
+                if throttle > 0.25:
+                    clutch = 0.7
+                elif brake > 0.1:
+                    clutch = 0.9
+                else:
+                    clutch = 0.9
+            else:
+                rpm = rpm / self.clutch_max_rpm_arranque
+                clutch = np.clip((0.2 / rpm) - 0.2, 0., 0.9)
 
 
         return clutch

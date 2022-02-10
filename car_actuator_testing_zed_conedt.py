@@ -15,7 +15,7 @@ if __name__ == '__main__':
     init_message = "actuator_testing.py"
     logger = Logger(logger_path, init_message)
     # Inicializar detector de conos
-    detector = ConeDetector("Net_7_FP32/")
+    detector = ConeDetector(checkpoint_path="Net_7_FP32/", logger=logger)
 
     # Inicializar conexiones
     connect_mng = ConnectionManager(logger=logger)

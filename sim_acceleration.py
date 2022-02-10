@@ -1,5 +1,5 @@
 from connection_utils.my_client import ConnectionManager
-from controller_agent.agent import Agent
+from controller_agent.agent import AgentAcceleration
 from cone_detection.cone_segmentation import ConeDetector
 from visualization_utils.visualizer_con_det_seg import Visualizer
 from visualization_utils.logger import Logger
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     connect_mng = ConnectionManager(logger=logger)
 
     # Inicializar Agente (controlador)
-    agent = Agent(logger=logger, target_speed=60.)
+    agent = AgentAcceleration(logger=logger, target_speed=60.)
     # Visualización de datos
     visualizer = Visualizer()
 

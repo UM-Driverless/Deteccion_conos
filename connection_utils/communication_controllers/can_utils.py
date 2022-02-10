@@ -1,6 +1,6 @@
 from connection_utils.communication_controllers.can_interface import CANInterface
-import can
-from can_scripts import can_constants
+import can_scripts
+from globals import can_constants
 import math
 
 
@@ -15,14 +15,14 @@ class CAN(CANInterface):
         """
         Initialize CAN.
         """
-        self.bus = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
+        self.bus = can_scripts.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
         self.logger.write_can_log(self.bus.channel_info)
 
         ## Implementamos la clase abstracta Listener (https://python-can.readthedocs.io/en/master/listeners.html)
         # De momento usamos BufferedReader, que es una implementación por defecto de la librería, con un buffer de mensajes. Si necesitamos que sea async podemos
         # usar AsyncBufferedReader.
-        self.buffer = can.BufferedReader()
-        self.notifier = can.Notifier(self.bus, [self.buffer])
+        self.buffer = can_scripts.BufferedReader()
+        self.notifier = can_scripts.Notifier(self.bus, [self.buffer])
         self.logger.write_can_log("CAN listener connected")
 
     def get_sensors_data(self):
@@ -87,14 +87,14 @@ class CAN(CANInterface):
         #############################################################
         #    Sen CAN message
         #############################################################
-        msg = can.Message(arbitration_id=can_constants.TRAJECTORY_ACT, data=data, extended_id=False)
+        msg = can_scripts.Message(arbitration_id=can_constants.TRAJECTORY_ACT, data=data, extended_id=False)
         self.logger.write_can_log("MSG: " + str(msg))
 
         # self.logger.write_can_log("MSG: " + msg.__str__())
 
         try:
             self.bus.send(msg)
-        except can.CanError as e:
+        except can_scripts.CanError as e:
             error = e
             if hasattr(e, 'message'):
                 error = e.message

@@ -1,5 +1,5 @@
-from connection_utils.car_comunication import ConnectionManager
-# from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
+# from connection_utils.car_comunication import ConnectionManager
+from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
 # from cone_detection.cone_segmentation import ConeDetector
 from controller_agent.testing_agent import AgentActuatorsTest as Agent
 from visualization_utils.visualizer_test_actuators import VisualizeActuators as Visualizer
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     connect_mng = ConnectionManager(logger=logger)
 
     # Inicializar Agente (controlador)
-    agent = Agent()
+    agent = Agent(logger=logger)
 
     # Visualización de datos
     visualizer = Visualizer(max_data_to_store=10000)
@@ -35,7 +35,7 @@ if __name__ == '__main__':
         while True:
             start_time = time.time()
             # Pedir datos al simulador o al coche
-            image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear = connect_mng.get_data(verbose=1)
+            image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
 
             # Detectar conos
             # detections, y_hat = detector.detect_cones(image)

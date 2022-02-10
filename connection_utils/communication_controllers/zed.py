@@ -46,3 +46,4 @@ class Camera(CameraInterface):
         self.cam.retrieve_image(mat_img)
         img = mat_img.get_data()
         return img
+
