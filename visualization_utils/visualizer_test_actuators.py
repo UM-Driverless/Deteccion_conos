@@ -21,6 +21,7 @@ class VisualizeActuators(VisualizeInterface):
         self.steer_historial = []
         self.clutch_historial = []
         self.gear_historial = []
+        self.rpm_historial = []
 
         self.in_gear_historial = []
         self.in_speed_historial = []
@@ -28,16 +29,18 @@ class VisualizeActuators(VisualizeInterface):
         self.in_brake_historial = []
         self.in_steer_historial = []
         self.in_clutch_historial = []
+        self.in_rpm_historial = []
 
     def visualize(self, can_data, agent_data, print_can_data=True, print_agent_actions=True, real_time=False):
-        [in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear] = can_data
-        [throttle, brake, steer, clutch, gear] = agent_data
+        [in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm] = can_data
+        [throttle, brake, steer, clutch, gear, rpm] = agent_data
 
         self.throttle_historial.append(throttle)
         self.brake_historial.append(brake)
         self.steer_historial.append(steer)
         self.clutch_historial.append(clutch)
         self.gear_historial.append(gear)
+        self.rpm_historial.append(rpm)
 
         self.in_gear_historial.append(in_gear)
         self.in_speed_historial.append(in_speed)
@@ -46,6 +49,7 @@ class VisualizeActuators(VisualizeInterface):
         self.in_brake_historial.append(in_brake)
         self.in_steer_historial.append(in_steer)
         self.in_clutch_historial.append(in_clutch)
+        self.in_rpm_historial.append(in_rpm)
 
         if real_time:
             plt.clf()
@@ -65,29 +69,33 @@ class VisualizeActuators(VisualizeInterface):
 
         fig = plt.figure(2)
 
-        ax = fig.add_subplot(3, 3, 1)
+        ax = fig.add_subplot(3, 4, 1)
         ax.plot(lin_space, self.in_throttle_historial)
         ax.set(xlabel='steps', ylabel='force', title='CAN throttle')
 
-        ax = fig.add_subplot(3, 3, 2)
+        ax = fig.add_subplot(3, 4, 2)
         ax.plot(lin_space, self.in_brake_historial)
         ax.set(xlabel='steps', ylabel='force', title='CAN brake')
 
-        ax = fig.add_subplot(3, 3, 3)
+        ax = fig.add_subplot(3, 4, 3)
         ax.plot(lin_space, self.in_steer_historial)
         ax.set(xlabel='steps', ylabel='force', title='CAN steer')
 
-        ax = fig.add_subplot(3, 3, 4)
+        ax = fig.add_subplot(3, 4, 4)
         ax.plot(lin_space, self.in_clutch_historial)
         ax.set(xlabel='steps', ylabel='force', title='CAN clutch')
 
-        ax = fig.add_subplot(3, 3, 5)
+        ax = fig.add_subplot(3, 4, 5)
         ax.plot(lin_space, self.in_gear_historial)
         ax.set(xlabel='steps', ylabel='force', title='CAN gear')
 
-        ax = fig.add_subplot(3, 3, 6)
+        ax = fig.add_subplot(3, 4, 6)
         ax.plot(lin_space, self.in_speed_historial)
         ax.set(xlabel='steps', ylabel='force', title='CAN speed')
+
+        ax = fig.add_subplot(3, 4, 7)
+        ax.plot(lin_space, self.in_rpm_historial)
+        ax.set(xlabel='steps', ylabel='rpm', title='CAN rpm')
 
     def print_agent_data(self):
         lin_space = np.linspace(0, len(self.throttle_historial), num=len(self.throttle_historial))

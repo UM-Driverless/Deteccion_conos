@@ -31,7 +31,7 @@ if __name__ == '__main__':
             start_time = time.time()
 
             # Pedir datos al simulador o al coche
-            image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear = connect_mng.get_data(verbose=1)
+            image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
 
             # Detectar conos
             # detections, y_hat = detector.detect_cones(image)
@@ -64,8 +64,8 @@ if __name__ == '__main__':
             print("FPS: ", 1.0 / (time.time() - start_time))
 
             if verbose == 1:
-                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
-                                     [throttle, brake, steer, clutch, gear],
+                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
+                                     [throttle, brake, steer, clutch, gear, in_rpm],
                                      print_can_data=True,
                                      print_agent_actions=True,
                                      real_time=True)
@@ -73,8 +73,8 @@ if __name__ == '__main__':
     finally:
         # Do whatever needed where the program ends or fails
         # connect_mng.close_connection()
-        visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
-                             [throttle, brake, steer, clutch, gear],
+        visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
+                             [throttle, brake, steer, clutch, gear, in_rpm],
                              print_can_data=True,
                              print_agent_actions=True,
                              real_time=False)

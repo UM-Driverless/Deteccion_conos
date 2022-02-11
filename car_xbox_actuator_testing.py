@@ -1,5 +1,5 @@
-# from connection_utils.car_comunication import ConnectionManager
-from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
+from connection_utils.car_comunication import ConnectionManager
+# from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
 from controller_agent.xbox_agent import AgentXboxController as Agent
 from visualization_utils.visualizer_test_actuators import VisualizeActuators as Visualizer
 from visualization_utils.logger import Logger
@@ -13,7 +13,7 @@ import time
 # # os.environ["CUDA_DEVICE_ORDER"] = '0'
 
 if __name__ == '__main__':
-    verbose = 1
+    verbose = 0
 
     logger_path = os.path.join(os.getcwd(), "logs")
     init_message = "actuator_testing.py"
@@ -28,14 +28,14 @@ if __name__ == '__main__':
     agent = Agent(logger=logger)
 
     # Visualización de datos
-    visualizer = Visualizer(max_data_to_store=10000)
+    visualizer = Visualizer(max_data_to_store=1000)
 
     try:
         while True:
             start_time = time.time()
 
             # Pedir datos al simulador o al coche
-            image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear = connect_mng.get_data(verbose=1)
+            image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
 
             # Detectar conos
             # detections, y_hat = detector.detect_cones(image)
@@ -61,10 +61,10 @@ if __name__ == '__main__':
                                      )
 
             print("FPS: ", 1.0 / (time.time() - start_time))
-
+            print('throttle: ', throttle, 'brake: ', brake, 'steer: ', steer, 'clutch: ', clutch, 'gear: ', gear)
             if verbose == 1:
-                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
-                                     [throttle, brake, steer, clutch, gear],
+                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
+                                     [throttle, brake, steer, clutch, gear, in_rpm],
                                      print_can_data=False,
                                      print_agent_actions=True,
                                      real_time=True)
@@ -72,8 +72,8 @@ if __name__ == '__main__':
     finally:
         # Do whatever needed where the program ends or fails
         # connect_mng.close_connection()
-        visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
-                             [throttle, brake, steer, clutch, gear],
+        visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
+                             [throttle, brake, steer, clutch, gear, in_rpm],
                              print_can_data=True,
                              print_agent_actions=True,
                              real_time=False)

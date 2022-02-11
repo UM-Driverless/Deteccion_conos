@@ -1,4 +1,4 @@
-from connection_utils.my_client import ConnectionManager
+# from connection_utils.my_client import ConnectionManager
 from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
 from controller_agent.agent import AgentTestClutchThrottle
 from cone_detection.cone_segmentation import ConeDetector
@@ -53,9 +53,9 @@ if __name__ == '__main__':
             fps = 1.0 / (time.time() - start_time)
 
             if verbose==1:
-                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
-                                     [throttle, brake, steer, clutch, gear],
-                                     print_can_data=False,
+                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
+                                     [throttle, brake, steer, clutch, gear, in_rpm],
+                                     print_can_data=True,
                                      print_agent_actions=True,
                                      real_time=True)
 

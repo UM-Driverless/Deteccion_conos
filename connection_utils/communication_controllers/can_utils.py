@@ -1,5 +1,5 @@
 from connection_utils.communication_controllers.can_interface import CANInterface
-import can_scripts
+import can
 from globals import can_constants
 import math
 
@@ -9,20 +9,19 @@ class CAN(CANInterface):
         super().__init__()
         self.logger = logger
         self.init_can()
-        self.n_good_messages = 0  # TODO: variable para depurar la recepción de mensajes CAN. Eliminar cuando ya este testeado
 
     def init_can(self):
         """
         Initialize CAN.
         """
-        self.bus = can_scripts.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
+        self.bus = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
         self.logger.write_can_log(self.bus.channel_info)
 
         ## Implementamos la clase abstracta Listener (https://python-can.readthedocs.io/en/master/listeners.html)
         # De momento usamos BufferedReader, que es una implementación por defecto de la librería, con un buffer de mensajes. Si necesitamos que sea async podemos
         # usar AsyncBufferedReader.
-        self.buffer = can_scripts.BufferedReader()
-        self.notifier = can_scripts.Notifier(self.bus, [self.buffer])
+        self.buffer = can.BufferedReader()
+        self.notifier = can.Notifier(self.bus, [self.buffer])
         self.logger.write_can_log("CAN listener connected")
 
     def get_sensors_data(self):
@@ -30,22 +29,19 @@ class CAN(CANInterface):
         Returns the current data from sensors.
         :return: numpy nd array of floats
         """
-        msg = self.buffer.get_message()
-
-        if msg is not None:
-            self.logger.write_can_log("Message well received (" + str(self.n_good_messages + 1) + ") -> " + str(msg))
-            # self.logger.write_can_log("Mensaje bueno recibido (" + str(self.n_good_messages + 1) + ") -> " + msg.__str__())
-
-            self.n_good_messages += 1
-
-            message = self.decode_message(msg)
-            self.logger.write_can_log("Message read (" + str(message) + ") ")
-
-            # TODO: No se que checkea esta condición
-            if msg.arbitration_id == can_constants.SIG_SENFL or msg.arbitration_id == can_constants.SIG_SENFR or msg.arbitration_id == can_constants.SIG_SENRL or msg.arbitration_id == can_constants.SIG_SENRR:
-                # Ponía llamada a la red neuronal, pero eso no va a ir aquí
-                pass
-            return message
+        # TODO: Hay que controlar la lectura de cada tipo de mensaje y recopilar
+        #  toda la información necesaria antes de salir de este bucle.
+        all_msg_received = False
+        while not all_msg_received:
+            msg = self.buffer.get_message()
+            if msg is not None:
+                # msg.channel.fetchMessage()
+                print(msg)
+                msg_id, message = self.decode_message(msg)
+                print(hex(msg_id), message)
+                all_msg_received = True
+                self.route_msg(msg_id)
+                # Se tiene que poner a true cuando se hayan recibido los mensajes necesarios para calcular las acciones. Velocidad, posición actuadores, rpm...
 
         return 0
 
@@ -87,51 +83,46 @@ class CAN(CANInterface):
         #############################################################
         #    Sen CAN message
         #############################################################
-        msg = can_scripts.Message(arbitration_id=can_constants.TRAJECTORY_ACT, data=data, extended_id=False)
+        msg = can.Message(arbitration_id=can_constants.TRAJECTORY_ACT, data=data, extended_id=False)
         self.logger.write_can_log("MSG: " + str(msg))
 
         # self.logger.write_can_log("MSG: " + msg.__str__())
 
         try:
             self.bus.send(msg)
-        except can_scripts.CanError as e:
+        except can.CanError as e:
             error = e
             if hasattr(e, 'message'):
                 error = e.message
             self.logger.write_can_log("Sending ERROR: " + error)
 
-
     def decode_message(self, msg):
-        # TODO: Esta funcion que hace? las onstantes ya están definidas en can_constants
-        sender_id = msg.arbitration_id
-        switcher = {
-            # Rueda delantera izquierda
-            can_constants.IMU_SENFL: self.get_sen_imu(0, msg.data),
-            can_constants.SIG_SENFL: self.get_sen_signals(0, msg.data),
-            can_constants.STATE_SENFL: "SEN STATE",
-            # Rueda delantera derecha
-            can_constants.IMU_SENFR: self.get_sen_imu(1, msg.data),
-            can_constants.SIG_SENFR: self.get_sen_signals(1, msg.data),
-            can_constants.STATE_SENFR: 0x305,
-            # Rueda trasera izquierda
-            can_constants.IMU_SENRL: self.get_sen_imu(2, msg.data),
-            can_constants.SIG_SENRL: self.get_sen_signals(2, msg.data),
-            can_constants.STATE_SENRL: 0x308,
-            # Rueda trasera derecha
-            can_constants.IMU_SENRR: self.get_sen_imu(3, msg.data),
-            can_constants.SIG_SENRR: self.get_sen_signals(3, msg.data),
-            can_constants.STATE_SENRR: 0x311,
+        message = msg.data.hex()  # Extrae los datos del mensaje CAN y los convierte a hexadecimal
+        message = [int(message[index:index + 2], 16) for index in
+                   range(0, len(message), 2)]  # Divide el mensaje can en 8 bytes y los convierte a decimal
+        msg_id = int(hex(msg.arbitration_id), 16)  # ID del mensaje CAN en string hexadecimal
 
-            # ASSIS
-            can_constants.ASSIS_C: 0x350,
-            can_constants.ASSIS_R: 0x351,
-            can_constants.ASSIS_L: 0x352,
-            # ASB
-            can_constants.ASB_ANALOG: 0x360,
-            can_constants.ASB_SIGNALS: 0x361,
-            can_constants.ASB_STATE: 0x362
-            }
-        return switcher.get(sender_id, lambda: "Código inválido")
+        return msg_id, message
+
+    def route_msg(self, msg_id):
+        print('route msg: ', msg_id, can_constants.ARD_ID)
+        if msg_id in can_constants.SEN_ID.values():
+             if msg_id == can_constants.SEN_ID['IMU_SENFL']:
+                 pass
+             if msg_id == can_constants.SEN_ID['SIG_SENFL']:
+                 pass
+             if msg_id == can_constants.SEN_ID['STATE_SENFL']:
+                 pass
+        if msg_id in can_constants.TRAJ_ID.values():
+             pass
+        if msg_id in can_constants.ASSIS_ID.values():
+             pass
+        if msg_id in can_constants.ASB_ID.values():
+             pass
+        if msg_id in can_constants.ARD_ID.values():
+             print('Message from arduino readed')
+             if msg_id == can_constants.ARD_ID['ID']:
+                 print('ID from arduino readed')
 
     def get_sen_imu(self, wheel, data):
         acceleration_X = data[0]

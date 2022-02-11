@@ -159,9 +159,9 @@ class AgentTestClutchThrottle(AgentAcceleration):
         # Controla a que velocidad se suelta el embrague por completo
         self.clutch_max_speed = 10.
         self.clutch_max_rpm = 2000.
-
-        self.iter_arranque = 0.
-        self.max_iter_arranque = 10.
+        self.target_rpm_throttle = 1500.
+        self.iter_arranque = 1
+        self.max_iter_arranque = 1000000
         self.clutch_max_rpm_arranque = 3000.
 
 
@@ -177,7 +177,6 @@ class AgentTestClutchThrottle(AgentAcceleration):
 
 
     def longitudinal_control(self, cenital_cones, speed,  gear, rpm):
-        val = self.valTrackbarsPID()
 
 
         if self.iter_arranque  > self.max_iter_arranque:
@@ -190,13 +189,16 @@ class AgentTestClutchThrottle(AgentAcceleration):
 
         upgear, downgear, gear = self.change_gear(gear, rpm, throttle)
 
+        self.iter_arranque += 1
         return throttle, brake, clutch, upgear, downgear, gear
 
     def throttle_func(self, speed, brake, rpm):
-        if rpm < self.clutch_max_rpm_arranque:
+        val = self.valTrackbarsPID()
+        pid_throttle = self.pid_throttle(Kp=val[3], Ki=val[4], Kd=val[5], setpoint=0, output_limits=(0., 1.))
+        if self.iter_arranque < self.max_iter_arranque:
             if brake < 0.1:
-                rpm = (rpm / self.clutch_max_rpm_arranque) * 10 - 10
-                throttle = -1 / (rpm) - 0.1
+                ref_point = rpm - self.target_rpm_throttle
+                throttle = pid_throttle(ref_point)
             else:
                 throttle = 0.
         else:
@@ -205,18 +207,20 @@ class AgentTestClutchThrottle(AgentAcceleration):
 
     def clutch_func(self, speed, throttle, brake, rpm):
         clutch = 0.
-        if speed < self.clutch_max_speed and rpm < self.clutch_max_rpm_arranque:
-            speed = speed/self.clutch_max_speed
-            if speed < 0.1:
-                if throttle > 0.25:
-                    clutch = 0.7
-                elif brake > 0.1:
-                    clutch = 0.9
-                else:
-                    clutch = 0.9
-            else:
-                rpm = rpm / self.clutch_max_rpm_arranque
-                clutch = np.clip((0.2 / rpm) - 0.2, 0., 0.9)
+        if speed < self.clutch_max_speed and self.iter_arranque < self.max_iter_arranque:
+            iter_arranque = self.iter_arranque / self.max_iter_arranque
+            clutch = np.clip((0.2 / iter_arranque) - 0.2, 0., 0.9)
+            # speed = speed/self.clutch_max_speed
+            # if speed < 0.1:
+            #     if throttle > 0.25:
+            #         clutch = 0.7
+            #     elif brake > 0.1:
+            #         clutch = 0.9
+            #     else:
+            #         clutch = 0.9
+            # else:
+            #     rpm = rpm / self.clutch_max_rpm_arranque
+            #     clutch = np.clip((0.2 / rpm) - 0.2, 0., 0.9)
 
 
         return clutch

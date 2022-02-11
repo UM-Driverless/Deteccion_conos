@@ -3,13 +3,13 @@ Control the flow of information from the sensor (Camera and CAN data) to the mai
 """
 
 from connection_utils.comunication_base import ComunicationInterface
-from connection_utils.communication_controllers import zed, can_utils, zed_dummy
+from connection_utils.communication_controllers import can_utils, zed_dummy
 import numpy as np
 
 class ConnectionManager(ComunicationInterface):
     def __init__(self, logger=None):
         self.logger = logger
-        self.camera = zed.Camera(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
+        self.camera = zed_dummy.Camera(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
         self.can = can_utils.CAN(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.
 
     def get_data(self, params=None, verbose=0):
@@ -29,8 +29,9 @@ class ConnectionManager(ComunicationInterface):
         brake = 0.
         clutch = 0.
         gear = 0.
+        rpm = 0.
         # [speed, throttle, steer, brake, gear ...]
-        return np.array(image), speed, throttle, steer, brake, clutch, gear
+        return np.array(image), speed, throttle, steer, brake, clutch, gear, rpm
 
     def send_actions(self, throttle, steer, brake, clutch, upgear, downgear):
         """
@@ -57,7 +58,7 @@ class ConnectionManager_dummy(ComunicationInterface):
         can_msg = self.can.get_sensors_data()
 
         # Modificar valores, puestos a cero para que funcione el programa únicamente.
-        self.rpm += 200
+        self.rpm = np.clip(self.rpm + 200, 0., 4000.)
         speed = 0.
         throttle = 0.
         steer = 0.
