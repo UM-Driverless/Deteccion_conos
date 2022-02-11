@@ -55,6 +55,7 @@ class VisualizerTest:
 		finally:
 			# Do whatever needed where the program ends or fails
 			# connect_mng.close_connection()
-			visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, gear], [throttle, brake, steer, clutch, upgear, downgear], print_can_data=True, print_agent_actions=True, real_time=False)
+			visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, gear],
+								 [throttle, brake, steer, clutch, upgear, downgear], real_time=False)
 
 		visualizer.close_windows()

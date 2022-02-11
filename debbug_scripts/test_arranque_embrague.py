@@ -54,10 +54,7 @@ if __name__ == '__main__':
 
             if verbose==1:
                 visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
-                                     [throttle, brake, steer, clutch, gear, in_rpm],
-                                     print_can_data=True,
-                                     print_agent_actions=True,
-                                     real_time=True)
+                                     [throttle, brake, steer, clutch, gear, in_rpm], real_time=True)
 
     finally:
         # path = '/home/shernandez/PycharmProjects/UMotorsport/v1/UnityTrainerPy-master/PyUMotorsport_v2/video/'
