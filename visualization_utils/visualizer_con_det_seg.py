@@ -19,6 +19,8 @@ class Visualizer:
         color_mask = np.argmax(y_hat[0], axis=2)
 
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = cv2.resize(image, (1080, 720))
         y_hat_resize_backg = y_hat[0, :, :, 4]
 
         res_image = np.zeros((180, 320, 3), dtype=np.uint8)
@@ -115,9 +117,9 @@ class Visualizer:
         #         # text = 'steer:      xt(image, text, (10, 390), font, fontScale, color, thickness, cv2.LINE_AA)
         # text = 'clutch:     {:.4f}'.format(clutch)
         # image = cv2.putText(image, text, (10, 410), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'gear:     {:d}'.format(gear)
+        text = 'gear:     {:f}'.format(gear)
         image = cv2.putText(image, text, (10, 430), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'RPM:   {:d}'.format(rpm)
+        text = 'RPM:   {:f}'.format(rpm)
         image = cv2.putText(image, text, (10, 450), font, fontScale, color, thickness, cv2.LINE_AA)
         text = 'FPS:     {:.2f}'.format(fps)
         image = cv2.putText(image, text, (10, 490), font, fontScale, color, thickness, cv2.LINE_AA)

@@ -23,8 +23,9 @@ class Logger:
             f.write("[MAIN]: " + str(msg) + " [" + str(datetime.datetime.now().time()) + "]" + '\n')
 
     def write_can_log(self, msg):
-        with open(self.debug_path, 'a', encoding="utf-8") as f:
-            f.write("[CAN]: " + str(msg) + " [" + str(datetime.datetime.now().time()) + "]" + '\n')
+        pass
+        #with open(self.debug_path, 'a', encoding="utf-8") as f:
+        #    f.write("[CAN]: " + str(msg) + " [" + str(datetime.datetime.now().time()) + "]" + '\n')
 
 class Unbuffered:
     def __init__(self, stream, path):
