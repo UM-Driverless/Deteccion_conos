@@ -37,7 +37,7 @@ class Camera(CameraInterface):
 
         return cam
 
-    def get_frame(self):
+    def get_frame(self, camera):
         """
         Returns the current frame from the camera.
         :return: image (3D array)
