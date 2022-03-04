@@ -1,5 +1,5 @@
 from connection_utils.car_comunication import ConnectionManager
-# from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
+#from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
 from controller_agent.xbox_agent import AgentXboxController as Agent
 from visualization_utils.visualizer_test_actuators import VisualizeActuators as Visualizer
 from visualization_utils.logger import Logger
@@ -28,48 +28,55 @@ if __name__ == '__main__':
     agent = Agent(logger=logger)
 
     # Visualización de datos
-    visualizer = Visualizer(max_data_to_store=1000)
+    visualizer = Visualizer(max_data_to_store=100)
 
-    try:
-        while True:
-            start_time = time.time()
+    #try:
+    while True:
+        start_time = time.time()
 
-            # Pedir datos al simulador o al coche
-            image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
+        # Pedir datos al simulador o al coche
+        in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
 
-            # Detectar conos
-            # detections, y_hat = detector.detect_cones(image)
+        # Detectar conos
+        # detections, y_hat = detector.detect_cones(image)
 
-            # Actions:
-            # 1 -> steer
-            # 2 -> throttle
-            # 3 -> brake
-            # 4 -> clutch
-            # 5 -> upgear
-            # 6 -> downgear
+        # Actions:
+        # 1 -> steer
+        # 2 -> throttle
+        # 3 -> brake
+        # 4 -> clutch
+        # 5 -> upgear
+        # 6 -> downgear
 
-            # Seleccionar acciones
-            throttle, brake, steer, clutch, gear, upgear, downgear = agent.get_action([0.9])
+        # Seleccionar acciones
+        throttle, brake, steer, clutch, gear, upgear, downgear = agent.get_action([0.9])
 
-            # Enviar acciones
-            connect_mng.send_actions(throttle=throttle,
-                                     brake=brake,
-                                     steer=steer,
-                                     clutch=clutch,
-                                     upgear=upgear,
-                                     downgear=downgear
-                                     )
+        # Enviar acciones
+        connect_mng.send_actions(throttle=throttle,
+                                 brake=brake,
+                                 steer=steer,
+                                 clutch=clutch,
+                                 upgear=upgear,
+                                 downgear=downgear
+                                 )
 
-            print("FPS: ", 1.0 / (time.time() - start_time))
-            print('throttle: ', throttle, 'brake: ', brake, 'steer: ', steer, 'clutch: ', clutch, 'gear: ', gear)
-            if verbose == 1:
-                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
-                                     [throttle, brake, steer, clutch, gear, in_rpm], real_time=True)
+        print("FPS: ", 1.0 / (time.time() - start_time))
+        print('throttle: ', throttle, 'brake: ', brake, 'steer: ', steer, 'clutch: ', clutch, 'gear: ', gear)
+        time.sleep(0.01)
+        if verbose == 1:
+            visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
+                                 [throttle, brake, steer, clutch, gear],
+                                 print_can_data=False,
+                                 print_agent_actions=True,
+                                 real_time=True)
 
-    finally:
+    #finally:
         # Do whatever needed where the program ends or fails
         # connect_mng.close_connection()
-        visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
-                             [throttle, brake, steer, clutch, gear, in_rpm], real_time=False)
-
-        visualizer.close_windows()
+        #visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
+        #                     [throttle, brake, steer, clutch, gear],
+        #                     print_can_data=True,
+        #                     print_agent_actions=True,
+        #                     real_time=False)
+        #
+        #visualizer.close_windows()

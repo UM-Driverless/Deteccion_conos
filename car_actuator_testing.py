@@ -1,11 +1,12 @@
-# from connection_utils.car_comunication import ConnectionManager
-from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
+from connection_utils.car_comunication import ConnectionManager
+# from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
 # from cone_detection.cone_segmentation import ConeDetector
 from controller_agent.testing_agent import AgentActuatorsTest as Agent
 from visualization_utils.visualizer_test_actuators import VisualizeActuators as Visualizer
 from visualization_utils.logger import Logger
 import os
 import time
+
 
 # import tensorflow as tf
 # gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -14,7 +15,7 @@ import time
 # # os.environ["CUDA_DEVICE_ORDER"] = '0'
 
 if __name__ == '__main__':
-    verbose = 1
+    verbose = 0
 
     logger_path = os.path.join(os.getcwd(), "logs")
     init_message = "actuator_testing.py"
@@ -29,13 +30,16 @@ if __name__ == '__main__':
     agent = Agent(logger=logger)
 
     # Visualización de datos
-    visualizer = Visualizer(max_data_to_store=25, print_can_data=False, print_agent_actions=True)
+    visualizer = Visualizer(max_data_to_store=10000)
 
+    #try:
+    iterations = 0
     try:
-        while True:
+        while iterations < 100:
             start_time = time.time()
             # Pedir datos al simulador o al coche
-            image, in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
+
+            in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
 
             # Detectar conos
             # detections, y_hat = detector.detect_cones(image)
@@ -47,35 +51,49 @@ if __name__ == '__main__':
             # 4 -> clutch
             # 5 -> upgear
             # 6 -> downgear
-
+		
             # Seleccionar acciones
             throttle, brake, steer, clutch, gear, upgear, downgear = agent.get_action([1, 2, 3, 4])
 
-            # # resize actions
-            # throttle *= 0.8
-            # brake *= 0.8
-            # steer *= 0.8
-            # clutch *= 0.8
+            # resize actions
+            #throttle = 0.99
+            #brake = 0.99
+            #steer = 1.0
+            #clutch = 0.99
 
             # Enviar acciones
             connect_mng.send_actions(throttle=throttle,
-                                     brake=brake,
-                                     steer=steer,
-                                     clutch=clutch,
-                                     upgear=upgear,
-                                     downgear=downgear)
+                                 brake=brake,
+                                 steer=steer,
+                                 clutch=clutch,
+                                 upgear=upgear,
+                                 downgear=downgear)
 
-
+            print("FPS: ", 1.0 / (time.time() - start_time))
+            time.sleep(0.5)
             if verbose == 1:
-                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
-                                     [throttle, brake, steer, clutch, gear, in_rpm], real_time=True)
-
-            print("FPS: ", 1.0 / (time.time() - start_time), (time.time() - start_time))
+                visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
+                                 [throttle, brake, steer, clutch, gear],
+                                 print_can_data=True,
+                                 print_agent_actions=True,
+                                 real_time=True)
+                iterations += 1
 
     finally:
+        throttle = 0
+        brake = 0
+        steer = 0
+        clutch = 0
+        connect_mng.send_actions(throttle=throttle,
+                                 brake=brake,
+                                 steer=steer,
+                                 clutch=clutch,
+                                 upgear=upgear,
+                                 downgear=downgear)
         # Do whatever needed where the program ends or fails
         # connect_mng.close_connection()
-        visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm],
-                             [throttle, brake, steer, clutch, gear, in_rpm], real_time=False)
+        #visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear], [throttle, brake, steer, clutch, gear], print_can_data=True, print_agent_actions=True, real_time=False)
 
-        visualizer.close_windows()
+        # visualizer.close_windows()
+
+
