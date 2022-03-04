@@ -10,7 +10,7 @@ class AgentXboxController(AgentInterface):
     Genrates a sin  wave to send to the actuators
     """
     def __init__(self, logger):
-        super(AgentXboxController).__init__(logger=logger)
+        super().__init__(logger=logger)
 
         self.gear = 0
         self.max_gear = 4
