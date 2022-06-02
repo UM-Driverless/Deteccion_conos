@@ -13,7 +13,7 @@ class ConeProcessing(ConeProcessingInterface):
         intialTracbarVals = [[73, 67, 27], [129, 255, 255], [21, 58, 142], [24, 255, 255], [45, 27, 0, 44]]
         self.initializeTrackbars(intialTracbarVals[4])
 
-    def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3)):
+    def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
         """
         Performs the cones detection task. The detection must include the bounding boxes and classification of each
         cone.
@@ -24,8 +24,6 @@ class ConeProcessing(ConeProcessingInterface):
         :return: [ndarray, list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
                                 data.
         """
-        eagle_img, _ = aux_data
-
         src_trapezoide = self.valTrackbars()  # Trapezoide a coger de la imagen original
 
         if cone_centers[0].shape[0]:
@@ -68,7 +66,14 @@ class ConeProcessing(ConeProcessingInterface):
             warp_oran_center = []
         # list_blue_center, list_yell_center, list_oran_center = self.split_cones(cone_centers, labels)
 
-
+        if img_to_wrap is not None:
+            img_wrap = self.perspective_warp_image(img_to_wrap,
+                                                     orig_im_shape,
+                                                     dst_size=(orig_im_shape[2], orig_im_shape[2]),
+                                                     src=src_trapezoide,
+                                                     wrap_img=True)
+        else:
+            img_wrap = np.zeros((orig_im_shape[2], orig_im_shape[2], 3))
 
 
 
@@ -76,8 +81,8 @@ class ConeProcessing(ConeProcessingInterface):
         # # algoritmo para unir conos contiguos. Lo aplicamos sobre los conos en perspectiva
         # order_warp_blue_center = self.join_cones(warp_blue_center, unique_color='blue')
         # order_warp_yell_center = self.join_cones(warp_yell_center, unique_color='yell')
-        order_warp_oran_left_center, order_warp_oran_rigth_center = self.join_cones(warp_oran_center,
-                                                                                        unique_color='oran')
+        # order_warp_oran_left_center, order_warp_oran_rigth_center = self.join_cones(warp_oran_center,
+        #                                                                                 unique_color='oran')
         order_warp_blue_center = warp_blue_center
         order_warp_yell_center = warp_yell_center
         order_warp_oran_left_center, order_warp_oran_rigth_center = self.split_orange_cones(warp_oran_center)
@@ -94,9 +99,40 @@ class ConeProcessing(ConeProcessingInterface):
         else:
             center = 0.
 
+        # import matplotlib.pyplot as plt
+        # fig = plt.figure(0)
+        # plt.plot(list_blue_center[:, 0], list_blue_center[:, 1], 'o')
+        # plt.plot(list_yell_center[:, 0], list_yell_center[:, 1], 'o')
+        # plt.plot(list_oran_center[:, 0], list_oran_center[:, 1], 'o')
+        # fig.canvas.draw()
+        # # convert canvas to image
+        # img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+        # img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        # # img is rgb, convert to opencv's default bgr
+        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        #
+        # # display image with opencv or any operation you like
+        # cv2.imshow("plot", img)
+        #
+        # fig = plt.figure(1)
+        # plt.plot(warp_blue_center[:, 0], warp_blue_center[:, 1], 'o')
+        # plt.plot(warp_yell_center[:, 0], warp_yell_center[:, 1], 'o')
+        # plt.plot(warp_oran_center[:, 0], warp_oran_center[:, 1], 'o')
+        # fig.canvas.draw()
+        # # convert canvas to image
+        # img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+        # img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        # # img is rgb, convert to opencv's default bgr
+        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        #
+        # # display image with opencv or any operation you like
+        # cv2.imshow("plot_wrap", img)
+        # cv2.waitKey(0)
+
         return [warp_blue_center, warp_yell_center, warp_oran_center], \
-               [order_warp_blue_center, order_warp_yell_center, order_warp_oran_left_center, order_warp_oran_rigth_center], \
-               center
+               [np.array(order_warp_blue_center), np.array(order_warp_yell_center),
+                np.array(order_warp_oran_left_center), np.array(order_warp_oran_rigth_center)], \
+               center, img_wrap
 
 
     def create_cone_map_legacy(self, cone_detections, cone_centers, aux_data=None):
@@ -170,13 +206,33 @@ class ConeProcessing(ConeProcessingInterface):
             dst = dst * np.float32(dst_size)
             # Given src and dst points, calculate the perspective transform matrix
             M = cv2.getPerspectiveTransform(src, dst)
-            # Warp the image using OpenCV warpPerspective()
-            # warped = cv2.warpPerspective(img, M, dst_size)
 
             c = np.float32(coord_list[np.newaxis, :])
             warped = np.int32(cv2.perspectiveTransform(c, M))
             return warped[0]
         return []
+
+    def perspective_warp_image(self, image,
+                                    input_size,
+                                    dst_size=(180, 180),
+                                    src=np.float32([(0.43, 0.65), (0.58, 0.65), (0.1, 1), (1, 1)]),
+                                    dst=np.float32([(0, 0), (1, 0), (0, 1), (1, 1)]),
+                                    wrap_img=True):
+
+        img_size = np.float32([input_size[2], input_size[1]])
+        src = src * img_size
+        # For destination points, I'm arbitrarily choosing some points to be
+        # a nice fit for displaying our warped result
+        # again, not exact, but close enough for our purposes
+        dst = dst * np.float32(dst_size)
+        # Given src and dst points, calculate the perspective transform matrix
+        M = cv2.getPerspectiveTransform(src, dst)
+        # Warp the image using OpenCV warpPerspective()
+        if wrap_img:
+            img_warped = cv2.warpPerspective(image, M, dst_size)
+        else:
+            img_warped = np.zeros((dst, dst, 3))
+        return img_warped
 
     def perspective_warp_coordinates_legacy(self, coord_list,
                                      img,
@@ -275,8 +331,8 @@ class ConeProcessing(ConeProcessingInterface):
                     list_oran_rigth.append(c)
                 else:
                     list_oran_left.append(c)
-            return list_oran_left, list_oran_rigth
-        return [], []
+            return np.array(list_oran_left), np.array(list_oran_rigth)
+        return np.array([]), np.array([])
 
     def join_cones(self, cone_centers, unique_color=None):
         """

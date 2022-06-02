@@ -68,7 +68,7 @@ class AgentAcceleration(AgentInterface):
         data = self.create_cone_map(centers, labels, None, None)
 
         img_center = int(orig_im_shape[2] / 2)
-        steer = self.horinzontal_control(ref_point=data[-1], img_center=img_center)
+        steer = self.horinzontal_control(ref_point=data[-2], img_center=img_center)
 
         throttle, brake, clutch, upgear, downgear, gear = self.longitudinal_control(cenital_cones=data[1], speed=speed,  gear=gear, rpm=rpm)
 
@@ -220,3 +220,89 @@ class AgentTestClutchThrottle(AgentAcceleration):
 
 
         return clutch
+
+class AgentAccelerationYolo(AgentAcceleration):
+    def __init__(self, logger, target_speed=20.):
+        super().__init__(logger=logger)
+
+    def get_action(self, detections, speed, gear, rpm, cone_centers=None, orig_im_shape=(1, 180, 320, 3), image=None):
+        """
+        Calcular los valores de control
+        """
+        bboxes, labels = detections
+
+        data = self.create_cone_map(cone_centers, labels, None, image_shape=(1,) + image.shape, image=image)
+
+        img_center = int(image.shape[1] / 2)
+        steer = self.horinzontal_control(ref_point=data[-2], img_center=img_center, img_base_len=image.shape[1])
+
+        throttle, brake, clutch, upgear, downgear, gear = self.longitudinal_control(cenital_cones=data[1], speed=speed,  gear=gear, rpm=rpm)
+
+        return [throttle, brake, steer, clutch, upgear, downgear, gear], data
+
+    def create_cone_map(self, centers, labels, eagle_img, image_shape, image):
+        return self.cone_processing.create_cone_map(centers, labels, [eagle_img], orig_im_shape=image_shape, img_to_wrap=image)
+
+    def horinzontal_control(self, ref_point, img_center, img_base_len):
+        turn_point = img_center - ref_point
+        # turn_point = -turn_point/img_base_len
+        val = self.valTrackbarsPID()
+        pid = self.pid_steer(Kp=val[0], Ki=val[1], Kd=val[2], setpoint=0, output_limits=(-1., 1.))
+        return pid(turn_point)
+        # return turn_point
+
+    def longitudinal_control(self, cenital_cones, speed,  gear, rpm):
+        blue_center, yell_center, oran_left_center, oran_rigth_center = cenital_cones
+
+        n_color_cones = len(blue_center) + len(yell_center)
+        n_oran_cones = len(oran_left_center) + len(oran_rigth_center)
+
+        val = self.valTrackbarsPID()
+        pid_throttle = self.pid_throttle(Kp=val[3], Ki=val[4], Kd=val[5], setpoint=0, output_limits=(0., 1.))
+        pid_brake = self.pid_brake(Kp=val[6], Ki=val[7], Kd=val[8], setpoint=0, output_limits=(0., 1.))
+
+        if n_color_cones > n_oran_cones:
+            target_speed = self.target_speed
+
+            ref_point = speed - target_speed
+            # throttle = pid_throttle(ref_point)
+            throttle = 1.0
+
+            brake = 0.
+        else:
+            blue_braking_zone = False
+            for i in range(oran_left_center.shape[0]):
+                for j in range(blue_center.shape[0]):
+                    if oran_left_center[i, 1] > blue_center[j, 1]:
+                        blue_braking_zone = True
+
+            yell_braking_zone = False
+            for i in range(oran_rigth_center.shape[0]):
+                for j in range(yell_center.shape[0]):
+                    if oran_rigth_center[i, 1] > yell_center[j, 1]:
+                        yell_braking_zone = True
+
+            if blue_center.shape[0] < 1:
+                blue_braking_zone = True
+            if yell_center.shape[0] < 1:
+                yell_braking_zone = True
+
+            if not blue_braking_zone and not yell_braking_zone:  # No braking zone
+                target_speed = self.target_speed
+
+                ref_point = speed - target_speed
+                # throttle = pid_throttle(ref_point)
+                throttle = 1.0
+                brake = 0.
+            else: # Braking zone
+                throttle = 0.
+                ref_point = - speed
+                brake = pid_brake(ref_point)
+
+        print(throttle, brake, ref_point, val[3], val[4], val[5], val[6], val[7], val[8])
+
+        clutch = self.clutch_func(speed, throttle, brake, rpm)
+
+        upgear, downgear, gear = self.change_gear(gear, rpm, throttle)
+
+        return throttle, brake, clutch, upgear, downgear, gear

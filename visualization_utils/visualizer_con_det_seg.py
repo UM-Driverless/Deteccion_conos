@@ -1,11 +1,32 @@
 import cv2
 import numpy as np
+from visualization_utils.visualize_base import VisualizeInterface
 
-class Visualizer:
+
+class Visualizer(VisualizeInterface):
     def __init__(self):
         self.saved_frames = []
 
     def visualize(self, data, controls, fps, save_frames=False):
+        """
+        :param data: List of: [image, detections, cenital_map, y_hat, in_speed]
+                     image: ndarray (h, w, channels)
+                     detections: bboxes
+                     cenital_map: eagle view image or coordinates map
+                     y_hat: imagen segmentada (h, w, n_clases)
+                     in_speed: float. Current car speed
+        :param controls: List of [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm]
+                     throttle: float [0, 1]
+                     brake: float [0, 1]
+                     steer: float [-1, 1]
+                     clutch: float [0, 1]
+                     upgear: bool
+                     downgear: bool
+                     in_gear: int. current gear
+                     in_rpm: float. current rpm
+        :param fps: int
+        :param save_frames: bool. Allows store the resulting frame in a list to later create a video with save_in_video function
+        """
         image, detections, cenital_map, y_hat, speed = data
         self.make_images(image, detections, cenital_map, y_hat, speed, controls, fps, save_frames=save_frames)
 
