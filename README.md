@@ -53,3 +53,7 @@ sh ./ZED_SDK_Ubuntu20_cuda11.5_v3.6.5.run
 ```
 
 Sigue los pasos del instalador aceptando la instalacion de la API de python.
+
+## Actualizar a python >= 3.7
+
+Do https://cloudbytes.dev/snippets/upgrade-python-to-latest-version-on-ubuntu-linux

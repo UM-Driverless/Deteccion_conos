@@ -1,4 +1,4 @@
-from connection_utils.my_client import ConnectionManager
+from connection_utils.car_comunication import ConnectionManager
 from controller_agent.agent import AgentAccelerationYolo as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
