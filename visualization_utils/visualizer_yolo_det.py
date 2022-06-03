@@ -79,15 +79,15 @@ class Visualizer(VisualizeInterface):
         dim = image.shape
         cenital_img = np.zeros((dim[1], dim[1], 3)) * 255
         for c in cenital_map[0]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 5, color[0], -1)
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[0], -1)
         for c in cenital_map[1]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 5, color[1], -1)
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[1], -1)
         for c in cenital_map[2]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 5, color[2], -1)
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[2], -1)
         for c in cenital_map[3]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 5, color[3], -1)
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[3], -1)
 
-        cv2.circle(cenital_img, (int(estimated_center), int(dim[1] / 2)), 10, (0, 255, 0), -1)
+        cv2.circle(cenital_img, (int(estimated_center), int(dim[1] / 2)), 50, (0, 255, 0), -1)
 
         dim = (np.array(image.shape) * cenital_img_size).astype('int')
         image[2:2 + dim[1], 10:10 + dim[1]] = cv2.resize(cenital_img, (dim[1], dim[1]))

@@ -26,6 +26,7 @@ if __name__ == '__main__':
     # Visualización de datos
     visualizer = Visualizer()
 
+    count = 0
     try:
         while True:
             start_time = time.time()
@@ -45,9 +46,13 @@ if __name__ == '__main__':
                 cenital_map = [data[1], data[2], data[-1]]
                 visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed], [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps, save_frames=False)
 
+            count += 1
+            if in_speed <= 0. and count > 100:
+                break
+
 
     finally:
-        # path = '/home/shernandez/PycharmProjects/UMotorsport/v1/UnityTrainerPy-master/PyUMotorsport_v2/video/'
-        # name = 'video_{:0>4d}.jpg'
-        # visualizer.save_in_video(path, name)
+        path = '/media/archivos/UMotorsport/video_yolo/'
+        name = 'video_{:0>4d}.jpg'
+        visualizer.save_in_video(path, name)
         connect_mng.close_connection()

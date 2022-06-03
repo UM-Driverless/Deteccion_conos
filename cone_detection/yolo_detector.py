@@ -39,7 +39,7 @@ class ConeDetector(ConeDetectorInterface):
             labels.append(label)
 
         if get_centers:
-            cone_centers = self.get_centers(bboxes, labels)
+            cone_centers = self.get_centers(np.array(bboxes), labels)
         else:
             cone_centers = None
 
@@ -47,21 +47,23 @@ class ConeDetector(ConeDetectorInterface):
 
 
     def get_centers(self, bboxes, labels):
-        bboxes = np.array(bboxes)
-        x_center = bboxes[:, 0, 0] + ((bboxes[:, 1, 0] - bboxes[:, 0, 0]) / 2).astype('int')
-        y_center = bboxes[:, 0, 1] + ((bboxes[:, 1, 1] - bboxes[:, 0, 1]) / 2).astype('int')
+        if bboxes.shape[0] > 0:
+            x_center = bboxes[:, 0, 0] + ((bboxes[:, 1, 0] - bboxes[:, 0, 0]) / 2).astype('int')
+            y_center = bboxes[:, 0, 1] + ((bboxes[:, 1, 1] - bboxes[:, 0, 1]) / 2).astype('int')
 
-        cone_centers = np.array([x_center, y_center]).transpose()
+            cone_centers = np.array([x_center, y_center]).transpose()
 
-        index_0 = np.array(labels)[:, 0] == 0
-        index_1 = np.array(labels)[:, 0] == 1
-        index_2 = np.array(labels)[:, 0] == 2
-        index_3 = np.array(labels)[:, 0] == 3  # Los naranjas están todos agrupados en una única clase, por lo que este indez_4 no hace falta
+            index_0 = np.array(labels)[:, 0] == 0
+            index_1 = np.array(labels)[:, 0] == 1
+            index_2 = np.array(labels)[:, 0] == 2
+            index_3 = np.array(labels)[:, 0] == 3  # Los naranjas están todos agrupados en una única clase, por lo que este indez_4 no hace falta
 
-        cone_class_0 = cone_centers[index_0]
-        cone_class_1 = cone_centers[index_1]
-        cone_class_2 = cone_centers[index_2]
-        cone_class_3 = cone_centers[index_3]
-        cone_centers_by_class = [cone_class_0, cone_class_1, cone_class_2, cone_class_3]
+            cone_class_0 = cone_centers[index_0]
+            cone_class_1 = cone_centers[index_1]
+            cone_class_2 = cone_centers[index_2]
+            cone_class_3 = cone_centers[index_3]
+            cone_centers_by_class = [cone_class_0, cone_class_1, cone_class_2, cone_class_3]
 
-        return np.array(cone_centers_by_class)
+            return np.array(cone_centers_by_class)
+        else:
+            return np.array([[], [], [], []])
