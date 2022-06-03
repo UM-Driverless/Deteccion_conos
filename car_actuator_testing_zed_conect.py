@@ -18,7 +18,7 @@ if __name__ == '__main__':
     cam = sl.Camera()
     cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 0)
     init = sl.InitParameters()
-    init.camera_resolution = sl.RESOLUTION.VGA
+    init.camera_resolution = sl.RESOLUTION.HD1080
     init.camera_fps = 30
     #init.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
     #init.coordinate_units = sl.UNIT.METER
