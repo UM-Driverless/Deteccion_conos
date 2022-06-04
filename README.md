@@ -54,14 +54,13 @@ sh ./ZED_SDK_Ubuntu20_cuda11.5_v3.6.5.run
 
 Sigue los pasos del instalador aceptando la instalacion de la API de python.
 
-## Actualizar a python >= 3.7
+## Actualizar Xavier para ejecutar YOLOv5
 
-Do https://cloudbytes.dev/snippets/upgrade-python-to-latest-version-on-ubuntu-linux
-
-
+```bash
 git clone https://github.com/UM-Driverless/Deteccion_conos.git
 cd Deteccion_conos
 pip3 install -r yolov5/yolo_requeriments.txt
 sh can_scripts/enable_CAN.sh
 python3 car_actuator_testing_zed_conect_yolo.py 
+```
 
