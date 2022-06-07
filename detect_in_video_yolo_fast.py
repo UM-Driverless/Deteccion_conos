@@ -1,5 +1,5 @@
 import cv2
-from controller_agent.agent import AgentAccelerationYolo as AgentAcceleration
+from controller_agent.agent import AgentAccelerationYoloFast as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
@@ -8,10 +8,10 @@ import os
 import time
 
 #######################################################################################################################
-# Este código es más lento pero más fiable por que usa AgentAccelerationYolo. Este agente realiza una proyección de la
-# imagen y por lo tanto calcula un mapa de los conos. A partir de este mapa realiza los cáculos.
+# Este código es más rápido por que usa AgentAccelerationYoloFast. Este agente no realiza una proyección de la imagen y
+# por lo tanto no calcula un mapa de los conos. Resliza directamente los cáculos sobre la imagen en la perspectiva
+# original. Esto lo hace más sensible a errores, pero más rápido
 #######################################################################################################################
-
 if __name__ == '__main__':
     image_folder = '/media/archivos/UMotorsport/ImagenesDataset/21_11_21/21_11_21/21_11_21_16_59_1/frames/'
     video_path = '/media/archivos/UMotorsport/aux/'
@@ -38,7 +38,6 @@ if __name__ == '__main__':
     visualizer = Visualizer()
 
     images = [cv2.cvtColor(cv2.imread(os.path.join(image_folder, im)), cv2.COLOR_BGR2RGB) for im in images]
-
 
     try:
         for im in images:
@@ -70,4 +69,3 @@ if __name__ == '__main__':
     finally:
         ...
         # visualizer.save_in_video(video_path, video_name)
-

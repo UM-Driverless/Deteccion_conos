@@ -47,7 +47,7 @@ class Visualizer(VisualizeInterface):
         image = self._print_controls(brake, clutch, fps, gear, image, rpm, speed, steer, throttle)
 
         dim = (np.array(image.shape) * 0.1).astype('int')
-        image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
+        # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
 
         cv2.imshow("Detections", image)
         cv2.waitKey(1)

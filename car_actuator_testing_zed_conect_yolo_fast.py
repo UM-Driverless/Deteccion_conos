@@ -11,8 +11,9 @@ import pyzed.sl as sl
 import numpy as np
 
 #######################################################################################################################
-# Este código es más lento pero más fiable por que usa AgentAccelerationYolo. Este agente realiza una proyección de la
-# imagen y por lo tanto calcula un mapa de los conos. A partir de este mapa realiza los cáculos.
+# Este código es más rápido por que usa AgentAccelerationYoloFast. Este agente no realiza una proyección de la imagen y
+# por lo tanto no calcula un mapa de los conos. Resliza directamente los cáculos sobre la imagen en la perspectiva
+# original. Esto lo hace más sensible a errores, pero más rápido
 #######################################################################################################################
 
 if __name__ == '__main__':

@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
         print("FPS: ", 1.0 / (time.time() - start_time))
         print('throttle: ', throttle, 'brake: ', brake, 'steer: ', steer, 'clutch: ', clutch, 'gear: ', gear)
-        time.sleep(0.01)
+        # time.sleep(0.01)
         if verbose == 1:
             visualizer.visualize([in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear],
                                  [throttle, brake, steer, clutch, gear],

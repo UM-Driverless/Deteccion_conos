@@ -123,5 +123,5 @@ if __name__ == '__main__':
     bus.flush_tx_buffer()
     
     print("FPS: ", 1.0 / (time.time() - start_time))
-    time.sleep(1)
+    # time.sleep(1)
     bus.shutdown()

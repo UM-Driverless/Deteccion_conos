@@ -5,9 +5,10 @@ from cone_detection.detector_base import ConeDetectorInterface
 
 class ConeDetector(ConeDetectorInterface):
 
-    def __init__(self, checkpoint_path="yolov5/weights/yolov5s-cones-mixed-classes/weights/best.pt", logger=None):
+    def __init__(self, checkpoint_path="yolov5/weights/yolov5s-cones-mixed-classes/weights/best8.engine", logger=None):
         self.checkpoint_path = checkpoint_path
         self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=True)
+        self.detection_model.conf = 0.3
         self.logger = logger
 
     def detect_cones(self, input, get_centers=False):
@@ -28,13 +29,14 @@ class ConeDetector(ConeDetectorInterface):
             x2 = int(row['xmax'])
             y1 = int(row['ymin'])
             y2 = int(row['ymax'])
-            label = [int(row['name']), float(row['confidence'])]
+            label = [int(row['name'].split('class')[-1]), float(row['confidence'])]
             # x1,y1------------
             # |               |
             # |               |
             # |               |
             # |               |
             # ------------X2,Y2
+            # if float(row['confidence']) > 0.0:
             bboxes.append([[x1, y1], [x2, y2]])
             labels.append(label)
 

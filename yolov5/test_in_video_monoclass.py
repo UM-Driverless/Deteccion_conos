@@ -42,6 +42,6 @@ while (capture.isOpened()):
     cv2.imshow('webCam',frame)
     if (cv2.waitKey(1) == ord('s')):
         break
-    time.sleep(0.05)
+    # time.sleep(0.05)
 capture.release()
 cv2.destroyAllWindows()
