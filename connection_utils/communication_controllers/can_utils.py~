@@ -74,6 +74,12 @@ class CAN(CANInterface):
             # TODO: eliminar cuando se reciban los mensajes y configurar salida del bucle
             all_msg_received = True
                 # Se tiene que poner a true cuando se hayan recibido los mensajes necesarios para calcular las acciones. Velocidad, posición actuadores, rpm...
+		  if rpm_can =! 0:
+		  		return [rpm_can,"rpm_can"]
+		  if rpm_can =! 0:
+		  		return [speed_FL_can,"speed_FL_can"]
+		  if rpm_can =! 0:
+		  		return [speed_FR_can,"speed_FR_can"]
 		  
         return 0
 

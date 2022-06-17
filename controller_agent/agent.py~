@@ -351,8 +351,8 @@ class AgentAccelerationYoloFast(AgentAcceleration):
             target_speed = self.target_speed
 
             ref_point = speed - target_speed
-            #throttle = pid_throttle(ref_point)
-            throttle = 1.0
+            throttle = pid_throttle(ref_point)
+            #throttle = 1.0
 
             brake = 0.
         else:
@@ -377,8 +377,8 @@ class AgentAccelerationYoloFast(AgentAcceleration):
                 target_speed = self.target_speed
 
                 ref_point = speed - target_speed
-                #throttle = pid_throttle(ref_point)
-                throttle = 1.0
+                throttle = pid_throttle(ref_point)
+                #throttle = 1.0
                 brake = 0.
             else: # Braking zone
                 throttle = 0.
