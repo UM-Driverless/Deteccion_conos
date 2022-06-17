@@ -16,8 +16,8 @@ import numpy as np
 #######################################################################################################################
 
 if __name__ == '__main__':
-    verbose = 1
 
+    verbose = 1
     cam = sl.Camera()
     cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 0)
     init = sl.InitParameters()
@@ -51,6 +51,8 @@ if __name__ == '__main__':
     visualizer = Visualizer()
     print('visualizer initialized')
     mat_img = sl.Mat()
+
+
     try:
         while True:
             start_time = time.time()

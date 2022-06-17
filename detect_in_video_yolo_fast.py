@@ -58,13 +58,12 @@ if __name__ == '__main__':
             detections, cone_centers = detector.detect_cones(frame, get_centers=True)
 
             [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections, speed=in_speed, gear=in_gear, rpm=in_rpm, cone_centers=cone_centers, image=frame)
-
+            time.sleep(0.02)
             fps = 1.0 / (time.time() - start_time)
 
             if verbose==1:
                 cenital_map = [data[1], data[2], data[-1]]
                 visualizer.visualize([frame, detections, cone_centers, cenital_map, in_speed], [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps, save_frames=True)
-
 
     finally:
         ...
