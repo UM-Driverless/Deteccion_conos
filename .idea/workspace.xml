@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b37fd185-d515-4262-9caf-4fa3fd481726" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/car_actuator_testing_zed_conect_yolo_fast.py" beforeDir="false" afterPath="$PROJECT_DIR$/car_actuator_testing_zed_conect_yolo_fast.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection_utils/car_comunication.py" beforeDir="false" afterPath="$PROJECT_DIR$/connection_utils/car_comunication.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection_utils/communication_controllers/can_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/connection_utils/communication_controllers/can_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/controller_agent/agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller_agent/agent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/globals/can_constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/globals/can_constants.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2Ai5rrUzdAK8VYC6boXzLaCmbLT" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/Usuario/Documents/GitHub/Deteccion_conos",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b37fd185-d515-4262-9caf-4fa3fd481726" name="Changes" comment="" />
+      <created>1655479771090</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1655479771090</updated>
+      <workItem from="1655479777072" duration="17000" />
+      <workItem from="1655479832832" duration="3573000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

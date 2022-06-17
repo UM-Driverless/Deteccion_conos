@@ -42,6 +42,12 @@ class ConnectionManager(ComunicationInterface):
         print('Send throttle: ', throttle, ' clutch: ', clutch, ' brake: ', brake, ' steer: ', steer,  ' upgear: ', upgear, ' downgear: ', downgear)
         self.can.send_action_msg(throttle, brake, steer, clutch, upgear, downgear)
 
+    def get_amr(self):
+        return self.can.get_amr()
+
+    def get_rpm(self):
+        return self.can.get_rpm()
+
 class ConnectionManager_dummy(ComunicationInterface):
     def __init__(self, logger=None):
         self.logger = logger

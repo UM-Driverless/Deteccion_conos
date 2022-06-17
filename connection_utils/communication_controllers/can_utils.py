@@ -50,6 +50,40 @@ class CAN(CANInterface):
         self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_c)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
 
+    def get_amr(self):
+        amr = 0
+        all_msg_received = False
+        while not all_msg_received:
+            msg = self.buffer.get_message(0.1)  # Revisar si se puede configurar el timeout
+            if msg is not None:
+                # msg.channel.fetchMessage()
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.STEERING_ID["DV"]:
+                    amr = message[0]
+                all_msg_received = True
+                self.route_msg(msg_id)
+            # TODO: eliminar cuando se reciban los mensajes y configurar salida del bucle
+            all_msg_received = True # Se tiene que poner a true cuando se hayan recibido los mensajes necesarios para calcular las acciones. Velocidad, posición actuadores, rpm...
+
+        return amr
+
+    def get_rpm(self):
+        rpm_can = 0
+        all_msg_received = False
+        while not all_msg_received:
+            msg = self.buffer.get_message(0.1)  # Revisar si se puede configurar el timeout
+            if msg is not None:
+                # msg.channel.fetchMessage()
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.PMC_ID['PMC_ECU1']:
+                    rpm_can = (message[1] << 8) | message[0]
+                all_msg_received = True
+                self.route_msg(msg_id)
+            # TODO: eliminar cuando se reciban los mensajes y configurar salida del bucle
+            all_msg_received = True # Se tiene que poner a true cuando se hayan recibido los mensajes necesarios para calcular las acciones. Velocidad, posición actuadores, rpm...
+
+        return rpm_can
+
     def get_sensors_data(self):
         """
         Returns the current data from sensors.
