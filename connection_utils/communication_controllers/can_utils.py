@@ -58,7 +58,7 @@ class CAN(CANInterface):
             if msg is not None:
                 # msg.channel.fetchMessage()
                 msg_id, message = self.decode_message(msg)
-                if msg_id == can_constants.STEERING_ID["DV"]:
+                if msg_id == can_constants.STEERING_ID["STEERW_DV"]:
                     amr = message[0]
                 all_msg_received = True
                 self.route_msg(msg_id)
@@ -99,10 +99,16 @@ class CAN(CANInterface):
                 print(hex(msg_id), message)
                 if msg_id == can_constants.PMC_ID ['PMC_ECU1']:
                 	rpm_can = (message[1] << 8) | message[0]
+                if msg_id == can_constants.PMC_ID ['PMC_STATE']:
+                	ASState = message[0]
                 if msg_id == can_constants.SEN_ID['SIG_SENFL']:
                 	speed_FL_can = message[4]
                 if msg_id == can_constants.SEN_ID['SIG_SENFR']:
                 	speed_FR_can = message[4]
+                if msg_id == can_constants.SEN_ID['STEERW_DV']:
+                	amr = message[0]
+                if msg_id == can_constants.SEN_ID['ETC_STATE']:
+                	clutch_state = message[2]
                 all_msg_received = True
                 self.route_msg(msg_id)
             # TODO: eliminar cuando se reciban los mensajes y configurar salida del bucle

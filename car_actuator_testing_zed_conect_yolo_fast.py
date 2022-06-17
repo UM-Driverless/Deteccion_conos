@@ -73,6 +73,7 @@ if __name__ == '__main__':
                                                  clutch=1.0,
                                                  upgear=0,
                                                  downgear=0)
+                        #aqui se puede comprobar clutch_state
                         rpm = connect_mng.get_rpm()
                         if rpm < 2000:
                             time.sleep(0.5)

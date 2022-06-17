@@ -117,7 +117,13 @@ ARD_ID = {
 
 ## ID Steering
 STEERING_ID = {
-    "DV": int("410", 16)
+"STEERW_DV": int("410", 16)
+}
+
+## ID ETC
+ETC_ID = {
+"ETC_SIGNALS": int("330", 16)
+"ETC_STATE": int("331", 16)
 }
 
 CAN_SEND_MSG_TIMEOUT = 0.1
