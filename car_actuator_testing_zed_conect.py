@@ -36,7 +36,7 @@ if __name__ == '__main__':
     init_message = "actuator_zed_testing.py"
     logger = Logger(logger_path, init_message)
     # Inicializar detector de conos
-    detector = ConeDetector(checkpoint_path="/home/xavier/Deteccion_conos_03_2022/cone_detection/data/saved_networks/SNet_3L_saved_model_FP32", logger=logger)
+    detector = ConeDetector(checkpoint_path="/home/xavier/Deteccion_conos/cone_detection/data/saved_networks/SNet_3L_saved_model_FP32", logger=logger)
     print('Cone detector initialized')
     # Inicializar conexiones
     connect_mng = ConnectionManager(logger=logger)

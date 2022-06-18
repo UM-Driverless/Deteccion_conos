@@ -46,8 +46,7 @@ if __name__ == '__main__':
     # Inicializar conexiones
     connect_mng = ConnectionManager(logger=logger)
     print('CAN connection initialized')
-
-
+    agent_run=False
     # Visualización de datos
     visualizer = Visualizer()
     print('visualizer initialized')
@@ -55,10 +54,14 @@ if __name__ == '__main__':
     try:
         while True:
 
+            # Pedir datos al simulador o al coche
+            in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
+
             #1. Comprobar en que mision estamos (en este caso aceleración) 0x410-0
             #manual = 0, acc = 1, skidpad = 2, autox = 3, track = 4, ebstest= 5, inspection = 6
             amr = connect_mng.get_amr()
             if amr == 1:
+                print('---------------ACCELERATION--------------')
                 if accel_init == 0:
                     # Inicializar Agente (controlador)
                     agent = AgentAcceleration(logger=logger, target_speed=60.)
