@@ -83,7 +83,7 @@ class CAN(CANInterface):
             all_msg_received = True # Se tiene que poner a true cuando se hayan recibido los mensajes necesarios para calcular las acciones. Velocidad, posición actuadores, rpm...
 
         return rpm_can
-
+        
     def get_sensors_data(self):
         """
         Returns the current data from sensors.
@@ -98,17 +98,17 @@ class CAN(CANInterface):
                 msg_id, message = self.decode_message(msg)
                 print(hex(msg_id), message)
                 if msg_id == can_constants.PMC_ID ['PMC_ECU1']:
-                	rpm_can = (message[1] << 8) | message[0]
+                    rpm_can = ((message[1] << 8) | message[0])
                 if msg_id == can_constants.PMC_ID ['PMC_STATE']:
-                	ASState = message[0]
+                    ASState = message[0]
                 if msg_id == can_constants.SEN_ID['SIG_SENFL']:
-                	speed_FL_can = message[4]
+                    speed_FL_can = message[4]
                 if msg_id == can_constants.SEN_ID['SIG_SENFR']:
-                	speed_FR_can = message[4]
-                if msg_id == can_constants.SEN_ID['STEERW_DV']:
-                	amr = message[0]
-                if msg_id == can_constants.SEN_ID['ETC_STATE']:
-                	clutch_state = message[2]
+                    speed_FR_can = message[4]
+                if msg_id == can_constants.STEERING_ID['STEERW_DV']:
+                    amr = message[0]
+                if msg_id == can_constants.ETC_ID['ETC_STATE']:
+                    clutch_state = message[2]
                 all_msg_received = True
                 self.route_msg(msg_id)
             # TODO: eliminar cuando se reciban los mensajes y configurar salida del bucle
@@ -136,10 +136,10 @@ class CAN(CANInterface):
         clutch = math.trunc(clutch * can_constants.CAN_CLUTCH_DIMENSION)
         upgear = math.trunc(upgear * can_constants.CAN_ACTION_DIMENSION)
         downgear = math.trunc(downgear * can_constants.CAN_ACTION_DIMENSION)
-        print('Send actions: ', throttle, clutch, brake, steer, upgear, downgear)
+        #print('Send actions: ', throttle, clutch, brake, steer, upgear, downgear)
         
         if ((time.time() - self.time_traj) > 0.00001):
-        		print((time.time() - self.time_traj))
+        		#print((time.time() - self.time_traj))
 				#enviar datos actuadores
         		data = [throttle, clutch, brake, 0, upgear, downgear, 0, 0]
         		#self.logger.write_can_log("Send actions message -> " + str(data))
@@ -202,7 +202,7 @@ class CAN(CANInterface):
         #    Sen CAN message
         #############################################################
 		#DJU 17.02.2022         msg = can.Message(arbitration_id=can_constants.TRAJ_ID['TRAJ_ACT'], data=data, extended_id=False)
-        print(data)
+        #print(data)
         msg = can.Message(arbitration_id=idcan, data=data, extended_id=False)
         self.logger.write_can_log("MSG: " + str(msg))
 
@@ -227,25 +227,24 @@ class CAN(CANInterface):
         
 
     def route_msg(self, msg_id):
-        print('route msg: ', msg_id, can_constants.ARD_ID)
+        #print('route msg: ', msg_id, can_constants.ARD_ID)
         if msg_id in can_constants.SEN_ID.values():
-             if msg_id == can_constants.SEN_ID['IMU_SENFL']:
-                 pass
-             if msg_id == can_constants.SEN_ID['SIG_SENFL']:
-                 pass
-             if msg_id == can_constants.SEN_ID['STATE_SENFL']:
-                 pass
+            if msg_id == can_constants.SEN_ID['IMU_SENFL']:
+                pass
+            if msg_id == can_constants.SEN_ID['SIG_SENFL']:
+                pass
+            if msg_id == can_constants.SEN_ID['STATE_SENFL']:
+                pass
         if msg_id in can_constants.TRAJ_ID.values():
              pass
         if msg_id in can_constants.ASSIS_ID.values():
              pass
         if msg_id in can_constants.ASB_ID.values():
              pass
-        if msg_id in can_constants.ARD_ID.values():
-             print('Message from arduino readed')
-             if msg_id == can_constants.ARD_ID['ID']:
-                 print('ID from arduino readed')
-
+        #if msg_id in can_constants.ARD_ID.values():
+            #print('Message from arduino readed')
+        #if msg_id == can_constants.ARD_ID['ID']:
+            #print('ID from arduino readed')
 
     def get_sen_imu(self, wheel, data):
         acceleration_X = data[0]
