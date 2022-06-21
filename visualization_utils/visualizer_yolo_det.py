@@ -67,7 +67,7 @@ class Visualizer(VisualizeInterface):
         image = cv2.putText(image, text, (10, 430), font, fontScale, color, thickness, cv2.LINE_AA)
         text = 'RPM:   {:d}'.format(int(rpm))
         image = cv2.putText(image, text, (10, 450), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'FPS:     {:.2f}'.format(int(fps))
+        text = 'FPS:     {:.2f}'.format(float(fps))
         image = cv2.putText(image, text, (10, 490), font, fontScale, color, thickness, cv2.LINE_AA)
         ctr_img = self._controls_img(steer, throttle, brake, clutch)
         image[340:390, 10:210] = ctr_img
