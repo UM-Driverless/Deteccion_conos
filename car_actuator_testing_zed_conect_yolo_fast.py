@@ -152,7 +152,7 @@ if __name__ == '__main__':
                         start_time = time.time()
                         connect_mng.do_read_msg()
                         print('-----inicio mov 2.1-----')
-                        connect_mng.send_actions(throttle=0.5,
+                        connect_mng.send_actions(throttle=0.3,
                                                 brake=0,
                                                 steer=0,
                                                 clutch=1.0,
@@ -163,7 +163,7 @@ if __name__ == '__main__':
                         print('-----inicio mov 2.2-----')
                         for x in range(100, 0, -5):
 
-                            connect_mng.send_actions(throttle=0.5,
+                            connect_mng.send_actions(throttle=0.3,
                                                     brake=0,
                                                     steer=0,
                                                     clutch=x/100,
@@ -173,7 +173,7 @@ if __name__ == '__main__':
                             start_time = time.time()
 
                         print('-----inicio mov 2.3-----')
-                        connect_mng.send_actions(throttle=0.5,
+                        connect_mng.send_actions(throttle=0.3,
                                                 brake=0,
                                                 steer=0,
                                                 clutch=0,
@@ -194,7 +194,7 @@ if __name__ == '__main__':
                     # clutch *= 0.8
 
                     # Enviar acciones
-                    connect_mng.send_actions(throttle=0.4,
+                    connect_mng.send_actions(throttle=0.3,
                                             brake=brake,
                                             steer=steer,
                                             clutch=clutch,
