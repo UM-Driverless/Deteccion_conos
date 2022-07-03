@@ -112,31 +112,16 @@ if __name__ == '__main__':
                     # cv2.waitKey(1)
                     in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
                     connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
                     # Detectar conos
                     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
                     
                     in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
                     connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
 
                     detections, cone_centers = detector.detect_cones(image, get_centers=True)
 
                     in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
                     connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
                     # Actions:
                     # 1 -> steer
                     # 2 -> throttle
@@ -152,7 +137,7 @@ if __name__ == '__main__':
                         start_time = time.time()
                         connect_mng.do_read_msg()
                         print('-----inicio mov 2.1-----')
-                        connect_mng.send_actions(throttle=0.5,
+                        connect_mng.send_actions(throttle=0.3,
                                                 brake=0,
                                                 steer=0,
                                                 clutch=1.0,
@@ -163,7 +148,7 @@ if __name__ == '__main__':
                         print('-----inicio mov 2.2-----')
                         for x in range(100, 0, -5):
 
-                            connect_mng.send_actions(throttle=0.5,
+                            connect_mng.send_actions(throttle=0.3,
                                                     brake=0,
                                                     steer=0,
                                                     clutch=x/100,
@@ -173,7 +158,7 @@ if __name__ == '__main__':
                             start_time = time.time()
 
                         print('-----inicio mov 2.3-----')
-                        connect_mng.send_actions(throttle=0.5,
+                        connect_mng.send_actions(throttle=0.3,
                                                 brake=0,
                                                 steer=0,
                                                 clutch=0,
@@ -194,22 +179,12 @@ if __name__ == '__main__':
                     # clutch *= 0.8
 
                     # Enviar acciones
-                    connect_mng.send_actions(throttle=0.4,
+                    connect_mng.send_actions(throttle=0.3,
                                             brake=brake,
                                             steer=steer,
                                             clutch=clutch,
                                             upgear=upgear,
                                             downgear=downgear)
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
                     in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
                     connect_mng.do_read_msg()
                     print (in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm)
@@ -221,19 +196,10 @@ if __name__ == '__main__':
                     visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
                                         [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
                                         save_frames=False)
+                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
+                    connect_mng.do_read_msg()
                     
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                    connect_mng.do_read_msg()
+                    
 
             elif amr == 0:
                 accel_init = 0
