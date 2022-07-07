@@ -24,13 +24,13 @@ class ConnectionManager(ComunicationInterface):
         can_msg = self.can.get_sensors_data()
 
         # Modificar valores, puestos a cero para que funcione el programa únicamente.
-        speed = self.get_speed()
-        throttle = self.get_throttle()
-        steer = self.get_steer_angle()
-        brake = self.get_brake()
-        clutch = self.get_clutch_state()
+        speed = self.can.speed_FR_can
+        throttle = self.can.throttle_pos
+        steer = self.can.steer_angle
+        brake = self.can.brake_pressure
+        clutch = self.can.clutch_state
         gear = 0
-        rpm = self.get_rpm()
+        rpm = self.can.rpm_can
         # [speed, throttle, steer, brake, gear ...]
         #return np.array(image), speed, throttle, steer, brake, clutch, gear, rpm
         #print('------GET DATA------')
@@ -43,27 +43,6 @@ class ConnectionManager(ComunicationInterface):
         """
         print('Send throttle: ', throttle, ' clutch: ', clutch, ' brake: ', brake, ' steer: ', steer,  ' upgear: ', upgear, ' downgear: ', downgear)
         self.can.send_action_msg(throttle, brake, steer, clutch, upgear, downgear)
-
-    def get_amr(self):
-        return self.can.get_amr()
-
-    def get_rpm(self):
-        return self.can.get_rpm()
-
-    def get_speed(self):
-        return self.can.get_speed()
-    
-    def get_throttle(self):
-        return self.can.get_throttle()
-
-    def get_steer_angle(self):
-        return self.can.get_steer_angle()
-
-    def get_brake(self):
-        return self.can.get_brake()
-
-    def get_clutch_state(self):
-        return self.can.get_clutch_state()
 
     def do_read_msg(self):
         can_msg = self.can.get_sensors_data()

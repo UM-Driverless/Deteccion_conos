@@ -59,28 +59,6 @@ class CAN(CANInterface):
         #self.logger.write_can_log("Init steering message -> " + str(data_steer_msg_c))
         self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_c)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
-
-    def get_amr(self):
-        return self.amr
-
-    def get_rpm(self):
-        return self.rpm_can
-
-    def get_speed(self):
-        #cuando tengamos mas variables calcularemos aqui la media de velocidades
-        return self.speed_FR_can
-
-    def get_throttle(self):
-        return self.throttle_pos
-
-    def get_steer_angle(self):
-        return self.steer_angle
-
-    def get_brake(self):
-        return self.brake_pressure
-
-    def get_clutch_state(self):
-        return self.clutch_state
     
 
     def get_sensors_data(self):
