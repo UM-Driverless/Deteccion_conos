@@ -63,6 +63,7 @@ class AgentAcceleration(AgentInterface):
         """
         Calcular los valores de control
         """
+        print('*********--------Get action?-------*********')
         centers, detections, labels = detections
 
         data = self.create_cone_map(centers, labels, None, None)
@@ -112,7 +113,7 @@ class AgentAcceleration(AgentInterface):
             throttle = 0.
             ref_point = - speed
             brake = pid_brake(ref_point)
-
+            print('-----CONOS NARANJAS----')
         print(throttle, brake, ref_point, val[3], val[4], val[5], val[6], val[7], val[8])
 
         clutch = self.clutch_func(speed, throttle, brake, rpm)
@@ -148,7 +149,7 @@ class AgentAcceleration(AgentInterface):
                     clutch = 1.0
             else:
                 rpm = rpm / self.clutch_max_rpm
-                clutch = (0.2 / rpm) - 0.2
+                clutch = (0.2 / (rpm+0.1)) - 0.2
 
         return clutch
 
@@ -351,9 +352,9 @@ class AgentAccelerationYoloFast(AgentAcceleration):
             target_speed = self.target_speed
 
             ref_point = speed - target_speed
-            # throttle = pid_throttle(ref_point)
-            throttle = 1.0
-
+            #throttle = pid_throttle(ref_point)
+            throttle = 0.5
+            clutch = 0.
             brake = 0.
         else:
             blue_braking_zone = False
@@ -375,19 +376,22 @@ class AgentAccelerationYoloFast(AgentAcceleration):
 
             if not blue_braking_zone and not yell_braking_zone:  # No braking zone
                 target_speed = self.target_speed
-
                 ref_point = speed - target_speed
-                # throttle = pid_throttle(ref_point)
-                throttle = 1.0
+                #throttle = pid_throttle(ref_point)
+                throttle = 0.5
                 brake = 0.
+                clutch = 0.
             else: # Braking zone
                 throttle = 0.
                 ref_point = - speed
-                brake = pid_brake(ref_point)
+                #brake = pid_brake(ref_point)
+                brake = 1.
+                clutch = 1.
 
-        print(throttle, brake, ref_point, val[3], val[4], val[5], val[6], val[7], val[8])
 
-        clutch = self.clutch_func(speed, throttle, brake, rpm)
+        #print(throttle, brake, ref_point, val[3], val[4], val[5], val[6], val[7], val[8])
+
+        #clutch = self.clutch_func(speed, throttle, brake, rpm)
 
         upgear, downgear, gear = self.change_gear(gear, rpm, throttle)
 

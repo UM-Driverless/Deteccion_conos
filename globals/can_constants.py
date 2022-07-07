@@ -83,6 +83,19 @@ STEER_INIT_ID = {
 "MSG_35": int("00", 16),  # 0x00 Datos 1
 }
 
+##IDs de PMC
+PMC_ID = {
+"PMC_GPS": int("340", 16),
+"PMC_IMU": int("341", 16),
+"PMC_ANALOG": int("342", 16),
+"PMC_TIME": int("343", 16),
+"PMC_DIGITAL": int("344", 16),
+"PMC_ECU1": int("345", 16),
+"PMC_ECU2": int("346", 16),
+"PMC_STATE": int("347", 16),
+}
+
+
 ## IDs de ASSIS
 ASSIS_ID = {
 "ASSIS_C": int("350", 16),
@@ -99,9 +112,29 @@ ASB_ID = {
 
 ## ID Arduino
 ARD_ID = {
-"ID": int("201", 16)
+"ID": int("201", 16),
 }
 
-CAN_SEND_MSG_TIMEOUT = 0.005
+## ID Steering
+STEERING_ID = {
+"STEERW_DV": int("410", 16),
+}
+
+## ID ETC
+ETC_ID = {
+"ETC_SIGNALS": int("330", 16),
+"ETC_STATE": int("331", 16),
+}
+
+## ID AIM
+AIM_ID = {
+"AIM_GPS": int("400", 16),
+"AIM_OUT": int("401", 16),
+"AIM_SENSORS": int("402", 16),
+}
+
+CAN_SEND_MSG_TIMEOUT = 0.1
 CAN_ACTION_DIMENSION = 100.
-CAN_STEER_DIMENSION = 122880.
+CAN_STEER_DIMENSION = 1228800.
+CAN_CLUTCH_DIMENSION = 50.
+RPM_RALENTI = 1900
