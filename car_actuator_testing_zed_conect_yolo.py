@@ -18,6 +18,7 @@ import numpy as np
 if __name__ == '__main__':
 
     verbose = 1
+    
     cam = sl.Camera()
     cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 0)
     init = sl.InitParameters()

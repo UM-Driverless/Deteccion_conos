@@ -151,6 +151,7 @@ class AgentAcceleration(AgentInterface):
                 rpm = rpm / self.clutch_max_rpm
                 clutch = (0.2 / (rpm+0.1)) - 0.2
 
+
         return clutch
 
 class AgentTestClutchThrottle(AgentAcceleration):
