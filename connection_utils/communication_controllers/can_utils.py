@@ -59,7 +59,138 @@ class CAN(CANInterface):
         #self.logger.write_can_log("Init steering message -> " + str(data_steer_msg_c))
         self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_c)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
-    
+
+    def get_rpm_can(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.PMC_ID['PMC_ECU1']:
+                    self.rpm_can = ((message[1] << 8) | message[0])
+                    return self.rpm_can
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000001')
+
+    def get_ASState(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.PMC_ID ['PMC_STATE']:
+                    self.ASState = message[0]
+                    return self.ASState
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000002')
+
+    def get_speed_FL_can(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.SEN_ID['SIG_SENFL']:
+                    self.speed_FL_can = message[4]
+                    return self.speed_FL_can
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000003')
+
+    def get_speed_FR_can(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.SEN_ID['SIG_SENFR']:
+                    self.speed_FR_can = message[4]
+                    return self.speed_FR_can
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000004')
+
+    def get_amr(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.STEERING_ID['STEERW_DV']:
+                    self.amr = message[0]
+                    return self.amr
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000005')
+
+    def get_clutch_state(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.ETC_ID['ETC_STATE']:
+                    self.clutch_state = message[2]
+                    return self.clutch_state
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000006')
+
+    def get_throttle_pos(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.ETC_ID['ETC_SIGNALS']:
+                    self.throttle_pos = message[5]
+                    return self.throttle_pos
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000007')
+
+    def get_steer_angle(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.AIM_ID['AIM_SENSORS']:
+                    self.steer_angle = message[0]
+                    return self.steer_angle
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000008')
+
+    def get_brake_pressure(self):
+        inicio = time.time()/1000
+        fin = inicio + 100
+        while inicio < fin:
+            msg = self.buffer.get_message(0.1)
+            if msg is not None:
+                msg_id, message = self.decode_message(msg)
+                if msg_id == can_constants.ASB_ID['ASB_ANALOG']:
+                    self.brake_pressure = message[0]
+                    return self.brake_pressure
+            inicio = time.time()
+
+        self.send_trayectory_state('00000001', '00000009')
+
+
+    def send_trayectory_state(self, *args):
+        data_steering = [args[0], [args[1]]]
+
+        self.send_message(can_constants.TRAJ_ID['TRAJ_STATE'], 2, data_steering)
 
     def get_sensors_data(self):
         """
@@ -76,21 +207,21 @@ class CAN(CANInterface):
                 print(hex(msg_id), message)
                 if msg_id == can_constants.PMC_ID ['PMC_ECU1']:
                     self.rpm_can = ((message[1] << 8) | message[0])
-                if msg_id == can_constants.PMC_ID ['PMC_STATE']:
+                elif msg_id == can_constants.PMC_ID ['PMC_STATE']:
                     self.ASState = message[0]
-                if msg_id == can_constants.SEN_ID['SIG_SENFL']:
+                elif msg_id == can_constants.SEN_ID['SIG_SENFL']:
                     self.speed_FL_can = message[4]
-                if msg_id == can_constants.SEN_ID['SIG_SENFR']:
+                elif msg_id == can_constants.SEN_ID['SIG_SENFR']:
                     self.speed_FR_can = message[4]
-                if msg_id == can_constants.STEERING_ID['STEERW_DV']:
+                elif msg_id == can_constants.STEERING_ID['STEERW_DV']:
                     self.amr = message[0]
-                if msg_id == can_constants.ETC_ID['ETC_STATE']:
+                elif msg_id == can_constants.ETC_ID['ETC_STATE']:
                     self.clutch_state = message[2]
-                if msg_id == can_constants.ETC_ID['ETC_SIGNALS']:
+                elif msg_id == can_constants.ETC_ID['ETC_SIGNALS']:
                     self.throttle_pos = message[5]
-                if msg_id == can_constants.AIM_ID['AIM_SENSORS']:
+                elif msg_id == can_constants.AIM_ID['AIM_SENSORS']:
                     self.steer_angle = message[0]
-                if msg_id == can_constants.ASB_ID['ASB_ANALOG']:
+                elif msg_id == can_constants.ASB_ID['ASB_ANALOG']:
                     self.brake_pressure = message[0]
                 all_msg_received = True
                 self.route_msg(msg_id)
