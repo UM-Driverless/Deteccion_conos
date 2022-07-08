@@ -24,13 +24,13 @@ class ConnectionManager(ComunicationInterface):
         can_msg = self.can.get_sensors_data()
 
         # Modificar valores, puestos a cero para que funcione el programa únicamente.
-        speed = self.can.speed_FR_can
-        throttle = self.can.throttle_pos
-        steer = self.can.steer_angle
-        brake = self.can.brake_pressure
-        clutch = self.can.clutch_state
+        speed = (self.can.get_speed_FR_can() + self.can.get_speed_FL_can()) / 2
+        throttle = self.can.get_throttle_pos()
+        steer = self.can.get_steer_angle()
+        brake = self.can.get_brake_pressure()
+        clutch = self.can.get_clutch_state()
         gear = 0
-        rpm = self.can.rpm_can
+        rpm = self.can.get_rpm_can()
         # [speed, throttle, steer, brake, gear ...]
         #return np.array(image), speed, throttle, steer, brake, clutch, gear, rpm
         #print('------GET DATA------')

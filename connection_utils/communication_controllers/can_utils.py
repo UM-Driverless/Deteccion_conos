@@ -62,7 +62,7 @@ class CAN(CANInterface):
 
     def get_rpm_can(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -70,13 +70,14 @@ class CAN(CANInterface):
                 if msg_id == can_constants.PMC_ID['PMC_ECU1']:
                     self.rpm_can = ((message[1] << 8) | message[0])
                     return self.rpm_can
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000001')
+        self.send_trayectory_state([1,1])
+        return self.rpm_can
 
     def get_ASState(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -84,13 +85,13 @@ class CAN(CANInterface):
                 if msg_id == can_constants.PMC_ID ['PMC_STATE']:
                     self.ASState = message[0]
                     return self.ASState
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000002')
+        self.send_trayectory_state([1,2])
 
     def get_speed_FL_can(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA_SPEED
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -98,13 +99,13 @@ class CAN(CANInterface):
                 if msg_id == can_constants.SEN_ID['SIG_SENFL']:
                     self.speed_FL_can = message[4]
                     return self.speed_FL_can
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000003')
+        self.send_trayectory_state([1,3])
 
     def get_speed_FR_can(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA_SPEED
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -112,13 +113,13 @@ class CAN(CANInterface):
                 if msg_id == can_constants.SEN_ID['SIG_SENFR']:
                     self.speed_FR_can = message[4]
                     return self.speed_FR_can
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000004')
+        self.send_trayectory_state([1,4])
 
     def get_amr(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -126,13 +127,13 @@ class CAN(CANInterface):
                 if msg_id == can_constants.STEERING_ID['STEERW_DV']:
                     self.amr = message[0]
                     return self.amr
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000005')
+        self.send_trayectory_state([1,5])
 
     def get_clutch_state(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -140,13 +141,13 @@ class CAN(CANInterface):
                 if msg_id == can_constants.ETC_ID['ETC_STATE']:
                     self.clutch_state = message[2]
                     return self.clutch_state
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000006')
+        self.send_trayectory_state([1,6])
 
     def get_throttle_pos(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -154,13 +155,13 @@ class CAN(CANInterface):
                 if msg_id == can_constants.ETC_ID['ETC_SIGNALS']:
                     self.throttle_pos = message[5]
                     return self.throttle_pos
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000007')
+        self.send_trayectory_state([1,7])
 
     def get_steer_angle(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -168,13 +169,13 @@ class CAN(CANInterface):
                 if msg_id == can_constants.AIM_ID['AIM_SENSORS']:
                     self.steer_angle = message[0]
                     return self.steer_angle
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000008')
+        self.send_trayectory_state([1,8])
 
     def get_brake_pressure(self):
         inicio = time.time()/1000
-        fin = inicio + 100
+        fin = inicio + can_constants.ESPERA
         while inicio < fin:
             msg = self.buffer.get_message(0.1)
             if msg is not None:
@@ -182,15 +183,14 @@ class CAN(CANInterface):
                 if msg_id == can_constants.ASB_ID['ASB_ANALOG']:
                     self.brake_pressure = message[0]
                     return self.brake_pressure
-            inicio = time.time()
+            inicio = time.time()/1000
 
-        self.send_trayectory_state('00000001', '00000009')
+        self.send_trayectory_state([1,9])
 
 
-    def send_trayectory_state(self, *args):
-        data_steering = [args[0], [args[1]]]
+    def send_trayectory_state(self, arg):
 
-        self.send_message(can_constants.TRAJ_ID['TRAJ_STATE'], 2, data_steering)
+        self.send_message(can_constants.TRAJ_ID['TRAJ_STATE'], 2, arg)
 
     def get_sensors_data(self):
         """
