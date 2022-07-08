@@ -21,8 +21,6 @@ class ConnectionManager(ComunicationInterface):
         """
         #image = self.camera.get_frame(self.camera.cam)
 
-        can_msg = self.can.get_sensors_data()
-
         # Modificar valores, puestos a cero para que funcione el programa únicamente.
         speed = (self.can.get_speed_FR_can() + self.can.get_speed_FL_can()) / 2
         throttle = self.can.get_throttle_pos()

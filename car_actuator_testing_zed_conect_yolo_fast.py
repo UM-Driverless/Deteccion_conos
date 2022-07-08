@@ -54,7 +54,6 @@ if __name__ == '__main__':
     accel_init = 0
     try:
         while True:
-            connect_mng.do_read_msg()
             # Pedir datos al simulador o al coche
             in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
             #1. Comprobar en que mision estamos (en este caso aceleración) 0x410-0
@@ -64,6 +63,7 @@ if __name__ == '__main__':
                 if accel_init == 0:
                     inicio_mov=0
                     print('---------------ACCELERATION--------------')
+                    #connect_mng.can.send_trayectory_state([0,0,1])
                     # Inicializar Agente (controlador)
                     agent = AgentAcceleration(logger=logger, target_speed=20.)
                     print('agent initialized')
