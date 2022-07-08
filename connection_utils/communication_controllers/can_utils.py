@@ -88,6 +88,7 @@ class CAN(CANInterface):
             inicio = time.time()/1000
 
         self.send_trayectory_state([1,2])
+        return self.ASState
 
     def get_speed_FL_can(self):
         inicio = time.time()/1000
@@ -102,6 +103,7 @@ class CAN(CANInterface):
             inicio = time.time()/1000
 
         self.send_trayectory_state([1,3])
+        return self.speed_FL_can
 
     def get_speed_FR_can(self):
         inicio = time.time()/1000
@@ -116,6 +118,7 @@ class CAN(CANInterface):
             inicio = time.time()/1000
 
         self.send_trayectory_state([1,4])
+        return self.speed_FR_can
 
     def get_amr(self):
         inicio = time.time()/1000
@@ -130,6 +133,7 @@ class CAN(CANInterface):
             inicio = time.time()/1000
 
         self.send_trayectory_state([1,5])
+        return self.amr
 
     def get_clutch_state(self):
         inicio = time.time()/1000
@@ -144,6 +148,7 @@ class CAN(CANInterface):
             inicio = time.time()/1000
 
         self.send_trayectory_state([1,6])
+        return self.clutch_state
 
     def get_throttle_pos(self):
         inicio = time.time()/1000
@@ -158,6 +163,7 @@ class CAN(CANInterface):
             inicio = time.time()/1000
 
         self.send_trayectory_state([1,7])
+        return self.throttle_pos
 
     def get_steer_angle(self):
         inicio = time.time()/1000
@@ -172,6 +178,7 @@ class CAN(CANInterface):
             inicio = time.time()/1000
 
         self.send_trayectory_state([1,8])
+        return self.steer_angle
 
     def get_brake_pressure(self):
         inicio = time.time()/1000
@@ -186,6 +193,7 @@ class CAN(CANInterface):
             inicio = time.time()/1000
 
         self.send_trayectory_state([1,9])
+        return self.brake_pressure
 
 
     def send_trayectory_state(self, arg):
