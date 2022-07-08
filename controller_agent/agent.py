@@ -27,6 +27,8 @@ class AgentAcceleration(AgentInterface):
         self.clutch_max_rpm = 2000.
 
         self.target_speed = target_speed
+        self.actual_cones = 0
+        self.total_cones = 0
 
     def initializeTrackbarsPID(self, intialTracbarVals):
         cv2.namedWindow("Trackbars PID")
@@ -256,6 +258,9 @@ class AgentAccelerationYolo(AgentAcceleration):
 
         n_color_cones = len(blue_center) + len(yell_center)
         n_oran_cones = len(oran_left_center) + len(oran_rigth_center)
+
+        self.actual_cones = n_color_cones + n_oran_cones
+        self.total_cones += self.actual_cones
 
         val = self.valTrackbarsPID()
         pid_throttle = self.pid_throttle(Kp=val[3], Ki=val[4], Kd=val[5], setpoint=0, output_limits=(0., 1.))
