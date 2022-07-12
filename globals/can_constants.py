@@ -141,3 +141,18 @@ RPM_RALENTI = 1900
 
 ESPERA = 100
 ESPERA_SPEED = 500
+
+XAVIER_ERROR = {
+    CAN_TIMEOUT : {
+        "id": 1,
+        "rpm_can": 1,
+        "ASState": 2,
+        "speed_FL_can": 3,
+        "speed_FR_can": 4,
+        "amr": 5,
+        "clutch_state": 6,
+        "throttle_pos": 7,
+        "steer_angle": 8,
+        "brake_pressure": 9,
+    }
+}

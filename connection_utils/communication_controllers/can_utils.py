@@ -1,6 +1,7 @@
 from connection_utils.communication_controllers.can_interface import CANInterface
 import can
 from globals import can_constants
+from globals.can_constants import XAVIER_ERROR
 import math
 import struct
 import time
@@ -71,7 +72,7 @@ class CAN(CANInterface):
                     return self.rpm_can
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,1])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["rpm_can"]])
         return self.rpm_can
 
     def get_ASState(self):
@@ -86,7 +87,7 @@ class CAN(CANInterface):
                     return self.ASState
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,2])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["ASState"]])
         return self.ASState
 
     def get_speed_FL_can(self):
@@ -101,7 +102,7 @@ class CAN(CANInterface):
                     return self.speed_FL_can
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,3])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["speed_FL_can"]])
         return self.speed_FL_can
 
     def get_speed_FR_can(self):
@@ -116,7 +117,7 @@ class CAN(CANInterface):
                     return self.speed_FR_can
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,4])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["speed_FR_can"]])
         return self.speed_FR_can
 
     def get_amr(self):
@@ -131,7 +132,7 @@ class CAN(CANInterface):
                     return self.amr
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,5])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["ASState"]])
         return self.amr
 
     def get_clutch_state(self):
@@ -141,12 +142,12 @@ class CAN(CANInterface):
             msg = self.buffer.get_message(0.1)
             if msg is not None:
                 msg_id, message = self.decode_message(msg)
-                if msg_id == can_constants.ETC_ID['ETC_STATE']:
+                if msg_id == can_constants.ETC_ID['amr']:
                     self.clutch_state = message[2]
                     return self.clutch_state
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,6])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["clutch_state"]])
         return self.clutch_state
 
     def get_throttle_pos(self):
@@ -161,7 +162,7 @@ class CAN(CANInterface):
                     return self.throttle_pos
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,7])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["throttle_pos"]])
         return self.throttle_pos
 
     def get_steer_angle(self):
@@ -176,7 +177,7 @@ class CAN(CANInterface):
                     return self.steer_angle
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,8])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["steer_angle"]])
         return self.steer_angle
 
     def get_brake_pressure(self):
@@ -191,7 +192,7 @@ class CAN(CANInterface):
                     return self.brake_pressure
             inicio = time.time()*1000
 
-        self.send_trayectory_state([1,9])
+        self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["brake_pressure"]])
         return self.brake_pressure
 
 
