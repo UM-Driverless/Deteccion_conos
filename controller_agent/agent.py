@@ -314,7 +314,7 @@ class AgentAccelerationYolo(AgentAcceleration):
 
 class AgentAccelerationYoloFast(AgentAcceleration):
     def __init__(self, logger, target_speed=20.):
-        super().__init__(logger=logger)
+        super().__init__(logger=logger, target_speed=target_speed)
         self.cone_processing = ConeProcessingNoWrapped()
 
     def get_action(self, detections, speed, gear, rpm, cone_centers=None, orig_im_shape=(1, 180, 320, 3), image=None):
@@ -357,8 +357,8 @@ class AgentAccelerationYoloFast(AgentAcceleration):
             target_speed = self.target_speed
 
             ref_point = speed - target_speed
-            #throttle = pid_throttle(ref_point)
-            throttle = 0.5
+            # TODO [Jose]: desactivar pid
+            throttle = pid_throttle(ref_point)
             clutch = 0.
             brake = 0.
         else:
@@ -382,8 +382,9 @@ class AgentAccelerationYoloFast(AgentAcceleration):
             if not blue_braking_zone and not yell_braking_zone:  # No braking zone
                 target_speed = self.target_speed
                 ref_point = speed - target_speed
-                #throttle = pid_throttle(ref_point)
-                throttle = 0.5
+                # TODO [Jose]: desactivar pid
+                throttle = pid_throttle(ref_point)
+                #throttle = 0.5
                 brake = 0.
                 clutch = 0.
             else: # Braking zone
