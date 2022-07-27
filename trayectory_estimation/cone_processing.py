@@ -674,3 +674,60 @@ class ConeProcessingNoWrapped(ConeProcessing):
                [np.array(order_warp_blue_center), np.array(order_warp_yell_center),
                 np.array(order_warp_oran_left_center), np.array(order_warp_oran_rigth_center)], \
                center
+
+class ConeProcessingTest180(ConeProcessingNoWrapped):
+    def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
+        """
+        Performs the cones detection task. The detection must include the bounding boxes and classification of each
+        cone.
+        :param img: (3D numpy array) Image to process.
+        :param min_score_thresh: (float in [0., 1.]) Min score of confident on a detection.
+        :param show_detections: (bool) If True: The image with detections id displayed. If False: no image is displayed.
+        :param im_name: (string) Name of the detection image when show_detections=True
+        :return: [ndarray, list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
+                                data.
+        """
+        src_trapezoide = self.valTrackbars()  # Trapezoide a coger de la imagen original
+
+        if cone_centers[0].shape[0]:
+            list_blue_center = cone_centers[0]
+        else:
+            list_blue_center = []
+
+        if cone_centers[1].shape[0]:
+            list_yell_center = cone_centers[1]
+        else:
+            list_yell_center = []
+
+        if cone_centers[2].shape[0]:
+            list_oran_center = cone_centers[2]
+            if cone_centers[3].shape[0]:
+                list_oran_center = np.concatenate([list_oran_center, cone_centers[3]])
+
+        elif cone_centers[3].shape[0]:
+            list_oran_center = cone_centers[3]
+        else:
+            list_oran_center = []
+
+        order_warp_blue_center = list_blue_center
+        order_warp_yell_center = list_yell_center
+        order_warp_oran_left_center, order_warp_oran_rigth_center = self.split_orange_cones(list_oran_center)
+
+        # calcular el centro
+        if len(list_blue_center) > 1 and len(list_yell_center) > 1:
+            # TODO [Jose]: Ponderar pesos
+            x1 = np.median(np.array(list_blue_center)[:3, 0])
+            #x3 = np.mean(np.array(list_blue_center)[:, 0])
+            x2 = np.median(np.array(list_yell_center)[:3, 0])
+            center = int((x2 - x1) / 2 + x1)
+        elif len(order_warp_oran_left_center) > 1 and len(order_warp_oran_rigth_center) > 1:
+            x1 = np.median(np.array(order_warp_oran_left_center)[:, 0])
+            x2 = np.median(np.array(order_warp_oran_rigth_center)[:, 0])
+            center = int((x2 - x1) / 2 + x1)
+        else:
+            center = 0.
+
+        return [list_blue_center, list_yell_center, list_oran_center], \
+               [np.array(order_warp_blue_center), np.array(order_warp_yell_center),
+                np.array(order_warp_oran_left_center), np.array(order_warp_oran_rigth_center)], \
+               center
