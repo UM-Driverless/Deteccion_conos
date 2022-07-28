@@ -6,10 +6,10 @@ import numpy as np
 
 
 class AgentAcceleration(AgentInterface):
-    def __init__(self, logger, target_speed=20.):
+    def __init__(self, logger, target_speed=20., intialTrackVar = [4, 7, 15, 700, 300, 500, 10, 25, 40]):
         super().__init__(logger=logger)
 
-        self.initializeTrackbarsPID([4, 7, 15, 700, 300, 500, 10, 25, 40])
+        self.initializeTrackbarsPID(intialTrackVar)
         self.pid_steer = simple_pid.PID
         self.pid_throttle = simple_pid.PID
         self.pid_brake = simple_pid.PID
@@ -75,7 +75,7 @@ class AgentAcceleration(AgentInterface):
 
         throttle, brake, clutch, upgear, downgear, gear = self.longitudinal_control(cenital_cones=data[1], speed=speed,  gear=gear, rpm=rpm)
 
-        return [throttle, brake, steer, clutch, upgear, downgear, gear], data
+        return [throttle, brake, steer*0.8, clutch, upgear, downgear, gear], data
 
 
     def create_cone_map(self, centers, labels, eagle_img, image_shape):
@@ -278,13 +278,13 @@ class AgentAccelerationYolo(AgentAcceleration):
             blue_braking_zone = False
             for i in range(oran_left_center.shape[0]):
                 for j in range(blue_center.shape[0]):
-                    if oran_left_center[i, 1] > blue_center[j, 1]:
+                    if oran_left_center[i, 1] < blue_center[j, 1]:
                         blue_braking_zone = True
 
             yell_braking_zone = False
             for i in range(oran_rigth_center.shape[0]):
                 for j in range(yell_center.shape[0]):
-                    if oran_rigth_center[i, 1] > yell_center[j, 1]:
+                    if oran_rigth_center[i, 1] < yell_center[j, 1]:
                         yell_braking_zone = True
 
             if blue_center.shape[0] < 1:
@@ -300,6 +300,7 @@ class AgentAccelerationYolo(AgentAcceleration):
                 # throttle = 1.0
                 brake = 0.
             else: # Braking zone
+
                 throttle = 0.
                 ref_point = - speed
                 brake = pid_brake(ref_point)
@@ -313,8 +314,8 @@ class AgentAccelerationYolo(AgentAcceleration):
         return throttle, brake, clutch, upgear, downgear, gear
 
 class AgentAccelerationYoloFast(AgentAcceleration):
-    def __init__(self, logger, target_speed=20.):
-        super().__init__(logger=logger, target_speed=target_speed)
+    def __init__(self, logger, target_speed=20., intialTrackVar = [4, 7, 15, 700, 300, 500, 10, 25, 40]):
+        super().__init__(logger=logger, target_speed=target_speed, intialTrackVar = intialTrackVar)
         self.cone_processing = ConeProcessingNoWrapped()
 
     def get_action(self, detections, speed, gear, rpm, cone_centers=None, orig_im_shape=(1, 180, 320, 3), image=None):
@@ -353,7 +354,7 @@ class AgentAccelerationYoloFast(AgentAcceleration):
         pid_throttle = self.pid_throttle(Kp=val[3], Ki=val[4], Kd=val[5], setpoint=0, output_limits=(0., 1.))
         pid_brake = self.pid_brake(Kp=val[6], Ki=val[7], Kd=val[8], setpoint=0, output_limits=(0., 1.))
 
-        if n_color_cones > n_oran_cones:
+        if n_color_cones > 0:
             target_speed = self.target_speed
 
             ref_point = speed - target_speed
@@ -363,15 +364,16 @@ class AgentAccelerationYoloFast(AgentAcceleration):
             brake = 0.
         else:
             blue_braking_zone = False
+
             for i in range(oran_left_center.shape[0]):
                 for j in range(blue_center.shape[0]):
-                    if oran_left_center[i, 1] > blue_center[j, 1]:
+                    if oran_left_center[i, 1] < blue_center[j, 1]:
                         blue_braking_zone = True
 
             yell_braking_zone = False
             for i in range(oran_rigth_center.shape[0]):
                 for j in range(yell_center.shape[0]):
-                    if oran_rigth_center[i, 1] > yell_center[j, 1]:
+                    if oran_rigth_center[i, 1] < yell_center[j, 1]:
                         yell_braking_zone = True
 
             if blue_center.shape[0] < 1:

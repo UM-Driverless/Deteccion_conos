@@ -40,11 +40,11 @@ if __name__ == '__main__':
             start_time = time.time()
             # Pedir datos al simulador o al coche
             image, in_speed, in_throttle, in_steer, in_brake, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-            print(f"get_data: {time.time()-start_time}")
+            #print(f"get_data: {time.time()-start_time}")
             # Detectar conos
             start_time1 = time.time()
             detections, cone_centers = detector.detect_cones(image, get_centers=True)
-            print(f"detect_cones: {time.time() - start_time1}")
+            #print(f"detect_cones: {time.time() - start_time1}")
 
             start_time2 = time.time()
             [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
@@ -52,12 +52,12 @@ if __name__ == '__main__':
                                                                                               gear=in_gear, rpm=in_rpm,
                                                                                               cone_centers=cone_centers,
                                                                                               image=image)
-            print(f"get_action: {time.time() - start_time2}")
+            #print(f"get_action: {time.time() - start_time2}")
 
             start_time3 = time.time()
             connect_mng.send_actions(throttle=throttle, brake=brake, steer=steer, clutch=clutch, upgear=upgear,
                                      downgear=downgear)
-            print(f"send_actions: {time.time() - start_time3}")
+            #print(f"send_actions: {time.time() - start_time3}")
 
             fps = 1.0 / (time.time() - start_time)
             start_time4 = time.time()
@@ -66,11 +66,11 @@ if __name__ == '__main__':
                 visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
                                      [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
                                      save_frames=False)
-            print(f"visualize: {time.time() - start_time4}")
+            #print(f"visualize: {time.time() - start_time4}")
 
-            print(fps)
+            #print(fps)
             count += 1
-            if in_speed <= 0. and count > 100:
+            if in_speed <= 0. and count > 1000:
                 break
 
 
