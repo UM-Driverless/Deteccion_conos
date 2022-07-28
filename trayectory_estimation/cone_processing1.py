@@ -679,6 +679,7 @@ class ConeProcessingTest180(ConeProcessingNoWrapped):
     def __init__(self):
         super().__init__()
         self.gamma = 1
+        self.beta = 0.1
     def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
         """
         Performs the cones detection task. The detection must include the bounding boxes and classification of each
@@ -737,19 +738,20 @@ class ConeProcessingTest180(ConeProcessingNoWrapped):
                center
 
     def mean_cones(self, list_cones, orig_im_shape):
-        image_percent = int(orig_im_shape[2] * 0.1)
-        index = list_cones[:,0] > list_cones[0,0] - image_percent
-        cones_filtered = list_cones[index]
-        index = cones_filtered[:, 0] < cones_filtered[0, 0] + image_percent
-        cones_filtered = cones_filtered[index]
+        image_percent = int(orig_im_shape[2] * self.beta)
+        index = list_cones[:, 0] > list_cones[0, 0] - image_percent
+        list_cones = list_cones[index]
+        index = list_cones[:, 0] < list_cones[0, 0] + image_percent
+        list_cones = list_cones[index]
+        #print(list_cones)
 
+        list_cones = np.array(sorted(list_cones, key=lambda x:x[1], reverse=True))
 
-        blue_cones_y = np.array(list_cones)[:4, 1]
-        max_blue_cones_y = np.max(blue_cones_y)
-        blue_pond_y = np.power(blue_cones_y, self.gamma) / max_blue_cones_y
-        blue_cones_x = np.array(list_cones)[:4, 0]
-        max_blue_cones_x = np.max(blue_cones_x)
-        blue_pond_x = np.power(blue_cones_x, self.gamma) / max_blue_cones_x
-        blue_cones_x_pond = blue_cones_x * ((blue_pond_y + blue_pond_x) / 2)
-        x1 = np.sum(blue_cones_x_pond) / np.sum((blue_pond_y + blue_pond_x) / 2)
+        #blue_cones_y = np.array(list_cones)[:10, 1]
+        #max_blue_cones_y = np.max(blue_cones_y)
+        #blue_pond_y = np.power(blue_cones_y, self.gamma) / max_blue_cones_y
+        blue_cones_x = np.array(list_cones)[:1, 0]
+        #blue_cones_x_pond = blue_cones_x * blue_pond_y
+        #x1 = np.sum(blue_cones_x_pond) / np.sum(blue_pond_y)
+        x1 = np.mean(blue_cones_x)
         return x1
