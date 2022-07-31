@@ -124,7 +124,7 @@ class CAN(CANInterface):
         inicio = time.time()*1000
         fin = inicio + can_constants.ESPERA
         while inicio < fin:
-            msg = self.buffer.get_message(0.1)
+            msg = self.buffer.get_message(0.05)
             if msg is not None:
                 msg_id, message = self.decode_message(msg)
                 if msg_id == can_constants.STEERING_ID['STEERW_DV']:
@@ -142,7 +142,7 @@ class CAN(CANInterface):
             msg = self.buffer.get_message(0.1)
             if msg is not None:
                 msg_id, message = self.decode_message(msg)
-                if msg_id == can_constants.ETC_ID['amr']:
+                if msg_id == can_constants.STEERING_ID['STEERW_DV']:
                     self.clutch_state = message[2]
                     return self.clutch_state
             inicio = time.time()*1000
@@ -332,7 +332,7 @@ class CAN(CANInterface):
         try:
             self.bus.send(msg, timeout=can_constants.CAN_SEND_MSG_TIMEOUT)
         except can.CanError as e:
-            print('Error al mandar msg CAN')
+            print(f'Error al mandar msg CAN: {e}')
             error = e
             if hasattr(e, 'message'):
                 error = e.message

@@ -31,8 +31,8 @@ class ConnectionManager(ComunicationInterface):
         rpm = self.can.get_rpm_can()
         # [speed, throttle, steer, brake, gear ...]
         #return np.array(image), speed, throttle, steer, brake, clutch, gear, rpm
-        #print('------GET DATA------')
-        #print(speed, throttle, steer, brake, clutch, gear, rpm)
+        print('------GET DATA------')
+        print(speed, throttle, steer, brake, clutch, gear, rpm)
         return speed, throttle, steer, brake, clutch, gear, rpm
 
     def send_actions(self, throttle, steer, brake, clutch, upgear, downgear):
