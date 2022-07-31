@@ -332,7 +332,7 @@ class CAN(CANInterface):
         try:
             self.bus.send(msg, timeout=can_constants.CAN_SEND_MSG_TIMEOUT)
         except can.CanError as e:
-            print('Error al mandare msg CAN')
+            print('Error al mandar msg CAN')
             error = e
             if hasattr(e, 'message'):
                 error = e.message

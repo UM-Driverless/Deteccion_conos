@@ -143,7 +143,6 @@ ESPERA = 100
 ESPERA_SPEED = 500
 
 XAVIER_ERROR = {
-    CAN_TIMEOUT : {
         "id": 1,
         "rpm_can": 1,
         "ASState": 2,
@@ -154,5 +153,4 @@ XAVIER_ERROR = {
         "throttle_pos": 7,
         "steer_angle": 8,
         "brake_pressure": 9,
-    }
 }
