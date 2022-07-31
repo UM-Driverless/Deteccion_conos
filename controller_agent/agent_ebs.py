@@ -1,5 +1,5 @@
 from controller_agent.agent import AgentAccelerationYoloFast
-from trayectory_estimation.cone_processing1 import ConeProcessingTest180
+from trayectory_estimation.cone_processing import ConeProcessingTest180
 
 class AgentEBS(AgentAccelerationYoloFast):
     def __init__(self, logger, target_speed=45.):
