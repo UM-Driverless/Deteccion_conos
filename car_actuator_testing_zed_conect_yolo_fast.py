@@ -84,9 +84,9 @@ def seleccion_agente_arrancado(agente):
 
 if __name__ == '__main__':
     verbose = 1
-    PATH_OUTPUT = "nombre_video.avi"
-    fourcc = cv2.VideoWriter_fourcc("X", "V", "I", "D")
-    out = cv2.VideoWriter(PATH_OUTPUT, fourcc, 24.0, (1024, 768))
+    # PATH_OUTPUT = "nombre_video.avi"
+    # fourcc = cv2.VideoWriter_fourcc("X", "V", "I", "D")
+    # out = cv2.VideoWriter(PATH_OUTPUT, fourcc, 24.0, (1024, 768))
 
     cam = sl.Camera()
     cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 0)
@@ -109,7 +109,7 @@ if __name__ == '__main__':
     init_message = "actuator_zed_testing.py"
     logger = Logger(logger_path, init_message)
     # Inicializar detector de conos
-    detector = ConeDetector(logger=logger)
+    detector = ConeDetector(logger=logger, checkpoint_path="pesos/yolov5_models/240.pt")
     print('Cone detector initialized')
     # Inicializar conexiones
     connect_mng = ConnectionManager(logger=logger)
@@ -153,7 +153,7 @@ if __name__ == '__main__':
                     #     verbose=0)
                     # Detectar conos
                     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-                    out.write(image)
+                    # out.write(image)
                     print("---get_image---")
                     print(time.time() - time_send)
 
@@ -220,7 +220,7 @@ if __name__ == '__main__':
                     cenital_map = [data[1], data[2], data[-1]]
                     visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
                                          [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
-                                         save_frames=True)
+                                         save_frames=True, show_img = False)
                     print("-----Visualizacion-----)")
                     print(time.time() - time_send)
                     # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
@@ -247,7 +247,9 @@ if __name__ == '__main__':
                                  clutch=clutch,
                                  upgear=upgear,
                                  downgear=downgear)
-        out.release()
+        # out.release()
         print("fin")
-        # visualizer.save_in_video(path = "videos", name = "avi")
+        path = '/videos/'
+        name = 'video_{:0>4d}.jpg'
+        visualizer.save_in_video(path, name)
         # visualizer.close_windows()

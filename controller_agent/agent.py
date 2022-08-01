@@ -354,7 +354,7 @@ class AgentAccelerationYoloFast(AgentAcceleration):
         pid_throttle = self.pid_throttle(Kp=val[3], Ki=val[4], Kd=val[5], setpoint=0, output_limits=(0., 1.))
         pid_brake = self.pid_brake(Kp=val[6], Ki=val[7], Kd=val[8], setpoint=0, output_limits=(0., 1.))
 
-        if n_color_cones > 0:
+        if n_color_cones > n_oran_cones:
             target_speed = self.target_speed
 
             ref_point = speed - target_speed

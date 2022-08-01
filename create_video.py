@@ -1,8 +1,8 @@
 import cv2
 import os
 
-image_folder = '/media/archivos/UMotorsport/video_21_11_21_16_59_1/'
-video_name = '/media/archivos/UMotorsport/video_21_11_21_16_59_1_yolo.avi'
+image_folder = 'C:/Users/Usuario/Documents/GitHub/Deteccion_conos/videos/'
+video_name = 'C:/Users/Usuario/Documents/GitHub/Deteccion_conos/videos/video_xavier_{:0>4d}.avi'
 
 images = [img for img in os.listdir(image_folder) if img.endswith(".jpg")]
 # images.sort(key= lambda x:int(x.split('-')[1].split('.')[0]))
@@ -13,7 +13,7 @@ height, width, layers = frame.shape
 
 
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
-video = cv2.VideoWriter(video_name, fourcc, 15, (width, height))
+video = cv2.VideoWriter(video_name, fourcc, 3.3, (width, height))
 
 name = 'video_{:0>4d}.jpg'
 # images = [name.format(i) for i in range(0, 661)]

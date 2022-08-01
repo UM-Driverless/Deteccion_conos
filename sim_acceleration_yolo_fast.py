@@ -65,7 +65,7 @@ if __name__ == '__main__':
                 cenital_map = [data[1], data[2], data[-1]]
                 visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
                                      [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
-                                     save_frames=False)
+                                     save_frames=True)
             #print(f"visualize: {time.time() - start_time4}")
 
             #print(fps)

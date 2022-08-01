@@ -7,7 +7,7 @@ class Visualizer(VisualizeInterface):
     def __init__(self):
         self.saved_frames = []
 
-    def visualize(self, data, controls, fps, save_frames=False):
+    def visualize(self, data, controls, fps, save_frames=False, show_img=True):
         """
         :param data: List of: [image, detections, cenital_map, y_hat, in_speed]
                      image: ndarray (h, w, channels)
@@ -27,10 +27,11 @@ class Visualizer(VisualizeInterface):
         :param fps: int
         :param save_frames: bool. Allows store the resulting frame in a list to later create a video with save_in_video function
         """
-        self.make_images(data, controls, fps, save_frames=save_frames)
+        self.make_images(data, controls, fps, save_frames=save_frames, show_img=show_img)
 
 
-    def make_images(self, data, controls, fps, save_frames=False):
+    def make_images(self, data, controls, fps, save_frames=False, show_img=True):
+
         image, detections, cone_centers, cenital_map, speed = data
         bbox, label = detections
         cenital_map, estimated_center, wrap_img = cenital_map
@@ -46,11 +47,11 @@ class Visualizer(VisualizeInterface):
 
         image = self._print_controls(brake, clutch, fps, gear, image, rpm, speed, steer, throttle)
 
-        dim = (np.array(image.shape) * 0.1).astype('int')
+        # dim = (np.array(image.shape) * 0.1).astype('int')
         # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
-
-        cv2.imshow("Detections", image)
-        cv2.waitKey(1)
+        if show_img:
+            cv2.imshow("Detections", image)
+            cv2.waitKey(1)
 
         if save_frames:
             self.saved_frames.append(image)

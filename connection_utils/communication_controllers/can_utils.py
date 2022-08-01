@@ -204,36 +204,46 @@ class CAN(CANInterface):
         Returns the current data from sensors.
         :return: numpy nd array of floats
         """
-        all_msg_received = False
-        while not all_msg_received:
-            msg = self.buffer.get_message(0.1)  # Revisar si se puede configurar el timeout
+        msg_list = []
+        flag = [False for i in range(9)]
+        for i in range(10):
+            msg_list.append(self.buffer.get_message(0.1))
+        for msg in msg_list:
+              # Revisar si se puede configurar el timeout
             if msg is not None:
                 #msg.channel.fetchMessage()
                 #print(msg)
                 msg_id, message = self.decode_message(msg)
                 print(hex(msg_id), message)
-                if msg_id == can_constants.PMC_ID ['PMC_ECU1']:
+                if msg_id == can_constants.PMC_ID ['PMC_ECU1'] and not flag[0]:
                     self.rpm_can = ((message[1] << 8) | message[0])
-                elif msg_id == can_constants.PMC_ID ['PMC_STATE']:
+                    flag[0] = True
+                elif msg_id == can_constants.PMC_ID ['PMC_STATE'] and not flag[1]:
                     self.ASState = message[0]
-                elif msg_id == can_constants.SEN_ID['SIG_SENFL']:
+                    flag[1] = True
+                elif msg_id == can_constants.SEN_ID['SIG_SENFL'] and not flag[2]:
                     self.speed_FL_can = message[4]
-                elif msg_id == can_constants.SEN_ID['SIG_SENFR']:
+                    flag[2] = True
+                elif msg_id == can_constants.SEN_ID['SIG_SENFR'] and not flag[3]:
                     self.speed_FR_can = message[4]
-                elif msg_id == can_constants.STEERING_ID['STEERW_DV']:
+                    flag[3] = True
+                elif msg_id == can_constants.STEERING_ID['STEERW_DV'] and not flag[4]:
                     self.amr = message[0]
-                elif msg_id == can_constants.ETC_ID['ETC_STATE']:
+                    flag[4] = True
+                elif msg_id == can_constants.ETC_ID['ETC_STATE'] and not flag[5]:
                     self.clutch_state = message[2]
-                elif msg_id == can_constants.ETC_ID['ETC_SIGNALS']:
+                    flag[5] = True
+                elif msg_id == can_constants.ETC_ID['ETC_SIGNALS'] and not flag[6]:
                     self.throttle_pos = message[5]
-                elif msg_id == can_constants.AIM_ID['AIM_SENSORS']:
+                    flag[6] = True
+                elif msg_id == can_constants.AIM_ID['AIM_SENSORS'] and not flag[7]:
                     self.steer_angle = message[0]
-                elif msg_id == can_constants.ASB_ID['ASB_ANALOG']:
+                    flag[7] = True
+                elif msg_id == can_constants.ASB_ID['ASB_ANALOG'] and not flag[8]:
                     self.brake_pressure = message[0]
-                all_msg_received = True
+                    flag[8] = True
                 self.route_msg(msg_id)
             # TODO: eliminar cuando se reciban los mensajes y configurar salida del bucle
-            all_msg_received = True
                 # Se tiene que poner a true cuando se hayan recibido los mensajes necesarios para calcular las acciones. Velocidad, posición actuadores, rpm...		  
         return 0
 
