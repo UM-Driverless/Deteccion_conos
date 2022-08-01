@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import cv2
 from cone_detection.detector_base import ConeDetectorInterface
+import time
 
 class ConeDetector(ConeDetectorInterface):
 
@@ -20,10 +21,19 @@ class ConeDetector(ConeDetectorInterface):
         :return: [[ndarray, ndarray], list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
                                 data, in this case segmentations.
         """
+
+        time_send = time.time()
+
         results = self.detection_model(input)
         bboxes = []
         labels = []
         # self.extract_data(results)
+
+        print("---results_print---")
+        print(time.time() - time_send)
+
+        time_send = time.time()
+
         for index, row in results.pandas().xyxy[0].iterrows():
             x1 = int(row['xmin'])
             x2 = int(row['xmax'])
@@ -40,10 +50,18 @@ class ConeDetector(ConeDetectorInterface):
             bboxes.append([[x1, y1], [x2, y2]])
             labels.append(label)
 
+        print("---pandas_print---")
+        print(time.time() - time_send)
+
+        time_send = time.time()
+
         if get_centers:
             cone_centers = self.get_centers(np.array(bboxes), labels)
         else:
             cone_centers = None
+
+        print("---get_centers---")
+        print(time.time() - time_send)
 
         return [np.array(bboxes), np.array(labels)], np.array(cone_centers)
 

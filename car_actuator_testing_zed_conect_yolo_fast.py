@@ -109,7 +109,7 @@ if __name__ == '__main__':
     init_message = "actuator_zed_testing.py"
     logger = Logger(logger_path, init_message)
     # Inicializar detector de conos
-    detector = ConeDetector(logger=logger, checkpoint_path="pesos/yolov5_models/240.pt")
+    detector = ConeDetector(logger=logger, checkpoint_path="pesos/yolov5_models/480.pt")
     print('Cone detector initialized')
     # Inicializar conexiones
     connect_mng = ConnectionManager(logger=logger)
@@ -220,7 +220,7 @@ if __name__ == '__main__':
                     cenital_map = [data[1], data[2], data[-1]]
                     visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
                                          [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
-                                         save_frames=True, show_img = False)
+                                         save_frames=True, show_img = True)
                     print("-----Visualizacion-----)")
                     print(time.time() - time_send)
                     # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
@@ -249,7 +249,7 @@ if __name__ == '__main__':
                                  downgear=downgear)
         # out.release()
         print("fin")
-        path = '/videos/'
+        path = 'videos/'
         name = 'video_{:0>4d}.jpg'
         visualizer.save_in_video(path, name)
         # visualizer.close_windows()

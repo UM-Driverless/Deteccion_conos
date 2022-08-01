@@ -1,8 +1,8 @@
 import cv2
 import os
 
-image_folder = 'C:/Users/Usuario/Documents/GitHub/Deteccion_conos/videos/'
-video_name = 'C:/Users/Usuario/Documents/GitHub/Deteccion_conos/videos/video_xavier_{:0>4d}.avi'
+image_folder = '/home/xavier/Deteccion_conos/videos/'
+video_name = '/home/xavier/Deteccion_conos/videos/video_xavier_{:0>4d}.avi'
 
 images = [img for img in os.listdir(image_folder) if img.endswith(".jpg")]
 # images.sort(key= lambda x:int(x.split('-')[1].split('.')[0]))
