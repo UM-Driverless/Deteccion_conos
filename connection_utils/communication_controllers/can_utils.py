@@ -6,6 +6,10 @@ import math
 import struct
 import time
 
+# ELI
+from controller_agent.agent import getCones 
+
+
 
 class CAN(CANInterface):
     def __init__(self, logger=None):
@@ -194,6 +198,18 @@ class CAN(CANInterface):
 
         self.send_trayectory_state([XAVIER_ERROR["id"],XAVIER_ERROR["brake_pressure"]])
         return self.brake_pressure
+
+    # ELI Enviar n de conos por CAN
+    def send_cones_num(self):
+        actual_cones, total_cones = getCones()
+        overflow = 0
+        if(total_cones>255):
+            overflow = 255
+            total_cones -= overflow
+        if(overflow != 0):
+            self.send_trayectory_state([0,0,0,actual_cones,total_cones,0,0])
+        else:
+            self.send_trayectory_state([0,0,0,actual_cones,overflow,total_cones,0])
 
 
     def send_trayectory_state(self, arg):

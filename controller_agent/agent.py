@@ -5,6 +5,11 @@ import simple_pid
 import numpy as np
 
 
+# ELI: Para devolver el n de conos actual y total
+actual_cones_can = 0
+total_cones_can = 0
+def getCones():
+    return actual_cones_can, total_cones_can
 class AgentAcceleration(AgentInterface):
     def __init__(self, logger, target_speed=20., intialTrackVar = [4, 7, 15, 700, 300, 500, 10, 25, 40]):
         super().__init__(logger=logger)
@@ -261,6 +266,10 @@ class AgentAccelerationYolo(AgentAcceleration):
 
         self.actual_cones = n_color_cones + n_oran_cones
         self.total_cones += self.actual_cones
+        # ELI
+        actual_cones_can = self.actual_cones
+        total_cones_can = self.total_cones
+
 
         val = self.valTrackbarsPID()
         pid_throttle = self.pid_throttle(Kp=val[3], Ki=val[4], Kd=val[5], setpoint=0, output_limits=(0., 1.))
