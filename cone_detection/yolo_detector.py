@@ -7,6 +7,8 @@ import time
 class ConeDetector(ConeDetectorInterface):
 
     def __init__(self, checkpoint_path="yolov5/weights/yolov5s-cones-mixed-classes/weights/best.pt", logger=None):
+        print(f"Ruta de pesos: '{checkpoint_path}'")
+        print(f"Debe ser: 'yolov5/weights/yolov5_models/480.pt'")
         self.checkpoint_path = checkpoint_path
         self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=False)
         self.detection_model.conf = 0.3

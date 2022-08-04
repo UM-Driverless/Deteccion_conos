@@ -109,7 +109,7 @@ if __name__ == '__main__':
     init_message = "actuator_zed_testing.py"
     logger = Logger(logger_path, init_message)
     # Inicializar detector de conos
-    detector = ConeDetector(logger=logger, checkpoint_path="pesos/yolov5_models/480.pt")
+    detector = ConeDetector(logger=logger, checkpoint_path="yolov5/weights/yolov5_models/480.pt")
     print('Cone detector initialized')
     # Inicializar conexiones
     connect_mng = ConnectionManager(logger=logger)
