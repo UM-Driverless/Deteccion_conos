@@ -32,7 +32,7 @@ def inicio_de_movimiento():
     time.sleep(2)
     start_time = time.time()
     print('-----inicio mov 2.2-----')
-    for x in range(100, 0, -5):
+    for x in range(100, 0, -1):
         connect_mng.send_actions(throttle=0.3,
                                  brake=0,
                                  steer=0,
@@ -120,7 +120,6 @@ if __name__ == '__main__':
     print('visualizer initialized')
     mat_img = sl.Mat()
     accel_init = 0
-    amr = 2
     try:
         while True:
             # Pedir datos al simulador o al coche
@@ -129,7 +128,7 @@ if __name__ == '__main__':
             # manual = 0, acc = 1, skidpad = 2, autox = 3, track = 4, ebstest= 5, inspection = 6
             print("-----Lectura amr-----")
             #amr = connect_mng.can.get_amr()
-
+            amr = 2
             if amr > 0:
                 if accel_init == 0:
                     agent = seleccion_agente_arrancado(amr)
@@ -201,7 +200,7 @@ if __name__ == '__main__':
                     # clutch *= 0.8
                     time_send = time.time()
                     # Enviar acciones
-                    connect_mng.send_actions(throttle=0.3,
+                    connect_mng.send_actions(throttle=0,
                                              brake=brake,
                                              steer=steer,
                                              clutch=clutch,
