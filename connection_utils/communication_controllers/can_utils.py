@@ -348,9 +348,9 @@ class CAN(CANInterface):
         #############################################################
         #    Sen CAN message
         #############################################################
-		#DJU 17.02.2022         msg = can.Message(arbitration_id=can_constants.TRAJ_ID['TRAJ_ACT'], data=data, extended_id=False)
+		#DJU 17.02.2022         msg = can.Message(arbitration_id=can_constants.TRAJ_ID['TRAJ_ACT'], data=data, is_extended_id=False)
         #print(data)
-        msg = can.Message(arbitration_id=idcan, data=data, extended_id=False)
+        msg = can.Message(arbitration_id=idcan, data=data, is_extended_id=False)
         self.logger.write_can_log("MSG: " + str(msg))
 
         # self.logger.write_can_log("MSG: " + msg.__str__())

@@ -88,7 +88,7 @@ if __name__ == '__main__':
     print('Send actions: ', throttle, clutch, brake, steer)
     data = [0, 0, 0, 0, 0, 0, 0, 0]
 
-    msg = can.Message(arbitration_id=int("320", 16), data=data, extended_id=False)
+    msg = can.Message(arbitration_id=int("320", 16), data=data, is_extended_id=False)
     print(msg)
     timeout = 0.001
     try:
