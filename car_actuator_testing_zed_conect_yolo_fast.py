@@ -26,21 +26,18 @@ def inicio_de_movimiento():
     connect_mng.send_actions(throttle=0.3,
                              brake=0,
                              steer=0,
-                             clutch=1.0,
+                             clutch=2,
                              upgear=0,
                              downgear=0)
     time.sleep(2)
     start_time = time.time()
     print('-----inicio mov 2.2-----')
-    for x in range(100, 0, -1):
-        connect_mng.send_actions(throttle=0.3,
-                                 brake=0,
-                                 steer=0,
-                                 clutch=x / 100,
-                                 upgear=0,
-                                 downgear=0)
-        time.sleep(0.05)
-        start_time = time.time()
+    connect_mng.send_actions(throttle=0.3,
+                             brake=0,
+                             steer=0,
+                             clutch=1,
+                             upgear=0,
+                             downgear=0)
 
     print('-----inicio mov 2.3-----')
     connect_mng.send_actions(throttle=0.3,
@@ -67,7 +64,7 @@ def seleccion_agente_arrancado(agente):
         connect_mng.send_actions(throttle=0,
                                  brake=0,
                                  steer=0,
-                                 clutch=1.0,
+                                 clutch=2,
                                  upgear=0,
                                  downgear=0)
         rpm = connect_mng.can.get_rpm_can()
