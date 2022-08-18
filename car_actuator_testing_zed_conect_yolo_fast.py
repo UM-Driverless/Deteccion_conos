@@ -1,6 +1,7 @@
 from connection_utils.car_comunication import ConnectionManager
 from controller_agent.agent import AgentAccelerationYoloFast as AgentAcceleration
 from controller_agent.agent_ebs import AgentTest180 as AgentTest
+from controller_agent.agent_ebs import AgentEBS as AgentEbs
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
@@ -53,6 +54,29 @@ def seleccion_agente_arrancado(agente):
         print('---------------ACCELERATION--------------')
         agent_init = AgentAcceleration(logger=logger, target_speed=20.)
     elif agente == 2:
+        print('---------------Skidpad--------------')
+        #agent_init = AgentTest(logger=logger, target_speed=5.)
+        return 0
+    elif agente == 3:
+        print('---------------Autocross--------------')
+        #agent_init = AgentTest(logger=logger, target_speed=5.)
+        return 0
+    elif agente == 4:
+        print('---------------Trackdrive--------------')
+        #agent_init = AgentTest(logger=logger, target_speed=5.)
+        return 0
+    elif agente == 5:
+        print('---------------EBS test--------------')
+        agent_init = AgentEbs(logger=logger, target_speed=40.)
+    elif agente == 6:
+        print('---------------Inspection--------------')
+        # agent_init = AgentTest(logger=logger, target_speed=5.)
+        return 0
+    elif agente == 7:
+        print('---------------Manual driving--------------')
+        # agent_init = AgentTest(logger=logger, target_speed=5.)
+        return 0
+    elif agente == 8:
         print('---------------TEST180--------------')
         agent_init = AgentTest(logger=logger, target_speed=5.)
     print('agent initialized')
@@ -125,7 +149,7 @@ if __name__ == '__main__':
             # manual = 0, acc = 1, skidpad = 2, autox = 3, track = 4, ebstest= 5, inspection = 6
             print("-----Lectura amr-----")
             #amr = connect_mng.can.get_amr()
-            amr = 2
+            amr = 8
             if amr > 0:
                 if accel_init == 0:
                     agent = seleccion_agente_arrancado(amr)
@@ -135,92 +159,92 @@ if __name__ == '__main__':
                 start_time = time.time()
                 # Pedir datos al simulador o al coche
                 # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=0)
-                time_send = time.time()
                 # se obtienen las detecciones
                 err = cam.grab(runtime)
-                if err == sl.ERROR_CODE.SUCCESS:
-                    cam.retrieve_image(mat_img)
-                    image = mat_img.get_data()
+                if agent != 0:
+                    if err == sl.ERROR_CODE.SUCCESS:
+                        cam.retrieve_image(mat_img)
+                        image = mat_img.get_data()
 
-                    np.array(image)
-                    # cv2.imshow("img", image)
-                    # cv2.waitKey(1)
-                    # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
-                    #     verbose=0)
-                    # Detectar conos
-                    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-                    # out.write(image)
-                    print("---get_image---")
-                    print(time.time() - time_send)
+                        np.array(image)
+                        # cv2.imshow("img", image)
+                        # cv2.waitKey(1)
+                        # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
+                        #     verbose=0)
+                        # Detectar conos
+                        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                        # out.write(image)
+                        print("---get_image---")
+                        print(time.time() - time_send)
 
-                    # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
-                    #     verbose=0)
-                    time_send = time.time()
-                    detections, cone_centers = detector.detect_cones(image, get_centers=True)
-                    print("---get_detections---")
-                    print(time.time() - time_send)
+                        # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
+                        #     verbose=0)
+                        time_send = time.time()
+                        detections, cone_centers = detector.detect_cones(image, get_centers=True)
+                        print("---get_detections---")
+                        print(time.time() - time_send)
 
-                    time_send = time.time()
-                    in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
-                        verbose=0)
-                    print("---get_data---")
-                    print (time.time() - time_send)
-                    # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = [0, 0, 0, 0, 0, 0, 0]
-                    # Actions:
-                    # 1 -> steer
-                    # 2 -> throttle
-                    # 3 -> brake
-                    # 4 -> clutch
-                    # 5 -> upgear
-                    # 6 -> downgear
+                        time_send = time.time()
+                        in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
+                            verbose=0)
+                        print("---get_data---")
+                        print (time.time() - time_send)
+                        # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = [0, 0, 0, 0, 0, 0, 0]
+                        # Actions:
+                        # 1 -> steer
+                        # 2 -> throttle
+                        # 3 -> brake
+                        # 4 -> clutch
+                        # 5 -> upgear
+                        # 6 -> downgear
 
-                    # Inicio de movimiento
+                        # Inicio de movimiento
 
-                    if inicio_mov == 0:
-                        inicio_de_movimiento()
-                        inicio_mov = 1
-                    time_send = time.time()
-                    # Seleccionar acciones
-                    [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(
-                        detections=detections,
-                        speed=in_speed,
-                        gear=in_gear,
-                        rpm=in_rpm,
-                        cone_centers=cone_centers,
-                        image=image)
-                    print("---get_action---")
-                    print (time.time() - time_send)
-                    # resize actions
-                    # throttle *= 0.8
-                    # brake *= 0.8
-                    # steer *= 0.8
-                    # clutch *= 0.8
-                    time_send = time.time()
-                    # Enviar acciones
-                    connect_mng.send_actions(throttle=0,
-                                             brake=brake,
-                                             steer=steer,
-                                             clutch=clutch,
-                                             upgear=upgear,
-                                             downgear=downgear)
-                    print("---send_action---")
-                    print (time.time() - time_send)
-                    # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
-                    #     verbose=0)
-                    # print(in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm)
-                    fps = 1.0 / (time.time() - start_time)
-                    # print("FPS: ", 1.0 / (time.time() - start_time))
+                        if inicio_mov == 0:
+                            inicio_de_movimiento()
+                            inicio_mov = 1
+                        time_send = time.time()
+                        # Seleccionar acciones
+                        [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(
+                            detections=detections,
+                            speed=in_speed,
+                            gear=in_gear,
+                            rpm=in_rpm,
+                            cone_centers=cone_centers,
+                            image=image)
+                        print("---get_action---")
+                        print (time.time() - time_send)
+                        # resize actions
+                        # throttle *= 0.8
+                        # brake *= 0.8
+                        # steer *= 0.8
+                        # clutch *= 0.8
+                        time_send = time.time()
+                        # Enviar acciones
+                        connect_mng.send_actions(throttle=0,
+                                                 brake=brake,
+                                                 steer=steer,
+                                                 clutch=clutch,
+                                                 upgear=upgear,
+                                                 downgear=downgear)
+                        print("---send_action---")
+                        print (time.time() - time_send)
+                        # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
+                        #     verbose=0)
+                        # print(in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm)
+                        fps = 1.0 / (time.time() - start_time)
+                        # print("FPS: ", 1.0 / (time.time() - start_time))
 
-                if verbose == 1:
-                    time_send = time.time()
-                    cenital_map = [data[1], data[2], data[-1]]
-                    visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
-                                         [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
-                                         save_frames=True, show_img = True)
-                    print("-----Visualizacion-----)")
-                    print(time.time() - time_send)
-                    # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
-                    #     verbose=0)
+                    if verbose == 1:
+                        time_send = time.time()
+                        cenital_map = [data[1], data[2], data[-1]]
+                        visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
+                                             [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
+                                             save_frames=True, show_img = True)
+                        print("-----Visualizacion-----)")
+                        print(time.time() - time_send)
+                        # in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(
+                        #     verbose=0)
 
 
 

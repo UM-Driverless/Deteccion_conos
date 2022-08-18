@@ -6,3 +6,5 @@
 *.pt
 *.engine
 *.onnx
+*.iml
+*.xml
