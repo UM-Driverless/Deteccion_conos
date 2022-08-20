@@ -326,6 +326,7 @@ class AgentAccelerationYoloFast(AgentAcceleration):
     def __init__(self, logger, target_speed=20., intialTrackVar = [4, 7, 15, 700, 300, 500, 10, 25, 40]):
         super().__init__(logger=logger, target_speed=target_speed, intialTrackVar = intialTrackVar)
         self.cone_processing = ConeProcessingNoWrapped()
+        self.mov = True
 
     def get_action(self, detections, speed, gear, rpm, cone_centers=None, orig_im_shape=(1, 180, 320, 3), image=None):
         """
