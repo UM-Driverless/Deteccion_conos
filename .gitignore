@@ -3,3 +3,6 @@
 /logs/
 /Net_7_FP32/
 /cone_detection/data/saved_networks/
+*.pt
+*.engine
+*.onnx
