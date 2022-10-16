@@ -16,7 +16,7 @@ import numpy as np
 #######################################################################################################################
 
 if __name__ == '__main__':
-    verbose = 0
+    verbose = 1
 
 
     # init.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
@@ -67,12 +67,12 @@ if __name__ == '__main__':
                 # 6 -> downgear
 
                 # Seleccionar acciones
-                """[throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
-                                                                                                  speed=in_speed,
-                                                                                                  gear=in_gear,
-                                                                                                  rpm=in_rpm,
+                [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
+                                                                                                  speed=0,
+                                                                                                  gear=0,
+                                                                                                  rpm=0,
                                                                                                   cone_centers=cone_centers,
-                                                                                                  image=image)"""
+                                                                                                  image=image)
 
                 # resize actions
                 # throttle *= 0.8
@@ -93,7 +93,11 @@ if __name__ == '__main__':
 
             if verbose == 1:
                 cenital_map = [data[1], data[2], data[-1]]
-                visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
+                in_speed = 0
+                in_gear = 0
+                in_rpm = 0
+
+                visualizer.visualize([image, detections, cone_centers,cenital_map, in_speed],
                                      [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
                                      save_frames=False)
 
