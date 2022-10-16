@@ -6,3 +6,6 @@
 *.pt
 *.engine
 *.onnx
+*.zip
+*.pyc
+*.pyc

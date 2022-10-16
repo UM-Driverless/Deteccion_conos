@@ -67,12 +67,12 @@ if __name__ == '__main__':
                 # 6 -> downgear
 
                 # Seleccionar acciones
-                [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
+                """[throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
                                                                                                   speed=in_speed,
                                                                                                   gear=in_gear,
                                                                                                   rpm=in_rpm,
                                                                                                   cone_centers=cone_centers,
-                                                                                                  image=image)
+                                                                                                  image=image)"""
 
                 # resize actions
                 # throttle *= 0.8
