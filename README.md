@@ -6,7 +6,7 @@ conda create -n FormulaStudent -y
 https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 
 ```bash
-sudo apt install git
+sudo apt install git &
 sudo apt install python3-pip
 ```
 
