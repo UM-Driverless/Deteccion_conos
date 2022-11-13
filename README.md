@@ -5,7 +5,9 @@ conda create -n FormulaStudent -y
 (en caso de no tener conda, instalarlo siguiendo los pasos de esta web: 
 https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 
-`sudo apt install git`
+```bash
+sudo apt install git
+
 
 2. Activa el entorno
 conda activate FormulaStudent
