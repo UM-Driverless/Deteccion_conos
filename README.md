@@ -1,3 +1,34 @@
+Instrucciones de instalación en linux:
+
+1. Crea un entorno de conda:
+conda create -n FormulaStudent -y
+(en caso de no tener conda, instalarlo siguiendo los pasos de esta web: 
+https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
+
+2. Activa el entorno
+conda activate FormulaStudent
+
+3. clona el directorio de github:
+git clone https://github.com/UM-Driverless/Deteccion_conos.git
+
+4. Instala los requisitos
+cd ~/Deteccion_conos
+pip3 install -r yolov5/yolo_requeriments.txt
+
+5. Instala las dos librerías restantes:
+pip install simple-pid
+pip install python-can
+
+6. Descomprime la carpeta de los pesos en: "yolov5/weights/yolov5_models/240.pt"
+ruta de los pesos: https://urjc-my.sharepoint.com/:u:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models.zip?csf=1&web=1&e=EWceWu
+
+7. Debería serte posible ejecutar el siguiente comando:
+python3 own_camera_main_no_can.py
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 # Cliente para realizar la detección de conos en el simulador
 
 Este cliente funciona en conjunto con el simulador desarrollado en https://github.com/AlbaranezJavier/UnityTrainerPy. Para hacerlo funcionar solo será necesario seguir las instrucciones del repositorio indicado para arrancar el simulador y posteriormente ejecutar el cliente que podemos encontrar en el archivo /PyUMotorsport/main_cone_detection.py
