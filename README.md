@@ -22,7 +22,7 @@ git checkout Test_Portatil
 ```bash
 cd ~/Deteccion_conos
 pip3 install -r yolov5/yolo_requeriments.txt
-
+```
 
 5. Instala las dos librerías restantes:
 ```bash
