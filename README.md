@@ -10,6 +10,7 @@ conda activate FormulaStudent
 
 3. clona el directorio de github:
 git clone https://github.com/UM-Driverless/Deteccion_conos.git
+git checkout Test_Portatil
 
 4. Instala los requisitos
 cd ~/Deteccion_conos
@@ -19,7 +20,7 @@ pip3 install -r yolov5/yolo_requeriments.txt
 pip install simple-pid
 pip install python-can
 
-6. Descomprime la carpeta de los pesos en: "yolov5/weights/yolov5_models/240.pt"
+6. Descomprime la carpeta de los pesos en: "yolov5/weights"
 ruta de los pesos: https://urjc-my.sharepoint.com/:u:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models.zip?csf=1&web=1&e=EWceWu
 
 7. Debería serte posible ejecutar el siguiente comando:
