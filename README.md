@@ -8,7 +8,8 @@ https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 ```bash
 sudo apt install git
 sudo apt install python3-pip
-`
+```
+
 
 2. Activa el entorno
 conda activate FormulaStudent
