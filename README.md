@@ -14,8 +14,7 @@ git clone https://github.com/UM-Driverless/Deteccion_conos.git
 4. Instala los requisitos
 cd ~/Deteccion_conos
 pip3 install -r yolov5/yolo_requeriments.txt
-pip3 install simple-pid
-pip3 install python_can
+
 5. Instala las dos librerías restantes:
 pip install simple-pid
 pip install python-can
