@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-import cv2
 from cone_detection.detector_base import ConeDetectorInterface
 
 class ConeDetector(ConeDetectorInterface):
