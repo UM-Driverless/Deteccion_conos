@@ -13,10 +13,14 @@
 
 
 # Constants to define what to do
-CAN_MODE = 0 # 0 -> OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino, >=3 -> Others
+CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 1 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
-VERBOSE = 1
+VISUALIZE = 1
+
+WEIGHTS_PATH = 'yolov5/weights/yolov5_models/800.pt'
+#WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights
+
 
 # IMPORTS
 from connection_utils.car_comunication import ConnectionManager
@@ -83,7 +87,7 @@ if __name__ == '__main__':
     logger = Logger(logger_path, init_message)
     
     ## Cone detector
-    detector = ConeDetector(logger=logger)
+    detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger)
     
     ## Connections
     #connect_mng = ConnectionManager(logger=logger)
@@ -107,7 +111,7 @@ if __name__ == '__main__':
             start_time = time.time()
 
             # ASK DATA (To the car sensors or the simulator)
-            #in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(VERBOSE=1)
+            #in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(VISUALIZE=1)
 
             result, image = cam.read() # TODO check if result == true?
             recorded_times[0] += time.time() - start_time
@@ -155,7 +159,7 @@ if __name__ == '__main__':
             
             
 
-            if VERBOSE == 1:
+            if VISUALIZE == 1:
                 cenital_map = [data[1], data[2], data[-1]]
                 in_speed = 0
                 in_gear = 0

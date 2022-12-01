@@ -6,9 +6,11 @@ class ConeDetector(ConeDetectorInterface):
 
     def __init__(self, checkpoint_path="yolov5/weights/yolov5_models/240.pt", logger=None):
         self.checkpoint_path = checkpoint_path
+        print(f'Using weights in: {checkpoint_path}')
         self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=True)
         self.detection_model.conf = 0.3
         self.logger = logger
+        
 
     def detect_cones(self, input, get_centers=False):
         """
