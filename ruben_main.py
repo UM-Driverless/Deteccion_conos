@@ -2,7 +2,6 @@
 # MAIN script to execute all the others. Shall contain the main classes, top level functions etc.
 
 # TODO
-# add requirements for our specific extra libraries (cv2, pythoncan, opencv-python, ...)
 #
 #
 
@@ -12,9 +11,9 @@
 #
 
 
-# Constants to define what to do
+# CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 1 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
+CAMERA_MODE = 0 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
 VISUALIZE = 1
 
@@ -38,8 +37,6 @@ import matplotlib.pyplot as plt # For representation of time consumed
 ## Camera libraries
 import cv2 # Webcam
 #import pyzed.sl as sl # ZED.
-
-# TODO ADD ZED dependencies to requirements.txt: python -m pip install cython numpy opencv-python pyopengl
 
 if __name__ == '__main__':
     # SETUP CAMERA
@@ -100,33 +97,34 @@ if __name__ == '__main__':
 
 
     # READ TIMES
-    recorded_times = [0]*10
-    start_time = -1
+    TIMES_TO_MEASURE = 6
+    recorded_times = np.array([0.]*(TIMES_TO_MEASURE+2)) # Timetag at different points in code
+    integrated_time_taken = np.array([0.]*TIMES_TO_MEASURE)
+    average_time_taken = np.array([0.]*TIMES_TO_MEASURE)
     fps = -1
     loop_counter = 0
 
     # Main loop
     try:
         while True:
-            start_time = time.time()
+            recorded_times[0] = time.time()
 
             # ASK DATA (To the car sensors or the simulator)
             #in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(VISUALIZE=1)
 
             result, image = cam.read() # TODO check if result == true?
-            recorded_times[0] += time.time() - start_time
-            np.array(image)
+            recorded_times[1] = time.time()
 
-            recorded_times[1] += time.time() - start_time
-            # cv2.imshow("img", image)
-            # cv2.waitKey(1)
+            np.array(image)
+            recorded_times[2] = time.time()
 
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            recorded_times[2] += time.time() - start_time
+            recorded_times[3] = time.time()
 
             # Detect cones
             detections, cone_centers = detector.detect_cones(image, get_centers=True)
-            recorded_times[3] += time.time() - start_time
+            recorded_times[4] = time.time()
+            
             # Actions:
             # 1 -> steer
             # 2 -> throttle
@@ -135,31 +133,32 @@ if __name__ == '__main__':
             # 5 -> upgear
             # 6 -> downgear
 
-            # Seleccionar acciones
+            # Get actions from agent
             [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
                                                                                                 speed=0,
                                                                                                 gear=0,
                                                                                                 rpm=0,
                                                                                                 cone_centers=cone_centers,
                                                                                                 image=image)
-            recorded_times[4] += time.time() - start_time
+            recorded_times[5] = time.time()
             # resize actions
             # throttle *= 0.8
             # brake *= 0.8
             # steer *= 0.8
             # clutch *= 0.8
 
-            # Enviar acciones
-            '''connect_mng.send_actions(throttle=throttle,
+            # Send actions - CAN
+            if (CAN_MODE == 1): # TODO ERROR NOT DEFINED
+                connect_mng.send_actions(throttle=throttle,
                                         brake=brake,
                                         steer=steer,
                                         clutch=clutch,
                                         upgear=upgear,
-                                        downgear=downgear)'''
+                                        downgear=downgear)
             
             
-
-            if VISUALIZE == 1:
+            # VISUALIZE
+            if (VISUALIZE == 1):
                 cenital_map = [data[1], data[2], data[-1]]
                 in_speed = 0
                 in_gear = 0
@@ -169,24 +168,27 @@ if __name__ == '__main__':
                                      [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
                                      save_frames=False)
             
-            recorded_times[5] += time.time() - start_time
+            recorded_times[6] = time.time()
 
-            #print(f'TIMES: {recorded_times[0]}, {recorded_times[1]}, {recorded_times[2]}, {recorded_times[3]}, {recorded_times[4]}')
-            fps = 1/(time.time() - start_time)
-            print(f'FPS: {fps}')
+            # END OF LOOP
+            print(f'REC: {[(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)]}')
             loop_counter += 1
+            fps = 1/(recorded_times[6] - recorded_times[0])
+            print(f'FPS: {fps}')
+            integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
+
 
     finally:
         # When main loop stops,
 
-        # PRINT TIMES
+        # TIMES
+        average_time_taken = integrated_time_taken/loop_counter
         print(f'\n')
         print(f'LOOPS: {loop_counter}')
-        #print(f'INTEGRATED TIMES: {recorded_times[0]}, {recorded_times[1]}, {recorded_times[2]}, {recorded_times[3]}, {recorded_times[4]}')
-        print(f'AVERAGE TIMES: {recorded_times[0]/loop_counter}, {recorded_times[1]/loop_counter}, {recorded_times[2]/loop_counter}, {recorded_times[3]/loop_counter}, {recorded_times[4]/loop_counter}')
+        print(f'AVERAGE TIMES: {average_time_taken}')
 
         fig = plt.figure(figsize=(12, 4))
-        plt.bar(['cam.read()','Make np.array()','cv2.cvtColor()','detect_cones()','agent.get_action()'],[t/loop_counter for t in recorded_times[0:5]])
+        plt.bar(['cam.read()','Make np.array()','cv2.cvtColor()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
         plt.ylabel("Average time taken [s]")
         #plt.title("Title")
         #plt.show()
@@ -204,3 +206,11 @@ if __name__ == '__main__':
 
 
 
+# STORE
+"""
+cv2.imshow("img", image)
+cv2.waitKey(1)
+
+
+
+"""
