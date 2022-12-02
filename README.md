@@ -1,46 +1,58 @@
-Instrucciones de instalación en linux:
+# How to install and use the scripts in linux (Tested with Ubuntu 22)
 
-1. Crea un entorno de conda:
-conda create -n FormulaStudent -y
-(en caso de no tener conda, instalarlo siguiendo los pasos de esta web: 
-https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
+1. Create a conda environment:
+    ```bash
+    conda create -n FormulaStudent -y
+    ```
+    (en caso de no tener conda, instalarlo siguiendo los pasos de esta web: 
+    https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 
-```bash
-sudo apt install git
-sudo apt install python3-pip
-```
+    ```bash
+    sudo apt install git
+    sudo apt install python3-pip
+    ```
+2. Activate the environment
+    ```bash
+    conda activate FormulaStudent
+    ```
+3. Clone the GitHub directory:
+    ```bash
+    git clone https://github.com/UM-Driverless/Deteccion_conos.git
+    git checkout Test_Portatil
+    ```
+4. Install the requirements (for yolo network and for our scripts)
+    ```bash
+    cd ~/Deteccion_conos
+    pip3 install -r yolov5/yolo_requeriments.txt
+    pip3 install -r requirements.txt
+    ```
+5. Descomprime la [carpeta de los pesos](https://urjc-my.sharepoint.com/:u:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models.zip?csf=1&web=1&e=EWceWu) en: `"yolov5/weights"`
+6. Debería serte posible ejecutar:
+    ```bash
+    python3 own_camera_main_no_can.py
+    ```
 
-
-2. Activa el entorno
-conda activate FormulaStudent
-
-3. clona el directorio de github:
-git clone https://github.com/UM-Driverless/Deteccion_conos.git
-git checkout Test_Portatil
-
-4. Install the requirements (of yolo network and for our scripts)
-```bash
-cd ~/Deteccion_conos
-pip3 install -r yolov5/yolo_requirements.txt
-pip3 install -r requirements.txt
-```
-
-5. Instala las dos librerías restantes:
-```bash
-pip install simple-pid
-pip install python-can
-```
-
-
-6. Descomprime la carpeta de los pesos en: "yolov5/weights"
-ruta de los pesos: https://urjc-my.sharepoint.com/:u:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models.zip?csf=1&web=1&e=EWceWu
-
-7. Debería serte posible ejecutar el siguiente comando:
-python3 own_camera_main_no_can.py
-
-
-
---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# ZED Camera Installation
+1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...)
+    https://www.stereolabs.com/developers/release/
+2. Activate the conda environment (To be safe. Keep the ZED's Python API inside the environment)
+    ```bash
+    conda activate FormulaStudent
+    ```
+3. Add permits:
+    ```bash
+    sudo chmod 777 {FILENAME}
+    ```
+4. Run it without sudo (You can copy the file and Ctrl+Shift+V into the terminal. Don't know why tab doesn't complete the filename):
+    ```bash
+    sh {FILENAME}.run
+    ```
+5. By default accept to install cuda, static version of SDK, AI module, samples and **Python API**. Diagnostic not required.
+6. Now it should be installed in the deault installation path: `/usr/local/zed`
+7. To get the Python API:
+    ```bash
+    python3 /usr/local/zed/get_python_api.py 
+    ```
 
 # Cliente para realizar la detección de conos en el simulador
 
@@ -58,23 +70,16 @@ Crea tu entorno virtual en python 3.8 y activalo
 ```bash
 conda create -n FormulaStudent python=3.8
 conda activate FormulaStudent
-conda install tensorflow-gpu
-conda install pandas
-pip install opencv-python
-pip install simple-pid
-conda install pillow
-conda install matplotlib
-pip install opencv-contrib-python
-
+#conda install tensorflow-gpu
 ```
 
-[comment]: <> (&#40;pip install -r requirements.txt&#41;)
+[comment]: <> (&#40;pip install -r requeriments.txt&#41;)
 
 A continuación vamos a installar el Model Zoo de detección de Tensorflow
 
 Si no tienes todavía la carpeta models/research/
 ```bash
-git clone --deph 1 https://github.com/tensorflow/models
+git clone --depth 1 https://github.com/tensorflow/models
 ```
 
 Una vez dispones de la carpeta models/research/
@@ -86,24 +91,12 @@ cp object_detection/packages/tf2/setup.py .
 python -m pip install .
 ```
 
-## Instalación ZED
-Descarga la versión del SDK que corresponda según la versión de CUDA y el sistema operativo (o Jetpack) en la página de Stereolabs:
-https://www.stereolabs.com/developers/release/
-
-En la carpeta de descargas ejecuta:
-
-```bash
-sh ./ZED_SDK_Ubuntu20_cuda11.5_v3.6.5.run
-```
-
-Sigue los pasos del instalador aceptando la instalacion de la API de python.
-
 ## Actualizar Xavier para ejecutar YOLOv5 (06/2022)
 
 ```bash
 git clone https://github.com/UM-Driverless/Deteccion_conos.git
 cd Deteccion_conos
-pip3 install -r yolov5/yolo_requirements.txt
+pip3 install -r yolov5/yolo_requeriments.txt
 sh can_scripts/enable_CAN.sh
 python3 car_actuator_testing_zed_conect_yolo.py 
 ```
