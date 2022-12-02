@@ -21,7 +21,7 @@ git checkout Test_Portatil
 4. Install the requirements (of yolo network and for our scripts)
 ```bash
 cd ~/Deteccion_conos
-pip3 install -r yolov5/yolo_requeriments.txt
+pip3 install -r yolov5/yolo_requirements.txt
 pip3 install -r requirements.txt
 ```
 
@@ -68,7 +68,7 @@ pip install opencv-contrib-python
 
 ```
 
-[comment]: <> (&#40;pip install -r requeriments.txt&#41;)
+[comment]: <> (&#40;pip install -r requirements.txt&#41;)
 
 A continuación vamos a installar el Model Zoo de detección de Tensorflow
 
@@ -103,7 +103,7 @@ Sigue los pasos del instalador aceptando la instalacion de la API de python.
 ```bash
 git clone https://github.com/UM-Driverless/Deteccion_conos.git
 cd Deteccion_conos
-pip3 install -r yolov5/yolo_requeriments.txt
+pip3 install -r yolov5/yolo_requirements.txt
 sh can_scripts/enable_CAN.sh
 python3 car_actuator_testing_zed_conect_yolo.py 
 ```

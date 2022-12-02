@@ -1,9 +1,11 @@
 
 # MAIN script to execute all the others. Shall contain the main classes, top level functions etc.
 
-# TODO
-#
-#
+""" TODO
+Codigo ZED que funcione
+TEST TENSORFLOW AND GPU USAGE
+ZED and webcam: How to adjust resolution, frequency, and turn on/off the calculation of depth map and download sensors?
+"""
 
 # LINKS
 # https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
@@ -13,11 +15,11 @@
 
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 0 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
+CAMERA_MODE = 1 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
-VISUALIZE = 1
+VISUALIZE = 0
 
-WEIGHTS_PATH = 'yolov5/weights/yolov5_models/800.pt'
+WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
 #WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights
 
 
@@ -49,7 +51,7 @@ if __name__ == '__main__':
 
         # runtime.sensing_mode = sl.SENSING_MODE.FILL
         cam = cv2.VideoCapture(0)
-        cam.set(cv2.CAP_PROP_FPS, 30)
+        #cam.set(cv2.CAP_PROP_FPS, 30)
     elif (CAMERA_MODE == 1):
         # Read video file
         cam = cv2.VideoCapture(VIDEO_FILE_NAME)
@@ -171,7 +173,6 @@ if __name__ == '__main__':
             recorded_times[6] = time.time()
 
             # END OF LOOP
-            print(f'REC: {[(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)]}')
             loop_counter += 1
             fps = 1/(recorded_times[6] - recorded_times[0])
             print(f'FPS: {fps}')
@@ -186,7 +187,8 @@ if __name__ == '__main__':
         print(f'\n')
         print(f'LOOPS: {loop_counter}')
         print(f'AVERAGE TIMES: {average_time_taken}')
-
+        
+        ## Plot the times
         fig = plt.figure(figsize=(12, 4))
         plt.bar(['cam.read()','Make np.array()','cv2.cvtColor()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
         plt.ylabel("Average time taken [s]")

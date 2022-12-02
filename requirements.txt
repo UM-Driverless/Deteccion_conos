@@ -8,7 +8,12 @@
 
 
 opencv-python # To use webcam camera
+opencv-contrib-python #?
 python-can # Can communications
+simple-pid
+pillow #?
+matplotlib # Various graphs
+pandas #?
 
 # ZED camera dependencies
 cython
