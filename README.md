@@ -18,10 +18,11 @@ conda activate FormulaStudent
 git clone https://github.com/UM-Driverless/Deteccion_conos.git
 git checkout Test_Portatil
 
-4. Instala los requisitos
+4. Install the requirements (of yolo network and for our scripts)
 ```bash
 cd ~/Deteccion_conos
 pip3 install -r yolov5/yolo_requeriments.txt
+pip3 install -r requirements.txt
 ```
 
 5. Instala las dos librerías restantes:
