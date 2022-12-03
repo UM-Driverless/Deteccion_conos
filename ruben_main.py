@@ -1,22 +1,24 @@
 
 # MAIN script to execute all the others. Shall contain the main classes, top level functions etc.
 
-""" TODO
-Codigo ZED que funcione
-TEST TENSORFLOW AND GPU USAGE
-ZED and webcam: How to adjust resolution, frequency, and turn on/off the calculation of depth map and download sensors?
 """
+# TODO
+- TEST TENSORFLOW AND GPU USAGE
+- ZED and webcam: How to adjust resolution, frequency, and turn on/off the calculation of depth map and download sensors?
+- Como se pasa la imagen a la red. Entender y comentar los pasos
 
 # LINKS
-# https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
-#
-#
+https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
+
+
+"""
+
 
 
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 2 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
-VISUALIZE = 0
+VISUALIZE = 1
 
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
@@ -34,7 +36,6 @@ import os
 import time
 import numpy as np
 import matplotlib.pyplot as plt # For representation of time consumed
-# TODO add dependency sudo apt-get install python3-tk
 
 ## Camera libraries
 import cv2 # Webcam
@@ -59,20 +60,19 @@ if __name__ == '__main__':
         
     elif (CAMERA_MODE == 2):
         # Read ZED Camera - https://www.stereolabs.com/docs/video/camera-controls/
-        # TODO HOW CAN I KNOW THE EXPECTED RESOLUTION OF THE NET?
-
-        cam = sl.Camera()
-        cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 0)
         
+        cam = sl.Camera()
+        
+        # Camera settings
+        cam.set_camera_settings(sl.VIDEO_SETTINGS.GAIN, 100) # We don't want blurry photos, we don't care about noise. The exposure time will still be adjusted automatically to compensate lighting conditions
+        #cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, -1) # % of camera framerate (period)
+        
+        # Init parameters: https://www.stereolabs.com/docs/api/structsl_1_1InitParameters.html
         zed_params = sl.InitParameters()
         zed_params.camera_fps = 60
         zed_params.camera_resolution = sl.RESOLUTION.HD720 # HD1080 HD720 VGA
+        #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
         
-        #zed_params.computeDepth
-        # zed_params.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
-        # zed_params.coordinate_units = sl.UNIT.METER
-        # zed_params.depth_minimum_distance = 0.15
-        # runtime.sensing_mode = sl.SENSING_MODE.FILL
         
         status = cam.open(zed_params)
         if status != sl.ERROR_CODE.SUCCESS:
@@ -80,8 +80,7 @@ if __name__ == '__main__':
             exit(1)
 
         runtime = sl.RuntimeParameters()
-        runtime.enable_depth = False # TODO DOES IT WORK?
-        # runtime.sensing_mode = sl.SENSING_MODE.FILL
+        runtime.enable_depth = False # Deactivates de depth map calculation. We don't need it.
         
         # Create an RGBA sl.Mat object
         mat_img = sl.Mat()
@@ -133,8 +132,8 @@ if __name__ == '__main__':
                 np.array(image)
             elif (CAMERA_MODE == 2):
                 # Read ZED camera
-                if (cam.grab(runtime) == sl.ERROR_CODE.SUCCESS):
-                    cam.retrieve_image(mat_img)
+                if (cam.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
+                    cam.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
                     image = mat_img.get_data() # Creates np.array()
             
             recorded_times[1] = time.time()
