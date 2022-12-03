@@ -16,9 +16,9 @@ ZED and webcam: How to adjust resolution, frequency, and turn on/off the calcula
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 2 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
-VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
-VISUALIZE = 1
+VISUALIZE = 0
 
+VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
 #WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights
 
@@ -46,35 +46,41 @@ if __name__ == '__main__':
         # WEBCAM
 
         cam = cv2.VideoCapture(0)
+        
+        # Set the video frequency
         #cam.set(cv2.CAP_PROP_FPS, 20)
-        # cam.set(cv2.CAP_PROP_FRAME_WIDTH, 480) #1280 480 default
-        # cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) #720 480 default
+        
+        cam.set(cv2.CAP_PROP_FRAME_WIDTH, 480) #1280 480 default
+        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) #720 480 default
 
     elif (CAMERA_MODE == 1):
         # Read video file
         cam = cv2.VideoCapture(VIDEO_FILE_NAME)
         
     elif (CAMERA_MODE == 2):
-        # Read ZED Camera
-        # TODO CHECK if this works with zed
+        # Read ZED Camera - https://www.stereolabs.com/docs/video/camera-controls/
+        # TODO HOW CAN I KNOW THE EXPECTED RESOLUTION OF THE NET?
 
         cam = sl.Camera()
         cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 0)
-        init = sl.InitParameters()
-        init.camera_resolution = sl.RESOLUTION.HD1080 # HD1080 HD720
-        init.camera_fps = 30
-        # init.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
-        # init.coordinate_units = sl.UNIT.METER
-        # init.depth_minimum_distance = 0.15
-
+        
+        zed_params = sl.InitParameters()
+        zed_params.camera_fps = 60
+        zed_params.camera_resolution = sl.RESOLUTION.HD720 # HD1080 HD720 VGA
+        
+        #zed_params.computeDepth
+        # zed_params.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
+        # zed_params.coordinate_units = sl.UNIT.METER
+        # zed_params.depth_minimum_distance = 0.15
         # runtime.sensing_mode = sl.SENSING_MODE.FILL
         
-        status = cam.open(init)
+        status = cam.open(zed_params)
         if status != sl.ERROR_CODE.SUCCESS:
             print(repr(status))
             exit(1)
 
         runtime = sl.RuntimeParameters()
+        runtime.enable_depth = False # TODO DOES IT WORK?
         # runtime.sensing_mode = sl.SENSING_MODE.FILL
         
         # Create an RGBA sl.Mat object
@@ -102,7 +108,7 @@ if __name__ == '__main__':
 
 
     # READ TIMES
-    TIMES_TO_MEASURE = 6
+    TIMES_TO_MEASURE = 5
     recorded_times = np.array([0.]*(TIMES_TO_MEASURE+2)) # Timetag at different points in code
     integrated_time_taken = np.array([0.]*TIMES_TO_MEASURE)
     average_time_taken = np.array([0.]*TIMES_TO_MEASURE)
@@ -115,35 +121,30 @@ if __name__ == '__main__':
         while True:
             recorded_times[0] = time.time()
 
-            # ASK DATA (To the car sensors or the simulator)
+            # Get CAN Data (To the car sensors or the simulator)
             if CAN_MODE == 1:
                 # Get data from CAN
                 in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(VISUALIZE=1)
 
-            ## Image
+            ## Get Image
             if (CAMERA_MODE == 0) or (CAMERA_MODE == 1):
                 # WEBCAM or video file
                 result, image = cam.read() # TODO check if result == true?
+                np.array(image)
             elif (CAMERA_MODE == 2):
                 # Read ZED camera
-                err = cam.grab(runtime)
-                if err == sl.ERROR_CODE.SUCCESS:
+                if (cam.grab(runtime) == sl.ERROR_CODE.SUCCESS):
                     cam.retrieve_image(mat_img)
-                    image = mat_img.get_data()
-
-
+                    image = mat_img.get_data() # Creates np.array()
+            
             recorded_times[1] = time.time()
 
-            np.array(image)
-            
-            recorded_times[2] = time.time()
-
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            recorded_times[3] = time.time()
+            recorded_times[2] = time.time()
 
             # Detect cones
             detections, cone_centers = detector.detect_cones(image, get_centers=True)
-            recorded_times[4] = time.time()
+            recorded_times[3] = time.time()
             
             # Actions:
             # 1 -> steer
@@ -160,7 +161,7 @@ if __name__ == '__main__':
                                                                                                 rpm=0,
                                                                                                 cone_centers=cone_centers,
                                                                                                 image=image)
-            recorded_times[5] = time.time()
+            recorded_times[4] = time.time()
             # resize actions
             # throttle *= 0.8
             # brake *= 0.8
@@ -187,11 +188,11 @@ if __name__ == '__main__':
                                      [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
                                      save_frames=False)
             
-            recorded_times[6] = time.time()
+            recorded_times[5] = time.time()
 
             # END OF LOOP
             loop_counter += 1
-            fps = 1/(recorded_times[6] - recorded_times[0])
+            fps = 1/(recorded_times[5] - recorded_times[0])
             integrated_fps += fps
             integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
 
@@ -209,12 +210,17 @@ if __name__ == '__main__':
         
         ## Plot the times
         fig = plt.figure(figsize=(12, 4))
-        plt.bar(['cam.read()','Make np.array()','cv2.cvtColor()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
+        plt.bar(['cam.read()','cv2.cvtColor()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
         plt.ylabel("Average time taken [s]")
         #plt.title("Title")
         #plt.show()
         plt.savefig("logs/times.png")
 
+        # Close windows of visualizer
+        #?
+        
+        
+        # TODO CREATE CAR CLASS WITH THESE VARIABLES
         throttle = 0
         brake = 0
         steer = 0
@@ -222,16 +228,5 @@ if __name__ == '__main__':
         upgear = 0
         downgear = 0
 
-        #visualizer.close_windows() # TODO 'Visualizer' object has no attribute 'close_windows'
 
 
-
-
-# STORE
-"""
-cv2.imshow("img", image)
-cv2.waitKey(1)
-
-
-
-"""
