@@ -3,9 +3,11 @@
 
 """
 # TODO
+- KVASER
 - TEST TENSORFLOW AND GPU USAGE
 - ZED and webcam: How to adjust resolution, frequency, and turn on/off the calculation of depth map and download sensors?
 - Como se pasa la imagen a la red. Entender y comentar los pasos
+
 
 # LINKS
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
@@ -65,7 +67,9 @@ if __name__ == '__main__':
         
         # Camera settings
         cam.set_camera_settings(sl.VIDEO_SETTINGS.GAIN, 100) # We don't want blurry photos, we don't care about noise. The exposure time will still be adjusted automatically to compensate lighting conditions
-        #cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, -1) # % of camera framerate (period)
+        cam.set_camera_settings(sl.VIDEO_SETTINGS.SATURATION, 8) # Maximum so it recognizes the color of the cones better. 0 to 8
+        # cam.set_camera_settings(sl.VIDEO_SETTINGS.SHARPNESS, 0) # Doesn't seem to make much difference. 0 to 8
+        #cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, -1) # Fixed gain, so this is automatic. % of camera framerate (period)
         
         # Init parameters: https://www.stereolabs.com/docs/api/structsl_1_1InitParameters.html
         zed_params = sl.InitParameters()
@@ -115,7 +119,7 @@ if __name__ == '__main__':
     integrated_fps = 0.
     loop_counter = 0
 
-    # Main loop #####
+    # Main loop #########################
     try:
         while True:
             recorded_times[0] = time.time()
