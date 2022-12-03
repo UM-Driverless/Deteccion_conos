@@ -298,7 +298,7 @@ class AgentAccelerationYolo(AgentAcceleration):
                 ref_point = - speed
                 brake = pid_brake(ref_point)
 
-        print(throttle, brake, ref_point, val[3], val[4], val[5], val[6], val[7], val[8])
+        #print(throttle, brake, ref_point, val[3], val[4], val[5], val[6], val[7], val[8])
 
         clutch = self.clutch_func(speed, throttle, brake, rpm)
 

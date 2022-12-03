@@ -17,7 +17,7 @@ ZED and webcam: How to adjust resolution, frequency, and turn on/off the calcula
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 1 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
-VISUALIZE = 0
+VISUALIZE = 1
 
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
 #WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights
@@ -38,27 +38,31 @@ import matplotlib.pyplot as plt # For representation of time consumed
 
 ## Camera libraries
 import cv2 # Webcam
-#import pyzed.sl as sl # ZED.
+import pyzed.sl as sl # ZED.
 
 if __name__ == '__main__':
     # SETUP CAMERA
     if (CAMERA_MODE == 0):
         # WEBCAM
-        
-        # init.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
-        # init.coordinate_units = sl.UNIT.METER
-        # init.depth_minimum_distance = 0.15
 
-        # runtime.sensing_mode = sl.SENSING_MODE.FILL
         cam = cv2.VideoCapture(0)
-        #cam.set(cv2.CAP_PROP_FPS, 30)
+        #cam.set(cv2.CAP_PROP_FPS, 20)
+        # cam.set(cv2.CAP_PROP_FRAME_WIDTH, 480) #1280 480 default
+        # cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) #720 480 default
+
     elif (CAMERA_MODE == 1):
         # Read video file
         cam = cv2.VideoCapture(VIDEO_FILE_NAME)
         
     elif (CAMERA_MODE == 2):
-        # ZED
+        # Read ZED Camera
         # TODO CHECK if this works with zed
+
+        # init.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
+        # init.coordinate_units = sl.UNIT.METER
+        # init.depth_minimum_distance = 0.15
+
+        # runtime.sensing_mode = sl.SENSING_MODE.FILL
         
         """
         cam = sl.Camera()
@@ -77,6 +81,10 @@ if __name__ == '__main__':
 
         runtime = sl.RuntimeParameters()
         # runtime.sensing_mode = sl.SENSING_MODE.FILL
+
+        # Create an RGBA sl.Mat object
+        mat_img = sl.Mat()
+
         """
 
     # INITIALIZE things
@@ -89,8 +97,10 @@ if __name__ == '__main__':
     detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger)
     
     ## Connections
-    #connect_mng = ConnectionManager(logger=logger)
-
+    if (CAN_MODE == 1):
+        connect_mng = ConnectionManager(logger=logger)
+        print('CAN connection initialized')
+    
     ## Agent
     agent = AgentAcceleration(logger=logger, target_speed=60.)
 
@@ -103,7 +113,8 @@ if __name__ == '__main__':
     recorded_times = np.array([0.]*(TIMES_TO_MEASURE+2)) # Timetag at different points in code
     integrated_time_taken = np.array([0.]*TIMES_TO_MEASURE)
     average_time_taken = np.array([0.]*TIMES_TO_MEASURE)
-    fps = -1
+    fps = -1.
+    integrated_fps = 0.
     loop_counter = 0
 
     # Main loop
@@ -118,6 +129,7 @@ if __name__ == '__main__':
             recorded_times[1] = time.time()
 
             np.array(image)
+            
             recorded_times[2] = time.time()
 
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -150,14 +162,13 @@ if __name__ == '__main__':
             # clutch *= 0.8
 
             # Send actions - CAN
-            if (CAN_MODE == 1): # TODO ERROR NOT DEFINED
+            if (CAN_MODE == 1):
                 connect_mng.send_actions(throttle=throttle,
                                         brake=brake,
                                         steer=steer,
                                         clutch=clutch,
                                         upgear=upgear,
                                         downgear=downgear)
-            
             
             # VISUALIZE
             if (VISUALIZE == 1):
@@ -175,7 +186,7 @@ if __name__ == '__main__':
             # END OF LOOP
             loop_counter += 1
             fps = 1/(recorded_times[6] - recorded_times[0])
-            print(f'FPS: {fps}')
+            integrated_fps += fps
             integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
 
 
@@ -184,7 +195,9 @@ if __name__ == '__main__':
 
         # TIMES
         average_time_taken = integrated_time_taken/loop_counter
+        fps = integrated_fps/loop_counter
         print(f'\n')
+        print(f'FPS: {fps}')
         print(f'LOOPS: {loop_counter}')
         print(f'AVERAGE TIMES: {average_time_taken}')
         

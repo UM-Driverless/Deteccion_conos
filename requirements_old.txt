@@ -1,8 +1,8 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
-_libgcc_mutex=0.1=main
-_tflow_select=2.1.0=gpu
+_libgcc_mutex=0.1
+_tflow_select=2.1.0
 absl-py=0.10.0=py38_0
 aiohttp=3.6.3=py38h7b6447c_0
 apache-beam=2.25.0=pypi_0
