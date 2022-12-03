@@ -31,6 +31,8 @@
     ```bash
     python3 own_camera_main_no_can.py
     ```
+* To explore if something fails:
+    * `sudo apt-get install python3-tk`
 
 # ZED Camera Installation
 1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...)
