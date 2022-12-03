@@ -15,7 +15,7 @@ ZED and webcam: How to adjust resolution, frequency, and turn on/off the calcula
 
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 1 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
+CAMERA_MODE = 2 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
 VISUALIZE = 1
 
@@ -58,22 +58,17 @@ if __name__ == '__main__':
         # Read ZED Camera
         # TODO CHECK if this works with zed
 
+        cam = sl.Camera()
+        cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 0)
+        init = sl.InitParameters()
+        init.camera_resolution = sl.RESOLUTION.HD1080 # HD1080 HD720
+        init.camera_fps = 30
         # init.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
         # init.coordinate_units = sl.UNIT.METER
         # init.depth_minimum_distance = 0.15
 
         # runtime.sensing_mode = sl.SENSING_MODE.FILL
         
-        """
-        cam = sl.Camera()
-        cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, 0)
-        init = sl.InitParameters()
-        init.camera_resolution = sl.RESOLUTION.HD1080
-        init.camera_fps = 30
-        # init.depth_mode = sl.DEPTH_MODE.ULTRA  # Use ULTRA depth mode
-        # init.coordinate_units = sl.UNIT.METER
-        # init.depth_minimum_distance = 0.15
-
         status = cam.open(init)
         if status != sl.ERROR_CODE.SUCCESS:
             print(repr(status))
@@ -81,11 +76,9 @@ if __name__ == '__main__':
 
         runtime = sl.RuntimeParameters()
         # runtime.sensing_mode = sl.SENSING_MODE.FILL
-
+        
         # Create an RGBA sl.Mat object
         mat_img = sl.Mat()
-
-        """
 
     # INITIALIZE things
     ## Logger
@@ -117,15 +110,28 @@ if __name__ == '__main__':
     integrated_fps = 0.
     loop_counter = 0
 
-    # Main loop
+    # Main loop #####
     try:
         while True:
             recorded_times[0] = time.time()
 
             # ASK DATA (To the car sensors or the simulator)
-            #in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(VISUALIZE=1)
+            if CAN_MODE == 1:
+                # Get data from CAN
+                in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(VISUALIZE=1)
 
-            result, image = cam.read() # TODO check if result == true?
+            ## Image
+            if (CAMERA_MODE == 0) or (CAMERA_MODE == 1):
+                # WEBCAM or video file
+                result, image = cam.read() # TODO check if result == true?
+            elif (CAMERA_MODE == 2):
+                # Read ZED camera
+                err = cam.grab(runtime)
+                if err == sl.ERROR_CODE.SUCCESS:
+                    cam.retrieve_image(mat_img)
+                    image = mat_img.get_data()
+
+
             recorded_times[1] = time.time()
 
             np.array(image)
@@ -191,7 +197,7 @@ if __name__ == '__main__':
 
 
     finally:
-        # When main loop stops,
+        # When main loop stops, due to no image, error, Ctrl+C on terminal...
 
         # TIMES
         average_time_taken = integrated_time_taken/loop_counter
