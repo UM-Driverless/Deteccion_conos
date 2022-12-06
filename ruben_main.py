@@ -4,10 +4,12 @@
 """
 # TODO
 - KVASER
+    https://www.kvaser.com/developer-blog/running-python-wrapper-linux/
+    https://www.kvaser.com/developer-blog/kvaser-canlib-and-python-part-1-initial-setup/
+    
 - TEST TENSORFLOW AND GPU USAGE
-- ZED and webcam: How to adjust resolution, frequency, and turn on/off the calculation of depth map and download sensors?
 - Como se pasa la imagen a la red. Entender y comentar los pasos
-
+- Constants global file?
 
 # LINKS
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
@@ -15,11 +17,9 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 
 """
 
-
-
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 2 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
+CAMERA_MODE = 0 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VISUALIZE = 1
 
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
@@ -37,11 +37,27 @@ from visualization_utils.logger import Logger
 import os
 import time
 import numpy as np
+import multiprocessing
 import matplotlib.pyplot as plt # For representation of time consumed
 
 ## Camera libraries
 import cv2 # Webcam
 import pyzed.sl as sl # ZED.
+
+# TODO add somewhere out of the thread
+# Set the size with cv2.resize()
+
+def read_image(cam,cam_queue):
+    print(f'Starting camera thread...')
+    recorded_times = np.array([0.]*3)
+    
+    while True:
+        recorded_times[0] = time.time()
+        result, image = cam.read() # TODO check if result == true?, CHECK cam.isOpened()?
+        recorded_times[1] = time.time()
+        cam_queue.put(image)
+        recorded_times[2] = time.time()
+        print(f'cam times: {[(recorded_times[i+1]-recorded_times[i]) for i in range(2)]}')
 
 if __name__ == '__main__':
     # SETUP CAMERA
@@ -50,12 +66,21 @@ if __name__ == '__main__':
 
         cam = cv2.VideoCapture(0)
         
-        # Set the video frequency
-        #cam.set(cv2.CAP_PROP_FPS, 20)
+        # SETTINGS
+        # cam.set(cv2.CAP_PROP_FPS, 60)
+        # cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        # cam.set(cv2.CAP_PROP_FRAME_WIDTH, 480) #1280 640 default
+        # cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) #720 480 default
+        # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         
-        cam.set(cv2.CAP_PROP_FRAME_WIDTH, 480) #1280 480 default
-        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480) #720 480 default
-
+        result, image = cam.read()
+        while result == False:
+            result, image = cam.read()
+        np.array(image)
+        
+        # cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
+        # cam_worker  = multiprocessing.Process(target=read_image, args=(cam,cam_queue,), daemon=False)
+        # cam_worker.start()
     elif (CAMERA_MODE == 1):
         # Read video file
         cam = cv2.VideoCapture(VIDEO_FILE_NAME)
@@ -74,7 +99,7 @@ if __name__ == '__main__':
         # Init parameters: https://www.stereolabs.com/docs/api/structsl_1_1InitParameters.html
         zed_params = sl.InitParameters()
         zed_params.camera_fps = 60
-        zed_params.camera_resolution = sl.RESOLUTION.HD720 # HD1080 HD720 VGA
+        zed_params.camera_resolution = sl.RESOLUTION.HD720 # HD1080 HD720 VGA (VGA=1344x376)
         #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
         
         
@@ -123,17 +148,20 @@ if __name__ == '__main__':
     try:
         while True:
             recorded_times[0] = time.time()
-
+            
             # Get CAN Data (To the car sensors or the simulator)
             if CAN_MODE == 1:
                 # Get data from CAN
-                in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(VISUALIZE=1)
+                in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
 
-            ## Get Image
+            # GET IMAGE
             if (CAMERA_MODE == 0) or (CAMERA_MODE == 1):
-                # WEBCAM or video file
-                result, image = cam.read() # TODO check if result == true?
+                # WEBCAM or video file. Return image -> numpy array
+                result, image = cam.read()
+                while result == False:
+                    result, image = cam.read()
                 np.array(image)
+                # image = cam_queue.get()
             elif (CAMERA_MODE == 2):
                 # Read ZED camera
                 if (cam.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
@@ -141,7 +169,7 @@ if __name__ == '__main__':
                     image = mat_img.get_data() # Creates np.array()
             
             recorded_times[1] = time.time()
-
+            # image = cv2.resize
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             recorded_times[2] = time.time()
 

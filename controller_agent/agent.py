@@ -28,7 +28,7 @@ class AgentAcceleration(AgentInterface):
 
         self.target_speed = target_speed
 
-    def initializeTrackbarsPID(self, intialTracbarVals):
+    def initializeTrackbarsPID(self, intialTracbarVals):        
         cv2.namedWindow("Trackbars PID")
         cv2.resizeWindow("Trackbars PID", 360, 240)
         cv2.createTrackbar("Kp/1000", "Trackbars PID", intialTracbarVals[0], 500, self.nothing)
