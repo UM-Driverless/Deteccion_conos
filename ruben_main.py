@@ -20,7 +20,7 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 0 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
-VISUALIZE = 1
+VISUALIZE = 0
 
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
@@ -47,7 +47,7 @@ import pyzed.sl as sl # ZED.
 # TODO add somewhere out of the thread
 # Set the size with cv2.resize()
 
-def read_image(cam,cam_queue):
+def read_image_cv2(cam,cam_queue):
     print(f'Starting camera thread...')
     recorded_times = np.array([0.]*3)
     
