@@ -1,12 +1,10 @@
 import numpy as np
+import os
+import cv2
+from tensorflow.python.saved_model import tag_constants
 
 from cone_detection.detector_base import ConeDetectorInterface
 import tensorflow as tf
-import os
-from tensorflow.python.saved_model import tag_constants
-import cv2
-# from Object
-
 
 class ConeDetector(ConeDetectorInterface):
 

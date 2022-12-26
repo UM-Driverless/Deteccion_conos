@@ -24,7 +24,7 @@ VISUALIZE = 1
 
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
-#WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights
+#WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights?
 
 
 # IMPORTS
@@ -231,7 +231,7 @@ if __name__ == '__main__':
         # When main loop stops, due to no image, error, Ctrl+C on terminal...
 
         # TIMES
-        average_time_taken = integrated_time_taken/loop_counter
+        average_time_taken = integrated_time_taken/loop_counter # TODO remove 1
         fps = integrated_fps/loop_counter
         print(f'\n')
         print(f'FPS: {fps}')
