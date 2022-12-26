@@ -1,33 +1,40 @@
 # How to install and use the scripts in linux (Tested with Ubuntu 22)
 
-1. Create a conda environment:
+- Create a conda environment:
     ```bash
     conda create -n FormulaStudent -y
     ```
     (en caso de no tener conda, instalarlo siguiendo los pasos de esta web: 
     https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
-
-    ```bash
-    sudo apt install git
-    sudo apt install python3-pip
-    ```
-2. Activate the environment
+- Activate the environment
     ```bash
     conda activate FormulaStudent
     ```
-3. Clone the GitHub directory:
+- Install git, and pip
+    ```bash
+    sudo apt install git
+    conda install pip
+    
+    # If outside of conda environment:
+    # sudo apt install python3-pip
+    ```
+- Clone the GitHub directory:
     ```bash
     git clone https://github.com/UM-Driverless/Deteccion_conos.git
     git checkout Test_Portatil
     ```
-4. Install the requirements (for yolo network and for our scripts)
+- Install the requirements (for yolo network and for our scripts)
+    ```bash
+    cd ~/Deteccion_conos
+    pip install -r requirements.txt
+    ```
     ```bash
     cd ~/Deteccion_conos
     pip3 install -r yolov5/yolo_requeriments.txt
     pip3 install -r requirements.txt
     ```
-5. Descomprime la [carpeta de los pesos](https://urjc-my.sharepoint.com/:u:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models.zip?csf=1&web=1&e=EWceWu) en: `"yolov5/weights"`
-6. Debería serte posible ejecutar:
+- [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models?csf=1&web=1&e=nILHR5) in: `"yolov5/weights"`
+- You should be able to run:
     ```bash
     python3 own_camera_main_no_can.py
     ```
