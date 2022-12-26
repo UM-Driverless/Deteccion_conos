@@ -1,8 +1,6 @@
 import tensorflow as tf
 import cv2
 import time
-from cone_detection.aux_def import *
-
 
 BLUE_COLOR = (255, 0, 0)
 YELLOW_COLOR = (0, 237, 255)
@@ -499,7 +497,7 @@ class ConeDetector:
             print("No se ha podido cargar el checkpoint")
         return detection_model, category_index
 
-
+# TODO what is this?
 def main():
     data_path = "/home/shernandez/PycharmProjects/cone_detection/skidpad_640x640/"
     ground_truth_path = "/home/shernandez/PycharmProjects/cone_detection/skidpad_640x640/skidpad.csv"

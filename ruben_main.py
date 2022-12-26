@@ -28,12 +28,6 @@ WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
 
 
 # IMPORTS
-from connection_utils.car_comunication import ConnectionManager
-from controller_agent.agent import AgentAccelerationYolo as AgentAcceleration
-from cone_detection.yolo_detector import ConeDetector
-from visualization_utils.visualizer_yolo_det import Visualizer
-from visualization_utils.logger import Logger
-
 import os
 import time
 import numpy as np
@@ -43,6 +37,12 @@ import matplotlib.pyplot as plt # For representation of time consumed
 ## Camera libraries
 import cv2 # Webcam
 import pyzed.sl as sl # ZED.
+
+from connection_utils.car_comunication import ConnectionManager
+from controller_agent.agent import AgentAccelerationYolo as AgentAcceleration
+from cone_detection.yolo_detector import ConeDetector
+from visualization_utils.visualizer_yolo_det import Visualizer
+from visualization_utils.logger import Logger
 
 # TODO add somewhere out of the thread
 # Set the size with cv2.resize()
@@ -226,7 +226,6 @@ if __name__ == '__main__':
             fps = 1/(recorded_times[5] - recorded_times[0])
             integrated_fps += fps
             integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
-
 
     finally:
         # When main loop stops, due to no image, error, Ctrl+C on terminal...
