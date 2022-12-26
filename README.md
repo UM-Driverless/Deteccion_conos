@@ -1,14 +1,15 @@
 # How to install and use the scripts in linux (Tested with Ubuntu 22)
-
+- If conda is not installed: https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 - Create a conda environment:
     ```bash
-    conda create -n FormulaStudent -y
+    conda create -n formula -y
+    
+    # To remove it:
+    # conda env remove -n formula
     ```
-    (en caso de no tener conda, instalarlo siguiendo los pasos de esta web: 
-    https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html)
 - Activate the environment
     ```bash
-    conda activate FormulaStudent
+    conda activate formula
     ```
 - Install git, pip, numpy, update the compiler
     ```bash
@@ -29,6 +30,9 @@
     ```bash
     cd ~/Deteccion_conos
     pip install -r requirements.txt
+    
+    # To do it with conda:
+    # conda install --file requirements.txt
     ```
     The requirements file should be installed with conda to prevent compatibility problems, but many packages are not available in conda, so are installed with pip
 - [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models?csf=1&web=1&e=nILHR5) in: `"yolov5/weights"`
@@ -37,7 +41,7 @@
         https://www.stereolabs.com/developers/release/
     2. Activate the conda environment (To be safe. Keep the ZED's Python API inside the environment)
         ```bash
-        conda activate FormulaStudent
+        conda activate formula
         ```
     3. Add permits:
         ```bash
@@ -70,12 +74,12 @@ Se debe descomprimir el archivo dentro de la carpeta: /PyUMotorsport/cone_detect
 Los pesos de la red neuronal para el main_2.py se encuentran en el siguiente enlace: https://drive.google.com/file/d/1NFDBKxpRcfPs8PV3oftLya_M9GxW8O5h/view?usp=sharing
 Se debe descomprimir el archivo dentro de la carpeta: /PyUMotorsport_v2/ObjectDetectionSegmentation/DetectionData/
 
-# Instalación
+# Old (install tensorflow detection)
 
 Crea tu entorno virtual en python 3.8 y activalo
 ```bash
-conda create -n FormulaStudent python=3.8
-conda activate FormulaStudent
+conda create -n formula python=3.8
+conda activate formula
 #conda install tensorflow-gpu
 ```
 
