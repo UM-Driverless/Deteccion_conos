@@ -10,10 +10,11 @@
     ```bash
     conda activate FormulaStudent
     ```
-- Install git, and pip
+- Install git, pip, and update the compiler
     ```bash
     sudo apt install git
     conda install pip
+    conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
     
     # If outside of conda environment:
     # sudo apt install python3-pip
