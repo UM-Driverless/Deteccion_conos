@@ -10,10 +10,12 @@
     ```bash
     conda activate FormulaStudent
     ```
-- Install git, and pip
+- Install git, pip, numpy (with conda otherwise odd errors), update the compiler
     ```bash
     sudo apt install git
     conda install pip
+    conda install numpy
+    conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
     
     # If outside of conda environment:
     # sudo apt install python3-pip
@@ -28,6 +30,7 @@
     cd ~/Deteccion_conos
     pip install -r requirements.txt
     ```
+    The requirements file should be installed with conda to prevent compatibility problems, but many packages are not available in conda, so are installed with pip
 - [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models?csf=1&web=1&e=nILHR5) in: `"yolov5/weights"`
 - ZED Camera Installation
     1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...)
@@ -46,7 +49,7 @@
         ```
     5. By default accept to install cuda, static version of SDK, AI module, samples and **Python API**. Diagnostic not required.
     6. Now it should be installed in the deault installation path: `/usr/local/zed`
-    7. To get the Python API:
+    7. To get the Python API (Otherwise pyzed won't be installed and will throw an error):
         ```bash
         python3 /usr/local/zed/get_python_api.py 
         ```
