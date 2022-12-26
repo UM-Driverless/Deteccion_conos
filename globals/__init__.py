@@ -1,0 +1,1 @@
+print('globals package imported')
