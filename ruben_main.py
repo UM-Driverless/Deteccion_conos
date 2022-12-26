@@ -20,7 +20,7 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 0 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
-VISUALIZE = 0
+VISUALIZE = 1
 
 VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
