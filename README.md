@@ -28,11 +28,6 @@
     cd ~/Deteccion_conos
     pip install -r requirements.txt
     ```
-    ```bash
-    cd ~/Deteccion_conos
-    pip3 install -r yolov5/yolo_requeriments.txt
-    pip3 install -r requirements.txt
-    ```
 - [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models?csf=1&web=1&e=nILHR5) in: `"yolov5/weights"`
 - You should be able to run:
     ```bash
