@@ -10,11 +10,11 @@
     ```bash
     conda activate FormulaStudent
     ```
-- Install git, pip, numpy (with conda otherwise odd errors), update the compiler
+- Install git, pip, numpy, update the compiler
     ```bash
     sudo apt install git
     conda install pip
-    conda install numpy
+    conda install numpy # With conda instead of pip, otherwise odd errors
     conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
     
     # If outside of conda environment:
