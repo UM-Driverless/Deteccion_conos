@@ -29,34 +29,33 @@
     pip install -r requirements.txt
     ```
 - [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models?csf=1&web=1&e=nILHR5) in: `"yolov5/weights"`
+- ZED Camera Installation
+    1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...)
+        https://www.stereolabs.com/developers/release/
+    2. Activate the conda environment (To be safe. Keep the ZED's Python API inside the environment)
+        ```bash
+        conda activate FormulaStudent
+        ```
+    3. Add permits:
+        ```bash
+        sudo chmod 777 {FILENAME}
+        ```
+    4. Run it without sudo (You can copy the file and Ctrl+Shift+V into the terminal. Don't know why tab doesn't complete the filename):
+        ```bash
+        sh {FILENAME}.run
+        ```
+    5. By default accept to install cuda, static version of SDK, AI module, samples and **Python API**. Diagnostic not required.
+    6. Now it should be installed in the deault installation path: `/usr/local/zed`
+    7. To get the Python API:
+        ```bash
+        python3 /usr/local/zed/get_python_api.py 
+        ```
 - You should be able to run:
     ```bash
     python3 own_camera_main_no_can.py
     ```
 * To explore if something fails:
     * `sudo apt-get install python3-tk`
-
-# ZED Camera Installation
-1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...)
-    https://www.stereolabs.com/developers/release/
-2. Activate the conda environment (To be safe. Keep the ZED's Python API inside the environment)
-    ```bash
-    conda activate FormulaStudent
-    ```
-3. Add permits:
-    ```bash
-    sudo chmod 777 {FILENAME}
-    ```
-4. Run it without sudo (You can copy the file and Ctrl+Shift+V into the terminal. Don't know why tab doesn't complete the filename):
-    ```bash
-    sh {FILENAME}.run
-    ```
-5. By default accept to install cuda, static version of SDK, AI module, samples and **Python API**. Diagnostic not required.
-6. Now it should be installed in the deault installation path: `/usr/local/zed`
-7. To get the Python API:
-    ```bash
-    python3 /usr/local/zed/get_python_api.py 
-    ```
 
 # Cliente para realizar la detección de conos en el simulador
 
