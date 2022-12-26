@@ -1,0 +1,15 @@
+./yolov5/models/__init__.py
+./yolov5/utils/__init__.py
+
+./yolov5/utils/aws/__init__.py
+./yolov5/utils/loggers/__init__.py
+./yolov5/utils/loggers/wandb/__init__.py
+
+./can_scripts/__init__.py
+./connection_utils/communication_controllers/__init__.py
+./cone_detection/__init__.py
+
+./trajectory_estimation/__init__.py
+./globals/__init__.py
+./controller_agent/__init__.py
+./visualization_utils/__init__.py

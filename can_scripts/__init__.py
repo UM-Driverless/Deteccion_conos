@@ -1,0 +1,1 @@
+print('can_scripts package imported')

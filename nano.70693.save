@@ -1,0 +1,66 @@
+./yolov5/models/__init__.py ./yolov5/utils/__init__.py ./yolov5/utils/aws/__init__.py ./yolov5/utils/loggers/__init__.py 
+./yolov5/utils/loggers/wandb/__init__.py ./venv/lib/python3.10/site-packages/_distutils_hack/__init__.py 
+./venv/lib/python3.10/site-packages/setuptools/_distutils/__init__.py 
+./venv/lib/python3.10/site-packages/setuptools/_distutils/command/__init__.py ./venv/lib/python3.10/site-packages/setuptools/__init__.py 
+./venv/lib/python3.10/site-packages/setuptools/command/__init__.py ./venv/lib/python3.10/site-packages/setuptools/extern/__init__.py 
+./venv/lib/python3.10/site-packages/setuptools/_vendor/packaging/__init__.py ./venv/lib/python3.10/site-packages/setuptools/_vendor/__init__.py 
+./venv/lib/python3.10/site-packages/setuptools/_vendor/more_itertools/__init__.py ./venv/lib/python3.10/site-packages/pkg_resources/__init__.py 
+./venv/lib/python3.10/site-packages/pkg_resources/extern/__init__.py 
+./venv/lib/python3.10/site-packages/pkg_resources/_vendor/packaging/__init__.py 
+./venv/lib/python3.10/site-packages/pkg_resources/_vendor/__init__.py ./venv/lib/python3.10/site-packages/wheel/__init__.py 
+./venv/lib/python3.10/site-packages/wheel/vendored/packaging/__init__.py ./venv/lib/python3.10/site-packages/wheel/vendored/__init__.py 
+./venv/lib/python3.10/site-packages/wheel/cli/__init__.py ./venv/lib/python3.10/site-packages/pip/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/index/__init__.py ./venv/lib/python3.10/site-packages/pip/_internal/resolution/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/resolution/resolvelib/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/resolution/legacy/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/req/__init__.py ./venv/lib/python3.10/site-packages/pip/_internal/locations/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/__init__.py ./venv/lib/python3.10/site-packages/pip/_internal/models/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/commands/__init__.py ./venv/lib/python3.10/site-packages/pip/_internal/utils/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/network/__init__.py ./venv/lib/python3.10/site-packages/pip/_internal/cli/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/vcs/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/operations/install/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/operations/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/operations/build/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/metadata/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_internal/distributions/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/pkg_resources/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/packaging/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/idna/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/progress/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/colorama/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/msgpack/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/tomli/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/resolvelib/compat/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/resolvelib/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/platformdirs/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/tenacity/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/cachecontrol/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/cachecontrol/caches/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/chardet/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/chardet/cli/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/chardet/metadata/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/certifi/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/urllib3/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/urllib3/packages/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/urllib3/packages/backports/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/urllib3/packages/ssl_match_hostname/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/urllib3/util/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/urllib3/contrib/_securetransport/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/urllib3/contrib/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/requests/__init__.py ./venv/lib/python3.10/site-packages/pip/_vendor/webencodings/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/pep517/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/pep517/in_process/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/html5lib/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/html5lib/filters/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/html5lib/treebuilders/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/html5lib/treewalkers/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/html5lib/_trie/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/html5lib/treeadapters/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/distlib/__init__.py 
+./venv/lib/python3.10/site-packages/pip/_vendor/distlib/_backport/__init__.py ./models/research/object_detection/meta_architectures/__init__.py 
+./models/research/object_detection/anchor_generators/__init__.py ./models/research/object_detection/__init__.py 
+./models/research/object_detection/data_decoders/__init__.py ./models/research/object_detection/models/__init__.py 
+./models/research/object_detection/models/keras_models/__init__.py ./models/research/object_detection/builders/__init__.py 
+./models/research/object_detection/metrics/__init__.py ./models/research/object_detection/matchers/__init__.py 
+./models/research/object_detection/core/__init__.py ./models/research/object_detection/protos/__init__.py 
+./models/research/object_detection/inference/__init__.py ./models/research/object_detection/legacy/__init__.py 
+./models/research/object_detection/dataset_tools/__init__.py ./models/research/object_detection/dataset_tools/context_rcnn/__init__.py 
+./models/research/object_detection/utils/__init__.py ./models/research/object_detection/predictors/heads/__init__.py 
+./models/research/object_detection/predictors/__init__.py ./models/research/object_detection/box_coders/__init__.py 
+./models/research/object_detection/tpu_exporters/__init__.py ./models/research/object_detection/tpu_exporters/testdata/__init__.py 
+./can_scripts/__init__.py ./old_and_aux_files/__init__.py ./old_and_aux_files/old_can_files/__init__.py 
+./connection_utils/communication_controllers/__init__.py ./cone_detection/__init__.py ./cone_detection/data/__init__.py 
+./trajectory_estimation/__init__.py ./globals/__init__.py ./controller_agent/__init__.py ./visualization_utils/__init__.py

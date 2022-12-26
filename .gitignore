@@ -8,3 +8,4 @@
 *.onnx
 *.zip
 *.pyc
+*.whl # Python library installation format

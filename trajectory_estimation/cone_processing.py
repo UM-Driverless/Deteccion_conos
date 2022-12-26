@@ -1,4 +1,4 @@
-from trayectory_estimation.cone_processing_interface import ConeProcessingInterface
+from trajectory_estimation.cone_processing_interface import ConeProcessingInterface
 import numpy as np
 import cv2
 

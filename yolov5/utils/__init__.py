@@ -2,7 +2,7 @@
 """
 utils/initialization
 """
-
+print('yolov5/utils package imported')
 
 def notebook_init(verbose=True):
     # Check system software and hardware

@@ -3,7 +3,7 @@ import numpy as np
 from connection_utils.my_client import ConnectionManager
 from controller_agent.agent_v0 import Agent
 from cone_detection.cone_segmentation import ConeDetector
-from trayectory_estimation.cone_processing import ConeProcessing
+from trajectory_estimation.cone_processing import ConeProcessing
 from visualization_utils.visualize import Visualize
 import tensorflow as tf
 from ObjectDetectionSegmentation.Data.DataManager import DataManager
