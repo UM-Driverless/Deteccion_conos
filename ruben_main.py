@@ -2,22 +2,26 @@
 # MAIN script to execute all the others. Shall contain the main classes, top level functions etc.
 
 """
+# LINKS
+https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
+
+# CHECKS
+- Weights in yolov5/weights/yolov5_models
+- Active bash folder is Deteccion_conos
+- Check requirements. Some might need to be installed with conda instead of pip
+- ZED /usr/local/zed/get_python_api.py run to have pyzed library
+- gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
+
+
+
 # TODO
 - KVASER
     https://www.kvaser.com/developer-blog/running-python-wrapper-linux/
     https://www.kvaser.com/developer-blog/kvaser-canlib-and-python-part-1-initial-setup/
-    
-- TEST TENSORFLOW AND GPU USAGE
-- Como se pasa la imagen a la red. Entender y comentar los pasos
-- Constants global file?
-
-# LINKS
-https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
-
 
 """
 
-# CONSTANTS FOR SETTINGS
+# CONSTANTS FOR SETTINGS (In the future move to globals/)
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 0 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VISUALIZE = 1
