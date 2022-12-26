@@ -26,7 +26,7 @@ CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 
 CAMERA_MODE = 0 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VISUALIZE = 1
 
-VIDEO_FILE_NAME = 'test_video.mp4' # Only used if CAMERA_MODE == 1
+VIDEO_FILE_NAME = 'test_media/test_video.mp4' # Only used if CAMERA_MODE == 1
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
 #WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights?
 

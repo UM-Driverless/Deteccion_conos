@@ -10,3 +10,4 @@
 *.pyc
 *.whl # Python library installation format
 *.vscode # Visual Studio config files
+*.coverage
