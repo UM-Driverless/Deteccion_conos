@@ -46,7 +46,7 @@
         ```
     5. By default accept to install cuda, static version of SDK, AI module, samples and **Python API**. Diagnostic not required.
     6. Now it should be installed in the deault installation path: `/usr/local/zed`
-    7. To get the Python API:
+    7. To get the Python API (Otherwise pyzed won't be installed and will throw an error):
         ```bash
         python3 /usr/local/zed/get_python_api.py 
         ```
