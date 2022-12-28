@@ -69,7 +69,7 @@ def read_image_webcam():
     
     print(f'Starting read_image_webcam thread...')
     
-    # global cam_queue # TODO necessary to declare here?
+    global cam_queue # Required only to modify cam_queue. We don't. Just in case
 
     cam = cv2.VideoCapture(CAM_INDEX)
     
@@ -101,7 +101,7 @@ def read_image_video():
     
     print(f'Starting read_image_video thread...')
     
-    global cam_queue # TODO necessary to declare here?
+    global cam_queue # Required only to modify cam_queue. We don't. Just in case
 
     cam = cv2.VideoCapture(VIDEO_FILE_NAME)
     
@@ -137,7 +137,7 @@ def read_image_zed():
     
     print(f'Starting read_image_zed thread...')
     
-    global runtime, cam_queue # Only read
+    global runtime, cam_queue # Required only to modify. We don't. Just in case
     
     cam = sl.Camera()
     
@@ -153,7 +153,7 @@ def read_image_zed():
     
     # RESOLUTION: HD1080 (3840x1080), HD720 (1280x720), VGA (VGA=1344x376)
     # yolov5 uses 640x640. VGA is much faster, up to 100Hz
-    zed_params.camera_resolution = sl.RESOLUTION.HD720
+    zed_params.camera_resolution = sl.RESOLUTION.VGA
     
     #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
     
@@ -263,7 +263,7 @@ try:
         image = cam_queue.get(timeout=5)
         
         # Resize to IMAGE_RESOLUTION no matter how we got the image
-        # image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
+        image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         # image = np.array(image)
         
@@ -330,7 +330,6 @@ finally:
 
     # TIMES
     # cam.release()
-    cv2.destroyAllWindows()
     if loop_counter != 0:
         average_time_taken = integrated_time_taken/loop_counter
         fps = integrated_fps/loop_counter
@@ -351,7 +350,8 @@ finally:
     plt.title("Execution time per section of main loop")
     plt.savefig("logs/times.png")
 
-    # Close windows of visualizer?
+    # Close windows
+    cv2.destroyAllWindows()
     
     
     # TODO CREATE CAR CLASS WITH THESE VARIABLES
