@@ -67,6 +67,6 @@ class ConeDetector(ConeDetectorInterface):
             cone_class_3 = cone_centers[index_3]
             cone_centers_by_class = [cone_class_0, cone_class_1, cone_class_2, cone_class_3]
 
-            return np.array(cone_centers_by_class)
+            return np.array(cone_centers_by_class, dtype=object)
         else:
             return np.array([[], [], [], []])

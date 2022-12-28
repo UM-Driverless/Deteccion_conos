@@ -31,7 +31,7 @@ class ConeDetector:
         :return: [ndarray, list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
                                 data.
         """
-        # cv2.imwrite('imagen_conos.png', img)
+        # cv2.imwrite('cones_image.png', img)
         img_resize = cv2.resize(img, (640, 640), interpolation=cv2.INTER_AREA)
         detections = self.detect(img_resize)
         if plot:
