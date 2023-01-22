@@ -3,10 +3,10 @@
 /logs/
 /Net_7_FP32/
 /cone_detection/data/saved_networks/
-#*.pt
+#*.pt # Not ignored because they're a few MB
 *.engine
 *.onnx
-*.zip
+*.zipg
 *.pyc
 *.whl # Python library installation format
 *.vscode # Visual Studio config files
