@@ -16,6 +16,7 @@ vulture . --min-confidence 100
 
 
 # TODO
+- Global state variables. Write from thread, concurrently. Read from anywhere. Mutex or synchronization
 - Print number of cones detected (per color or total)
 - Xavier why network takes 3s to execute.
 - Better color recognition
@@ -34,7 +35,7 @@ To stop: Ctrl+C in the terminal
 
 """
 
-# CONSTANTS FOR SETTINGS (In the future move to globals/)
+# CONSTANTS FOR SETTINGS (In the future move to glo/)
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 2 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VISUALIZE = 1
@@ -60,6 +61,7 @@ import cv2 # Webcam
 import pyzed.sl as sl # ZED.
 
 ## Our imports
+import glo # Global variables and constants.
 from connection_utils.car_comunication import ConnectionManager
 from controller_agent.agent import AgentAccelerationYolo as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
@@ -105,7 +107,7 @@ def read_image_webcam():
         # cv2.waitKey(1)
         
         cam_queue.put(image)
-        print(f'Webcam read time: {recorded_times_1-recorded_times_0}')
+        print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
         
 
 def read_image_video():
@@ -184,22 +186,21 @@ def read_image_zed():
     while True:
         # Read ZED camera
         if (cam.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
-            recorded_times_0 = time.time()
+            # recorded_times_0 = time.time()
             
             cam.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
             image = mat_img.get_data() # Creates np.array()
             cam_queue.put(image)
             
-            recorded_times_1 = time.time()
-            print(f'ZED read time: {recorded_times_1-recorded_times_0}')
-        
+            # recorded_times_1 = time.time()
+            # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
 
 def agent_thread():
     print(f'Starting agent thread...')
     global detections, cone_centers, image # Only read
     
     while True:
-        [[throttle, brake, steer, clutch, upgear, downgear, gear], data] = agent.get_action(detections=detections,
+        [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
                                                                                         speed=0,
                                                                                         gear=0,
                                                                                         rpm=0,
@@ -221,6 +222,48 @@ def agent_thread():
 #                         [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
 #                         save_frames=False)
 '''
+
+'''
+# Visualize thread directly here
+def visualize_thread():
+    print(f'Starting visualize thread...')
+    while True:        
+        # image, detections, cone_centers, cenital_map, speed = [image, detections, cone_centers,cenital_map, in_speed]
+        bbox, labels = detections
+        # cenital_map, estimated_center, wrap_img = cenital_map
+        # throttle, brake, steer, clutch, upgear, downgear, gear, rpm = [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm]
+        
+        image = cam_queue.get(block=False, timeout=5) # Read an image but don't remove it. Only the main loop takes it
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        # Color values of each cone type, in bgr
+        colors = {
+            'blue_cone': (255, 0, 0),
+            'yellow_cone': (0, 255, 255),
+            'orange_cone': (40, 50, 200), #(40, 50, 200)
+            'large_orange_cone': (40, 100, 255), #(40, 100, 255)
+            'unknown_cone': (0,0,0)
+        }
+        
+        # Print boxes around each detected cone
+        image = Visualizer.print_bboxes(image, bbox, labels, colors)
+
+        # Print cenital map
+        # image = self._print_cenital_map(cenital_map, colors, estimated_center, image) # TODO MAKE IT WORK
+
+        # Print the output values of the agent, trying to control the car
+        # image = Visualizer.print_data(0, 0, fps, 0, image, 0, 0, 0, 0, len(labels))
+
+        
+
+        # dim = (np.array(image.shape) * 0.1).astype('int')
+        # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
+
+        #TODO make faster or in parallel #takestime
+        cv2.imshow("Detections", image)
+        cv2.waitKey(100)
+'''
+
 
 # SETUP CAMERA
 if (CAMERA_MODE == 0):   cam_worker = multiprocessing.Process(target=read_image_webcam, args=(), daemon=False)
@@ -260,6 +303,7 @@ loop_counter = 0
 ## Data visualization
 if (VISUALIZE == 1):
     visualizer = Visualizer()
+    # visualize_worker = multiprocessing.Process(target=visualize_thread, args=(), daemon=False)
 
 
 # Main loop ------------------------
@@ -288,24 +332,10 @@ try:
         detections, cone_centers = detector.detect_cones(image, get_centers=True)
         recorded_times[2] = time.time()
         
-        # Get actions from agent
-        ## Actions:
-            # 1 -> steer
-            # 2 -> throttle
-            # 3 -> brake
-            # 4 -> clutch
-            # 5 -> upgear
-            # 6 -> downgear
-
-        # [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
-        #                                                                                     speed=0,
-        #                                                                                     gear=0,
-        #                                                                                     rpm=0,
-        #                                                                                     cone_centers=cone_centers,
-        #                                                                                     image=image)
-        
+        # Get actions from agent        
         if (loop_counter == 0):
             agent_worker.start()
+            # visualize_worker.start() #Visualizer
         
         [[throttle, brake, steer, clutch, upgear, downgear, gear], data] = agent_queue.get()
         

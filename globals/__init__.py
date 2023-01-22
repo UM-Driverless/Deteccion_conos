@@ -1,1 +1,0 @@
-print('globals package imported')

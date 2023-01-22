@@ -1,0 +1,1 @@
+print('glo (globals) package imported') # Named glo because globals is a reserved name

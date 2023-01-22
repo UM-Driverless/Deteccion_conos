@@ -1,7 +1,7 @@
 import os
 import time
 import can
-from globals import can_constants
+from glo import can_constants
 import math
 import struct
 import can.interfaces.socketcan.socketcan

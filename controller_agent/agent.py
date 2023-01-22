@@ -72,8 +72,7 @@ class AgentAcceleration(AgentInterface):
 
         throttle, brake, clutch, upgear, downgear, gear = self.longitudinal_control(cenital_cones=data[1], speed=speed,  gear=gear, rpm=rpm)
 
-        return [throttle, brake, steer, clutch, upgear, downgear, gear], data
-
+        return [throttle, brake, steer, clutch, upgear, downgear, gear], data        
 
     def create_cone_map(self, centers, labels, eagle_img, image_shape):
         return self.cone_processing.create_cone_map(centers, labels, [eagle_img, image_shape])
