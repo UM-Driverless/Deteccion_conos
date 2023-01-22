@@ -2,8 +2,9 @@
 # MAIN script to execute all the others. Shall contain the main classes, top level functions etc.
 
 """
-# LINKS
+# REFERENCES
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
+vulture . --min-confidence 100
 
 # CHECKS
 - Weights in yolov5/weights/yolov5_models
@@ -15,13 +16,21 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 
 
 # TODO
+- Print number of cones detected (per color or total)
+- Xavier why network takes 3s to execute.
+- Better color recognition
+- Check NVPMODEL with high power during xavier installation
 - KVASER
     https://www.kvaser.com/developer-blog/running-python-wrapper-linux/
     https://www.kvaser.com/developer-blog/kvaser-canlib-and-python-part-1-initial-setup/
 
+- Can't install anaconda on xavier, it says it's not compatible due to arch64 architecture.
+
+- Wanted to make visualize work in a thread and for any resolution, but now it works for any resolution, don't know why, and it's always about 3ms so it's not worth it for now.
 
 # STUFF
-#if __name__ == '__main__': # removed because this file shouldn never be imported as a module.
+#if __name__ == '__main__': # removed because this file should never be imported as a module.
+To stop: Ctrl+C in the terminal
 
 """
 
@@ -34,10 +43,10 @@ VISUALIZE = 1
 CAM_INDEX = 0
 # For video file
 VIDEO_FILE_NAME = 'test_media/video_short.mp4' # Only used if CAMERA_MODE == 1
-WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
-#WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights?
-IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels. Default yolo_v5 resolution is 640x640
-
+WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best.pt'
+# WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
+# WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights?
+IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
 
 # IMPORTS
 import os
@@ -57,14 +66,11 @@ from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
 
-# TODO add somewhere out of the thread
-# Set the size with cv2.resize()
-
 cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
 
 def read_image_webcam():
     '''Reads the webcam
-    It usually takes about 35e-3 s to read an image, but in parallel
+    It usually takes about 35e-3 s to read an image, but in parallel it doesn't matter.
     '''
     
     print(f'Starting read_image_webcam thread...')
@@ -85,15 +91,22 @@ def read_image_webcam():
     
     while True:
         recorded_times_0 = time.time()
-        result, image = cam.read() # TODO also check CHECK cam.isOpened()?
+        
+        # Read image from webcam
+        # TODO also check CHECK cam.isOpened()?
+        # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
+        result, image = cam.read()
         while result == False:
             result, image = cam.read()
         
         recorded_times_1 = time.time()
         
+        # cv2.imshow('image',image)
+        # cv2.waitKey(1)
+        
         cam_queue.put(image)
         print(f'Webcam read time: {recorded_times_1-recorded_times_0}')
-
+        
 
 def read_image_video():
     '''Reads a video file
@@ -171,14 +184,14 @@ def read_image_zed():
     while True:
         # Read ZED camera
         if (cam.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
-            # recorded_times_0 = time.time()
+            recorded_times_0 = time.time()
             
             cam.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
             image = mat_img.get_data() # Creates np.array()
             cam_queue.put(image)
             
-            # recorded_times_1 = time.time()
-            # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
+            recorded_times_1 = time.time()
+            print(f'ZED read time: {recorded_times_1-recorded_times_0}')
         
 
 def agent_thread():
@@ -237,7 +250,7 @@ agent_worker = multiprocessing.Process(target=agent_thread, args=(), daemon=Fals
 
 # READ TIMES
 TIMES_TO_MEASURE = 4
-recorded_times = np.array([0.]*(TIMES_TO_MEASURE+2)) # Timetag at different points in code
+recorded_times = np.array([0.]*(TIMES_TO_MEASURE+2)) # Timetags at different points in code
 integrated_time_taken = np.array([0.]*TIMES_TO_MEASURE)
 average_time_taken = np.array([0.]*TIMES_TO_MEASURE)
 fps = -1.
@@ -251,6 +264,7 @@ if (VISUALIZE == 1):
 
 # Main loop ------------------------
 try:
+    print(f'Starting main loop.......')
     while True:
         recorded_times[0] = time.time()
         
@@ -265,6 +279,7 @@ try:
         # Resize to IMAGE_RESOLUTION no matter how we got the image
         image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        image = cv2.flip(image, flipCode=1) # For testing purposes
         # image = np.array(image)
         
         recorded_times[1] = time.time()
@@ -350,9 +365,10 @@ finally:
     plt.title("Execution time per section of main loop")
     plt.savefig("logs/times.png")
 
-    # Close windows
-    cv2.destroyAllWindows()
-    
+    # Close processes and windows
+    cam_worker.terminate()
+    agent_worker.terminate()
+    cv2.destroyAllWindows()    
     
     # TODO CREATE CAR CLASS WITH THESE VARIABLES
     throttle = 0
