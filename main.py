@@ -15,10 +15,14 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 
 
 # TODO
+- Xavier why network takes 3s to execute.
+- Better color recognition
+- Check NVPMODEL with high power during xavier installation
 - KVASER
     https://www.kvaser.com/developer-blog/running-python-wrapper-linux/
     https://www.kvaser.com/developer-blog/kvaser-canlib-and-python-part-1-initial-setup/
 
+- Can't install anaconda on xavier, it says it's not compatible due to arch64 architecture.
 
 # STUFF
 #if __name__ == '__main__': # removed because this file shouldn never be imported as a module.
@@ -27,14 +31,15 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 
 # CONSTANTS FOR SETTINGS (In the future move to globals/)
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 2 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
+CAMERA_MODE = 0 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
 VISUALIZE = 1
 
 # For webcam
 CAM_INDEX = 0
 # For video file
 VIDEO_FILE_NAME = 'test_media/video_short.mp4' # Only used if CAMERA_MODE == 1
-WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
+# WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
+WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best.pt'
 #WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights?
 IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels. Default yolo_v5 resolution is 640x640
 
@@ -64,7 +69,7 @@ cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global 
 
 def read_image_webcam():
     '''Reads the webcam
-    It usually takes about 35e-3 s to read an image, but in parallel
+    It usually takes about 35e-3 s to read an image, but in parallel it doesn't matter.
     '''
     
     print(f'Starting read_image_webcam thread...')
@@ -153,7 +158,7 @@ def read_image_zed():
     
     # RESOLUTION: HD1080 (3840x1080), HD720 (1280x720), VGA (VGA=1344x376)
     # yolov5 uses 640x640. VGA is much faster, up to 100Hz
-    zed_params.camera_resolution = sl.RESOLUTION.VGA
+    zed_params.camera_resolution = sl.RESOLUTION.HD720
     
     #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
     
@@ -251,6 +256,7 @@ if (VISUALIZE == 1):
 
 # Main loop ------------------------
 try:
+    print(f'Starting main loop.......')
     while True:
         recorded_times[0] = time.time()
         
@@ -265,6 +271,7 @@ try:
         # Resize to IMAGE_RESOLUTION no matter how we got the image
         image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        image = cv2.flip(image, flipCode=1) # For testing purposes
         # image = np.array(image)
         
         recorded_times[1] = time.time()
@@ -319,6 +326,10 @@ try:
         
         recorded_times[4] = time.time()
 
+        # TODO deleteme test
+        if (loop_counter >= 20):
+            cam_worker.terminate()
+
         # END OF LOOP
         loop_counter += 1
         fps = 1/(recorded_times[TIMES_TO_MEASURE] - recorded_times[0])
@@ -352,6 +363,10 @@ finally:
 
     # Close windows
     cv2.destroyAllWindows()
+    # TODO Close processes
+    
+    # agent_worker.kill()
+    # cam_worker.kill()
     
     
     # TODO CREATE CAR CLASS WITH THESE VARIABLES

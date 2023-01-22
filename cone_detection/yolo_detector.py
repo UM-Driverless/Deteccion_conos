@@ -30,16 +30,23 @@ class ConeDetector(ConeDetectorInterface):
             x2 = int(row['xmax'])
             y1 = int(row['ymin'])
             y2 = int(row['ymax'])
-            label = [int(row['name'].split('class')[-1]), float(row['confidence'])]
+            
+            # Old neural net, with class names 0 1 2 3...
+            # label = [int(row['name'].split('class')[-1]), float(row['confidence'])]
+            
+            # label => [{CLASS NAME}, {CONFIDENCE FLOAT NUMBER}]
+            label = [str(row['name'].split('class')[-1]), float(row['confidence'])]
             # x1,y1------------
             # |               |
             # |               |
             # |               |
             # |               |
             # ------------X2,Y2
-            # if float(row['confidence']) > 0.0:
-            bboxes.append([[x1, y1], [x2, y2]])
-            labels.append(label)
+            
+            # Filter how many cones we want to use, according to the confidence value (0 to 1)
+            if float(row['confidence']) > 0.0:
+                bboxes.append([[x1, y1], [x2, y2]])
+                labels.append(label)
 
         if get_centers:
             cone_centers = self.get_centers(np.array(bboxes), labels)
@@ -56,16 +63,25 @@ class ConeDetector(ConeDetectorInterface):
 
             cone_centers = np.array([x_center, y_center]).transpose()
 
-            index_0 = np.array(labels)[:, 0] == 0
-            index_1 = np.array(labels)[:, 0] == 1
-            index_2 = np.array(labels)[:, 0] == 2
-            index_3 = np.array(labels)[:, 0] == 3  # Los naranjas están todos agrupados en una única clase, por lo que este indez_4 no hace falta
+            # Old neural net
+            # index_0 = np.array(labels)[:, 0] == 0
+            # index_1 = np.array(labels)[:, 0] == 1
+            # index_2 = np.array(labels)[:, 0] == 2
+            # index_3 = np.array(labels)[:, 0] == 3  # Los naranjas están todos agrupados en una única clase, por lo que este indez_4 no hace falta
+
+            index_0 = np.array(labels)[:, 0] == 'blue_cone'
+            index_1 = np.array(labels)[:, 0] == 'yellow_cone'
+            index_2 = np.array(labels)[:, 0] == 'orange_cone'
+            
+            index_3 = np.array(labels)[:, 0] == 'large_orange_cone'  # Los naranjas están todos agrupados en una única clase, por lo que este indez_4 no hace falta
+            index_4 = np.array(labels)[:, 0] == 'unknown_cone'
 
             cone_class_0 = cone_centers[index_0]
             cone_class_1 = cone_centers[index_1]
             cone_class_2 = cone_centers[index_2]
             cone_class_3 = cone_centers[index_3]
-            cone_centers_by_class = [cone_class_0, cone_class_1, cone_class_2, cone_class_3]
+            cone_class_4 = cone_centers[index_4]
+            cone_centers_by_class = [cone_class_0, cone_class_1, cone_class_2, cone_class_3, cone_class_4]
 
             return np.array(cone_centers_by_class, dtype=object)
         else:

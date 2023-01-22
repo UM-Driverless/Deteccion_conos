@@ -31,6 +31,18 @@ class Visualizer(VisualizeInterface):
 
 
     def make_images(self, data, controls, fps, save_frames=False):
+        '''Creates the new image with overlays of the detections.
+        
+        data:
+        
+        
+        controls:
+        
+        fps: boolean with the current frames per second 
+        save_frames: Whether to save the frames to a file, or just show them
+        '''
+        
+        
         image, detections, cone_centers, cenital_map, speed = data
         bbox, label = detections
         cenital_map, estimated_center, wrap_img = cenital_map
@@ -38,15 +50,28 @@ class Visualizer(VisualizeInterface):
 
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-        color = [(255, 0, 0), (0, 255, 255), (100, 0, 255), (100, 0, 255)]
+        # Old neural net
+        # color = [(255, 0, 0), (0, 255, 255), (100, 0, 255), (100, 0, 255)]
 
+        # Color values of each cone type
+        color = {
+            'blue_cone': (255, 0, 0),
+            'yellow_cone': (0, 255, 255),
+            'orange_cone': (100, 0, 255),
+            'large_orange_cone': (100, 0, 255),
+            'unknown_cone': (255,255,255)
+        }
+
+        # Print boxes around each detected cone
         image = self.print_bboxes(image, bbox, label, color)
 
-        image = self._print_cenital_map(cenital_map, color, estimated_center, image)
+        # Print cenital map
+        # image = self._print_cenital_map(cenital_map, color, estimated_center, image) # TODO MAKE IT WORK
 
+        # Print the output values of the agent, trying to control the car
         image = self._print_controls(brake, clutch, fps, gear, image, rpm, speed, steer, throttle)
 
-        dim = (np.array(image.shape) * 0.1).astype('int')
+        # dim = (np.array(image.shape) * 0.1).astype('int')
         # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
 
         cv2.imshow("Detections", image)
@@ -95,13 +120,25 @@ class Visualizer(VisualizeInterface):
         return image
 
     def print_bboxes(self, image, bbox, label, color):
+        ''' Print boxes around each detected cone
+        
+        '''
+        
         for (box, lab) in zip(bbox, label):
             x1 = int(box[0, 0])
             y1 = int(box[0, 1])
             x2 = int(box[1, 0])
             y2 = int(box[1, 1])
-            clase = int(lab[0])
-            lab = '{} {:.1f}'.format(lab[0], lab[1])
+            
+            # NEWNET TODO
+            # OLD
+            # clase = int(lab[0]) # INT -> STR
+            # lab = '{} {:.1f}'.format(lab[0], float(lab[1]))
+            
+            # NEW
+            clase = str(lab[0]) # INT -> STR            
+            lab = f'{lab[0]} {lab[1]}'
+            
             # For bounding box
             image = cv2.rectangle(image, (x1, y1), (x2, y2), color[clase], 2)
 
@@ -111,11 +148,12 @@ class Visualizer(VisualizeInterface):
                 lab, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
 
             # Prints the text.
-            image = cv2.rectangle(image, (x1, y1 - 20), (x1 + w, y1), color[clase], -1)
+            # image = cv2.rectangle(image, (x1, y1 - 20), (x1 + w, y1), color[clase], -1)
 
             # For printing text
-            image = cv2.putText(image, lab, (x1, y1),
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+            # TODO WE HAVE COMMENTED
+            # image = cv2.putText(image, lab, (x1, y1),
+            #                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
 
         return image
 
