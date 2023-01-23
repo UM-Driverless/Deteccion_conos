@@ -1,9 +1,10 @@
-from connection_utils.communication_controllers.can_interface import CANInterface
 import can
-from glo import can_constants
 import math
 import struct
 import time
+
+from connection_utils.communication_controllers.can_interface import CANInterface
+import can_constants
 
 #CLASE CAN
 class CAN1(CANInterface):
