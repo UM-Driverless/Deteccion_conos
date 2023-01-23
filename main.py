@@ -13,14 +13,12 @@ vulture . --min-confidence 100
 - ZED /usr/local/zed/get_python_api.py run to have pyzed library
 - gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
 
-
-
 # TODO
-- Global state variables. Write from thread, concurrently. Read from anywhere. Mutex or synchronization.
-    - For now main imports glo, and glo vars are used in the main. threads communicate using queues to manage concurrency
+- Kvaser CAN!!!!
 - Print number of cones detected (per color or total)
 - Xavier why network takes 3s to execute.
 - Better color recognition
+- Make net faster. Remove cone types that we don't use?
 - Check NVPMODEL with high power during xavier installation
 - KVASER
     https://www.kvaser.com/developer-blog/running-python-wrapper-linux/
@@ -35,20 +33,6 @@ vulture . --min-confidence 100
 To stop: Ctrl+C in the terminal
 
 """
-
-# CONSTANTS FOR SETTINGS (In the future move to glo/)
-CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 2 # 0 -> Webcam, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> ZED
-VISUALIZE = 1
-
-# For webcam
-CAM_INDEX = 0
-# For video file
-VIDEO_FILE_NAME = 'test_media/video_short.mp4' # Only used if CAMERA_MODE == 1
-WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best.pt'
-# WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
-# WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights?
-IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
 
 # IMPORTS
 import os
@@ -78,7 +62,7 @@ def read_image_webcam():
     
     print(f'Starting read_image_webcam thread...')
     
-    global cam_queue # Required only to modify cam_queue. We don't. Just in case
+    global cam_queue # To access the global cam_queue instead of a local copy
 
     cam = cv2.VideoCapture(CAM_INDEX)
     
@@ -132,7 +116,7 @@ def read_image_video():
         print("Error opening video file")
     
     while True:
-        recorded_times_0 = time.time()
+        # recorded_times_0 = time.time()
         result, image = cam.read() # TODO also check CHECK cam.isOpened()?
         while result == False:
             result, image = cam.read()
@@ -141,10 +125,10 @@ def read_image_video():
         # cv2.imshow('image',image)
         # cv2.waitKey(10)
         
-        recorded_times_1 = time.time()
+        # recorded_times_1 = time.time()
         
         cam_queue.put(image)
-        print(f'Video read time: {recorded_times_1-recorded_times_0}')
+        # print(f'Video read time: {recorded_times_1-recorded_times_0}')
 
 
 def read_image_zed():
@@ -195,6 +179,18 @@ def read_image_zed():
             
             # recorded_times_1 = time.time()
             # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
+
+def read_image_file():
+    '''
+    Reads an image file
+    '''
+    
+    print(f'Starting read_image_file thread...')
+    
+    while True:
+        image = cv2.imread(IMAGE_FILE_NAME)
+        cam_queue.put(image)
+    
 
 def agent_thread():
     print(f'Starting agent thread...')
@@ -270,6 +266,7 @@ def visualize_thread():
 if (CAMERA_MODE == 0):   cam_worker = multiprocessing.Process(target=read_image_webcam, args=(), daemon=False)
 elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_video,  args=(), daemon=False)
 elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(), daemon=False)
+elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_file,    args=(), daemon=False)
 
 cam_worker.start()
 
@@ -324,7 +321,7 @@ try:
         # Resize to IMAGE_RESOLUTION no matter how we got the image
         image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        image = cv2.flip(image, flipCode=1) # For testing purposes
+        # image = cv2.flip(image, flipCode=1) # For testing purposes
         # image = np.array(image)
         
         recorded_times[1] = time.time()
@@ -358,8 +355,10 @@ try:
 
             visualizer.visualize(agent_target,
                                  car_state,
-                                 [image, detections, cone_centers, cenital_map],
-                                 fps, save_frames=False)
+                                 image,
+                                 detections,
+                                 fps,
+                                 save_frames=False)
         
         recorded_times[4] = time.time()
 

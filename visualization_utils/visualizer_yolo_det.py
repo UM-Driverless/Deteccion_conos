@@ -7,7 +7,7 @@ class Visualizer(VisualizeInterface):
     def __init__(self):
         self.saved_frames = []
 
-    def visualize(self, agent_target, car_state, data, fps, save_frames=False):
+    def visualize(self, agent_target, car_state, image, detections, fps, save_frames=False):
         """
         Main method that gets called to generate the visualization
         
@@ -30,9 +30,9 @@ class Visualizer(VisualizeInterface):
         :param fps: int
         :param save_frames: bool. Allows store the resulting frame in a list to later create a video with save_in_video function
         """
-        self.make_images(agent_target, car_state, data, fps, save_frames=save_frames)
+        self.make_images(agent_target, car_state, image, detections, fps, save_frames=save_frames)
 
-    def make_images(self, agent_target, car_state, data, fps, save_frames=False):
+    def make_images(self, agent_target, car_state, image, detections, fps, save_frames=False):
         '''Creates the new image with overlays of the detections.
         
         data:
@@ -43,10 +43,8 @@ class Visualizer(VisualizeInterface):
         fps: boolean with the current frames per second 
         save_frames: Whether to save the frames to a file, or just show them
         '''
-        image, detections, cone_centers, cenital_map = data
         
         bbox, labels = detections
-        # cenital_map, estimated_center, wrap_img = cenital_map
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         # Color values of each cone type, in bgr
@@ -89,26 +87,36 @@ class Visualizer(VisualizeInterface):
         color = (255, 255, 255)
         thickness = 1
         
+        # Dark background
+        background = np.zeros_like(image)
+        cv2.rectangle(background, (0,380), (640, 640), (1,1,1), cv2.FILLED)
+        alpha = 0.5
+        mask = background.astype(bool)
+        image[mask] = cv2.addWeighted(src1=image, alpha=alpha, src2=background, beta=(1-alpha), gamma=0)[mask]
+        
         # Add text (takes almost no time to run)
-        text = f'RPM: {int(car_state["rpm"]):d}'
-        image = cv2.putText(image, text, (10, 450), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = f'speed: {car_state["speed"]:.2f}'
-        image = cv2.putText(image, text, (10, 470), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = f'FPS: {int(fps):.2f}'
-        image = cv2.putText(image, text, (10, 490), font, fontScale, color, thickness, cv2.LINE_AA)
-        # text = f'Cones: {} Blue: {} Yellow: {} Orange: {}'
-        text = f'Cones: {cone_amount}'
-        image = cv2.putText(image, text, (10, 510), font, fontScale, color, thickness, cv2.LINE_AA)
+        text = [
+            f'CAR STATE:',
+            f'    Speed: {car_state["speed"]:.2f}',
+            f'    RPM: {int(car_state["rpm"]):d}',
+            f'NET DATA:',
+            f'    fps: {int(fps):.2f}',
+            f'    Cones: {cone_amount}',
+            f'AGENT TARGET:',
+            f'    throttle: {agent_target["throttle"]}',
+            f'    brake: {agent_target["brake"]}',
+            f'    steer: {agent_target["steer"]}',
+            f'    clutch: {agent_target["clutch"]}',
+        ]
         
-        # text = f'AGENT'
-        # image = cv2.putText(image, text, (10, 510), font, fontScale, color, thickness, cv2.LINE_AA)
-        # text = f'AGENT'
-        # image = cv2.putText(image, text, (10, 530), font, fontScale, color, thickness, cv2.LINE_AA)
+        for i in range(11):
+            image = cv2.putText(image, text[i], (10, 400+20*i), font, fontScale, color, thickness, cv2.LINE_AA)
         
         
-        # Text from the agent. TODO it could be off. what then? #takestime
-        ctr_img = self._controls_img(agent_target)
-        image[340:390, 10:210] = ctr_img
+        # Text from the agent. TODO it could be off. what then?
+        # TODO FIGURE THIS OUT
+        # ctr_img = self._controls_img(agent_target)
+        # image[340:390, 10:210] = ctr_img
         
         return image
 
