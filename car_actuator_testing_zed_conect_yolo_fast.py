@@ -80,12 +80,12 @@ if __name__ == '__main__':
                 # 6 -> downgear
 
                 # Seleccionar acciones
-                [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
-                                                                                                  speed=in_speed,
-                                                                                                  gear=in_gear,
-                                                                                                  rpm=in_rpm,
-                                                                                                  cone_centers=cone_centers,
-                                                                                                  image=image)
+                agent_target, data = agent.get_action(agent_target,
+                                                      detections=detections,
+                                                        speed=in_speed,
+                                                        rpm=in_rpm,
+                                                        cone_centers=cone_centers,
+                                                        image=image)
 
                 # resize actions
                 # throttle *= 0.8
@@ -94,12 +94,10 @@ if __name__ == '__main__':
                 # clutch *= 0.8
 
                 # Enviar acciones
-                connect_mng.send_actions(throttle=throttle,
-                                         brake=brake,
-                                         steer=steer,
-                                         clutch=clutch,
-                                         upgear=upgear,
-                                         downgear=downgear)
+                connect_mng.send_actions(throttle = agent_target['throttle'],
+                                         brake = agent_target['brake'],
+                                         steer = agent_target['steer'],
+                                         clutch = agent_target['clutch'])
 
                 fps = 1.0 / (time.time() - start_time)
                 print("FPS: ", 1.0 / (time.time() - start_time))

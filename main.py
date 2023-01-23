@@ -16,7 +16,8 @@ vulture . --min-confidence 100
 
 
 # TODO
-- Global state variables. Write from thread, concurrently. Read from anywhere. Mutex or synchronization
+- Global state variables. Write from thread, concurrently. Read from anywhere. Mutex or synchronization.
+    - For now main imports glo, and glo vars are used in the main. threads communicate using queues to manage concurrency
 - Print number of cones detected (per color or total)
 - Xavier why network takes 3s to execute.
 - Better color recognition
@@ -61,7 +62,7 @@ import cv2 # Webcam
 import pyzed.sl as sl # ZED.
 
 ## Our imports
-import glo # Global variables and constants.
+from globals import * # Global variables and constants, as if they were here
 from connection_utils.car_comunication import ConnectionManager
 from controller_agent.agent import AgentAccelerationYolo as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
@@ -92,7 +93,7 @@ def read_image_webcam():
         print("Error opening webcam")
     
     while True:
-        recorded_times_0 = time.time()
+        # recorded_times_0 = time.time()
         
         # Read image from webcam
         # TODO also check CHECK cam.isOpened()?
@@ -101,13 +102,13 @@ def read_image_webcam():
         while result == False:
             result, image = cam.read()
         
-        recorded_times_1 = time.time()
+        # recorded_times_1 = time.time()
         
         # cv2.imshow('image',image)
         # cv2.waitKey(1)
         
         cam_queue.put(image)
-        print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
+        # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
         
 
 def read_image_video():
@@ -197,18 +198,18 @@ def read_image_zed():
 
 def agent_thread():
     print(f'Starting agent thread...')
-    global detections, cone_centers, image # Only read
+    global agent_target, detections, cone_centers, image
     
     while True:
-        [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections=detections,
-                                                                                        speed=0,
-                                                                                        gear=0,
-                                                                                        rpm=0,
-                                                                                        cone_centers=cone_centers,
-                                                                                        image=image)
+        # This agent_target variable must be local, and sent to the main loop through a queue that manages the concurrency.
+        [agent_target_local, data] = agent.get_action(agent_target,
+                                                      car_state,
+                                                    detections=detections,
+                                                    cone_centers=cone_centers,
+                                                    image=image)
         
         # Output values to queue as an array
-        agent_queue.put([[throttle, brake, steer, clutch, upgear, downgear, gear], data])
+        agent_queue.put([agent_target_local, data])
 
 ''' Visualize thread doesn't work. It's not required for the car to work so ignore it.
 # def visualize_thread():
@@ -308,7 +309,7 @@ if (VISUALIZE == 1):
 
 # Main loop ------------------------
 try:
-    print(f'Starting main loop.......')
+    print(f'Starting main loop...')
     while True:
         recorded_times[0] = time.time()
         
@@ -337,30 +338,28 @@ try:
             agent_worker.start()
             # visualize_worker.start() #Visualizer
         
-        [[throttle, brake, steer, clutch, upgear, downgear, gear], data] = agent_queue.get()
+        [agent_target, data] = agent_queue.get()
         
         recorded_times[3] = time.time()
 
         # Send actions - CAN
         if (CAN_MODE == 1):
-            connect_mng.send_actions(throttle=throttle,
-                                    brake=brake,
-                                    steer=steer,
-                                    clutch=clutch,
-                                    upgear=upgear,
-                                    downgear=downgear)
+            connect_mng.send_actions(throttle = agent_target['throttle'],
+                                    brake = agent_target['brake'],
+                                    steer = agent_target['steer'],
+                                    clutch = agent_target['clutch'])
         
         # VISUALIZE
         # TODO add parameters to class
         if (VISUALIZE == 1):
             cenital_map = [data[1], data[2], data[-1]]
             in_speed = 0
-            in_gear = 0
             in_rpm = 0
 
-            visualizer.visualize([image, detections, cone_centers,cenital_map, in_speed],
-                                    [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
-                                    save_frames=False)
+            visualizer.visualize(agent_target,
+                                 car_state,
+                                 [image, detections, cone_centers, cenital_map],
+                                 fps, save_frames=False)
         
         recorded_times[4] = time.time()
 
@@ -400,13 +399,9 @@ finally:
     agent_worker.terminate()
     cv2.destroyAllWindows()    
     
-    # TODO CREATE CAR CLASS WITH THESE VARIABLES
-    throttle = 0
-    brake = 0
-    steer = 0
-    clutch = 0
-    upgear = 0
-    downgear = 0
-
-
-
+    agent_target = {
+        "throttle": 0.,
+        "brake": 0.,
+        "steer": 0.,
+        "clutch": 0.,
+    }

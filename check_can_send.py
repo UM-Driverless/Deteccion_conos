@@ -1,8 +1,9 @@
 import os
 import time
 import can
-from glo import can_constants
 import math
+
+import can_constants
 
 if __name__ == '__main__':
     # Inicializar conexiones
