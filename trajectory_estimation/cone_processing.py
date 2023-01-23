@@ -15,6 +15,12 @@ class ConeProcessing(ConeProcessingInterface):
 
     def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
         """
+        
+        Returns data, which ...
+        data[1] = [{list with centers of blue cones}, [= for yellow cones], ...] list with centers of each cone
+        data[2] (=data[-2]) returns the reference point
+        
+        
         Performs the cones detection task. The detection must include the bounding boxes and classification of each
         cone.
         :param img: (3D numpy array) Image to process.
@@ -76,8 +82,6 @@ class ConeProcessing(ConeProcessingInterface):
             img_wrap = np.zeros((orig_im_shape[2], orig_im_shape[2], 3))
 
 
-
-
         # # algoritmo para unir conos contiguos. Lo aplicamos sobre los conos en perspectiva
         # order_warp_blue_center = self.join_cones(warp_blue_center, unique_color='blue')
         # order_warp_yell_center = self.join_cones(warp_yell_center, unique_color='yell')
@@ -91,11 +95,11 @@ class ConeProcessing(ConeProcessingInterface):
         if len(warp_blue_center) > 1 and len(warp_yell_center) > 1:
             x1 = np.median(np.array(warp_blue_center)[:, 0])
             x2 = np.median(np.array(warp_yell_center)[:, 0])
-            center = int((x2 - x1) / 2 + x1)
+            center = int((x1 + x2) / 2)
         elif len(order_warp_oran_left_center) > 1 and len(order_warp_oran_rigth_center) > 1:
             x1 = np.median(np.array(order_warp_oran_left_center)[:, 0])
             x2 = np.median(np.array(order_warp_oran_rigth_center)[:, 0])
-            center = int((x2 - x1) / 2 + x1)
+            center = int((x1 + x2) / 2)
         else:
             center = 0.
 
