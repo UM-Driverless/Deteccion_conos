@@ -16,7 +16,8 @@ class ConeProcessing(ConeProcessingInterface):
     def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
         """
         
-        Returns data, which ...
+        Returns data array, which ...
+        data[0] = cone centers per color in top view = [warp_blue_center, warp_yell_center, warp_oran_center]
         data[1] = [{list with centers of blue cones}, [= for yellow cones], ...] list with centers of each cone
         data[2] (=data[-2]) returns the reference point
         
@@ -114,10 +115,10 @@ class ConeProcessing(ConeProcessingInterface):
         # img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
         # # img is rgb, convert to opencv's default bgr
         # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        #
+        
         # # display image with opencv or any operation you like
         # cv2.imshow("plot", img)
-        #
+        
         # fig = plt.figure(1)
         # plt.plot(warp_blue_center[:, 0], warp_blue_center[:, 1], 'o')
         # plt.plot(warp_yell_center[:, 0], warp_yell_center[:, 1], 'o')
@@ -128,7 +129,7 @@ class ConeProcessing(ConeProcessingInterface):
         # img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
         # # img is rgb, convert to opencv's default bgr
         # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        #
+        
         # # display image with opencv or any operation you like
         # cv2.imshow("plot_wrap", img)
         # cv2.waitKey(0)
@@ -138,7 +139,7 @@ class ConeProcessing(ConeProcessingInterface):
                 np.array(order_warp_oran_left_center), np.array(order_warp_oran_rigth_center)], \
                center, img_wrap
 
-
+    '''
     def create_cone_map_legacy(self, cone_detections, cone_centers, aux_data=None):
         """
         Performs the cones detection task. The detection must include the bounding boxes and classification of each
@@ -191,7 +192,7 @@ class ConeProcessing(ConeProcessingInterface):
         return [warp_blue_center, warp_yell_center, warp_oran_center], \
                [order_warp_blue_center, order_warp_yell_center, order_warp_oran_left_center, order_warp_oran_rigth_center], \
                center
-
+    '''
 
     def perspective_warp_coordinates(self,
                                     coord_list,
@@ -623,7 +624,7 @@ class ConeProcessing(ConeProcessingInterface):
         v2_u = self.unit_vector(v2)
         return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
 
-
+'''
 class ConeProcessingNoWrapped(ConeProcessing):
     def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
         """
@@ -678,3 +679,4 @@ class ConeProcessingNoWrapped(ConeProcessing):
                [np.array(order_warp_blue_center), np.array(order_warp_yell_center),
                 np.array(order_warp_oran_left_center), np.array(order_warp_oran_rigth_center)], \
                center
+'''

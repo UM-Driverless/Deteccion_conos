@@ -2,6 +2,10 @@
 # MAIN script to execute all the others. Shall contain the main classes, top level functions etc.
 
 """
+# HOW TO USE
+- Configuration variables in globals.py
+
+
 # REFERENCES
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 vulture . --min-confidence 100
@@ -159,7 +163,7 @@ def read_image_zed():
     
     status = cam.open(zed_params)
     if status != sl.ERROR_CODE.SUCCESS:
-        print(repr(status))
+        print(f'ZED ERROR: {repr(status)}')
         exit(1)
 
     runtime = sl.RuntimeParameters()
@@ -200,9 +204,9 @@ def agent_thread():
         # This agent_target variable must be local, and sent to the main loop through a queue that manages the concurrency.
         [agent_target_local, data] = agent.get_action(agent_target,
                                                       car_state,
-                                                    detections=detections,
-                                                    cone_centers=cone_centers,
-                                                    image=image)
+                                                      detections=detections,
+                                                      cone_centers=cone_centers,
+                                                      image=image)
         
         # Output values to queue as an array
         agent_queue.put([agent_target_local, data])
@@ -264,9 +268,9 @@ def visualize_thread():
 
 # SETUP CAMERA
 if (CAMERA_MODE == 0):   cam_worker = multiprocessing.Process(target=read_image_webcam, args=(), daemon=False)
-elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_video,  args=(), daemon=False)
-elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(), daemon=False)
-elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_file,    args=(), daemon=False)
+elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(), daemon=False)
+elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_file,   args=(), daemon=False)
+elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_video,  args=(), daemon=False)
 
 cam_worker.start()
 
@@ -328,14 +332,25 @@ try:
 
         # Detect cones
         detections, cone_centers = detector.detect_cones(image, get_centers=True)
+        
         recorded_times[2] = time.time()
         
-        # Get actions from agent        
+        # Get actions from agent
         if (loop_counter == 0):
             agent_worker.start()
             # visualize_worker.start() #Visualizer
         
         [agent_target, data] = agent_queue.get()
+        
+        # Test with a plot
+        # if (len(cone_centers[0]) > 0):
+        #     plt.figure('cone_centers')
+        #     plt.clf()
+        #     plt.scatter(data[0][0][:,0], data[0][0][:,1])
+        #     plt.scatter(data[0][1][:,0], data[0][1][:,1])
+        #     plt.show()
+        #     plt.savefig("logs/cone_centers.png")
+        
         
         recorded_times[3] = time.time()
 

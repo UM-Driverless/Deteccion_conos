@@ -1,5 +1,5 @@
 from controller_agent.agent_base import AgentInterface
-from trajectory_estimation.cone_processing import ConeProcessing, ConeProcessingNoWrapped
+from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessingNoWrapped
 import cv2
 import simple_pid
 import numpy as np
@@ -272,7 +272,8 @@ class AgentAccelerationYolo(AgentAcceleration):
 
     def get_action(self, agent_target, car_state, detections, cone_centers=None, orig_im_shape=(1, 180, 320, 3), image=None):
         """
-        Calcular los valores de control
+        Figure out what to do to drive the car. Updates agent_target values.
+        
         """
         bboxes, labels = detections
 
@@ -289,6 +290,9 @@ class AgentAccelerationYolo(AgentAcceleration):
         return self.cone_processing.create_cone_map(centers, labels, [eagle_img], orig_im_shape=image_shape, img_to_wrap=image)
 
     def horinzontal_control(self, ref_point, img_center, img_base_len):
+        '''
+        TODO MAKE IT WORK
+        '''
         turn_point = img_center - ref_point
         # turn_point = -turn_point/img_base_len
         val = self.valTrackbarsPID()
