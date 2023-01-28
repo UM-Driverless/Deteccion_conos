@@ -9,7 +9,7 @@ if __name__ == '__main__':
     checkpoint_path = '../cone_detection/saved_models/ResNet50_640x640_synt_2'
     detector = ConeDetector(checkpoint_path)
     # Image processing
-    image = cv2.imread("/home/shernandez/PycharmProjects/UMotorsport/Deteccion_conos/cliente_simulador/PyUMotorsport/imagenes_auxiliares/imagen_conos.png")
+    image = cv2.imread("/home/shernandez/PycharmProjects/UMotorsport/Deteccion_conos/cliente_simulador/PyUMotorsport/imagenes_auxiliares/cones_image.png")
     w = image.shape[1]
     h = image.shape[0]
     detections = detector.detect_in_image(np.array(image), plot=False, min_score_thresh=0.1, real_time=False, im_name='Left')

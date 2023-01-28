@@ -3,10 +3,13 @@ Control the flow of information from the sensor (Camera and CAN data) to the mai
 """
 
 from connection_utils.comunication_base import ComunicationInterface
-from connection_utils.communication_controllers import zed, can_utils, zed_dummy
+from connection_utils.communication_controllers import can_utils, zed_dummy
 import numpy as np
 
 class ConnectionManager(ComunicationInterface):
+    """
+    TODO clear description
+    """
     def __init__(self, logger=None):
         self.logger = logger
         #self.camera = zed.Camera(logger=logger)  # Todavía no se ha implementado, de momento no hace nada.

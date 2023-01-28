@@ -1,5 +1,5 @@
 from controller_agent.agent_base import AgentInterface
-from trayectory_estimation.cone_processing import ConeProcessing
+from trajectory_estimation.cone_processing import ConeProcessing
 import cv2
 import simple_pid
 import numpy as np

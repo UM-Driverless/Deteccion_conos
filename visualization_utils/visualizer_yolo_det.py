@@ -1,14 +1,17 @@
 import cv2
 import numpy as np
 from visualization_utils.visualize_base import VisualizeInterface
-
+import time # Measure time taken
 
 class Visualizer(VisualizeInterface):
     def __init__(self):
         self.saved_frames = []
 
-    def visualize(self, data, controls, fps, save_frames=False):
+    def visualize(self, agent_target, car_state, image, detections, fps, save_frames=False):
         """
+        Main method that gets called to generate the visualization
+        
+        
         :param data: List of: [image, detections, cenital_map, y_hat, in_speed]
                      image: ndarray (h, w, channels)
                      detections: bboxes
@@ -27,60 +30,105 @@ class Visualizer(VisualizeInterface):
         :param fps: int
         :param save_frames: bool. Allows store the resulting frame in a list to later create a video with save_in_video function
         """
-        self.make_images(data, controls, fps, save_frames=save_frames)
+        self.make_images(agent_target, car_state, image, detections, fps, save_frames=save_frames)
 
+    def make_images(self, agent_target, car_state, image, detections, fps, save_frames=False):
+        '''Creates the new image with overlays of the detections.
+        
+        data:
+        
+        
+        controls:
+        
+        fps: boolean with the current frames per second 
+        save_frames: Whether to save the frames to a file, or just show them
+        '''
+        
+        bbox, labels = detections
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    def make_images(self, data, controls, fps, save_frames=False):
-        image, detections, cone_centers, cenital_map, speed = data
-        bbox, label = detections
-        cenital_map, estimated_center, wrap_img = cenital_map
-        throttle, brake, steer, clutch, upgear, downgear, gear, rpm = controls
+        # Color values of each cone type, in bgr
+        colors = {
+            'blue_cone': (255, 0, 0),
+            'yellow_cone': (0, 255, 255),
+            'orange_cone': (40, 50, 200), #(40, 50, 200)
+            'large_orange_cone': (40, 100, 255), #(40, 100, 255)
+            'unknown_cone': (0,0,0)
+        }
 
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        # Old neural net
+        # colors = [(255, 0, 0), (0, 255, 255), (100, 0, 255), (100, 0, 255)]
+        
+        # Print boxes around each detected cone
+        image = self.print_bboxes(image, bbox, labels, colors)
 
-        color = [(255, 0, 0), (0, 255, 255), (100, 0, 255), (100, 0, 255)]
+        # Print cenital map
+        # # image = self._print_cenital_map(cenital_map, colors, estimated_center, image) # TODO MAKE IT WORK
 
-        image = self.print_bboxes(image, bbox, label, color)
+        # Print the output values of the agent, trying to control the car
+        image = self.print_data(agent_target, car_state, fps, image, len(labels))
 
-        image = self._print_cenital_map(cenital_map, color, estimated_center, image)
-
-        image = self._print_controls(brake, clutch, fps, gear, image, rpm, speed, steer, throttle)
-
-        dim = (np.array(image.shape) * 0.1).astype('int')
+        # dim = (np.array(image.shape) * 0.1).astype('int')
         # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
 
+        #TODO TAKES 3ms OF TIME. make faster or in parallel
         cv2.imshow("Detections", image)
         cv2.waitKey(1)
 
         if save_frames:
             self.saved_frames.append(image)
+        
         return image
 
-    def _print_controls(self, brake, clutch, fps, gear, image, rpm, speed, steer, throttle):
+    def print_data(self, agent_target, car_state, fps, image, cone_amount):
+        # config
         font = cv2.FONT_HERSHEY_SIMPLEX
         fontScale = 0.5
         color = (255, 255, 255)
         thickness = 1
-        text = 'speed:   {:.2f}'.format(speed)
-        image = cv2.putText(image, text, (10, 470), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'gear:     {:d}'.format(int(gear))
-        image = cv2.putText(image, text, (10, 430), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'RPM:   {:d}'.format(int(rpm))
-        image = cv2.putText(image, text, (10, 450), font, fontScale, color, thickness, cv2.LINE_AA)
-        text = 'FPS:     {:.2f}'.format(int(fps))
-        image = cv2.putText(image, text, (10, 490), font, fontScale, color, thickness, cv2.LINE_AA)
-        ctr_img = self._controls_img(steer, throttle, brake, clutch)
-        image[340:390, 10:210] = ctr_img
+        
+        # Dark background
+        background = np.zeros_like(image)
+        cv2.rectangle(background, (0,380), (640, 640), (1,1,1), cv2.FILLED)
+        alpha = 0.5
+        mask = background.astype(bool)
+        image[mask] = cv2.addWeighted(src1=image, alpha=alpha, src2=background, beta=(1-alpha), gamma=0)[mask]
+        
+        # Add text (takes almost no time to run)
+        text = [
+            f'CAR STATE:',
+            f'    Speed: {car_state["speed"]:.2f}',
+            f'    RPM: {int(car_state["rpm"]):d}',
+            f'NET DATA:',
+            f'    fps: {int(fps):.2f}',
+            f'    Cones: {cone_amount}',
+            f'AGENT TARGET:',
+            f'    throttle: {agent_target["throttle"]}',
+            f'    brake: {agent_target["brake"]}',
+            f'    steer: {agent_target["steer"]}',
+            f'    clutch: {agent_target["clutch"]}',
+        ]
+        
+        for i in range(11):
+            image = cv2.putText(image, text[i], (10, 400+20*i), font, fontScale, color, thickness, cv2.LINE_AA)
+        
+        
+        # Text from the agent. TODO it could be off. what then?
+        # TODO FIGURE THIS OUT
+        # ctr_img = self._controls_img(agent_target)
+        # image[340:390, 10:210] = ctr_img
+        
         return image
 
+    '''
     def _print_cenital_map(self, cenital_map, color, estimated_center, image):
         cenital_img_size = 0.1
         # Pintar centros de masa de los conos
         dim = image.shape
         cenital_img = np.zeros((dim[1], dim[1], 3)) * 255
-        for c in cenital_map[0]:
+        # for c in cenital_map[0]:
             cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[0], -1)
-        for c in cenital_map[1]:
+        # for c in cenital_map[1]:
             cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[1], -1)
         for c in cenital_map[2]:
             cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[2], -1)
@@ -93,33 +141,52 @@ class Visualizer(VisualizeInterface):
         image[2:2 + dim[1], 10:10 + dim[1]] = cv2.resize(cenital_img, (dim[1], dim[1]))
 
         return image
+    '''
 
-    def print_bboxes(self, image, bbox, label, color):
+    def print_bboxes(self, image, bbox, label, colors):
+        ''' Print bounding boxes around each detected cone
+        
+        '''
+        
         for (box, lab) in zip(bbox, label):
             x1 = int(box[0, 0])
             y1 = int(box[0, 1])
             x2 = int(box[1, 0])
             y2 = int(box[1, 1])
-            clase = int(lab[0])
-            lab = '{} {:.1f}'.format(lab[0], lab[1])
+            
+            # NEWNET TODO
+            # OLD
+            # clase = int(lab[0]) # INT -> STR
+            # lab = '{} {:.1f}'.format(lab[0], float(lab[1]))
+            
+            # NEW
+            clase = str(lab[0]) # INT -> STR            
+            lab = f'{lab[0]} {lab[1]}'
+            
             # For bounding box
-            image = cv2.rectangle(image, (x1, y1), (x2, y2), color[clase], 2)
-
+            image = cv2.rectangle(image, (x1, y1), (x2, y2), colors[clase], 2)
+            
             # For the text background
             # Finds space required by the text so that we can put a background with that amount of width.
-            (w, h), _ = cv2.getTextSize(
-                lab, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
+            # (w, h), _ = cv2.getTextSize(
+            #     lab, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
 
             # Prints the text.
-            image = cv2.rectangle(image, (x1, y1 - 20), (x1 + w, y1), color[clase], -1)
+            # image = cv2.rectangle(image, (x1, y1 - 20), (x1 + w, y1), colors[clase], -1)
 
             # For printing text
-            image = cv2.putText(image, lab, (x1, y1),
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+            # TODO WE HAVE COMMENTED
+            # image = cv2.putText(image, lab, (x1, y1),
+            #                   cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
 
         return image
 
-    def _controls_img(self, steer, throttle, brake, clutch):
+    def _controls_img(self, agent_target):
+        steer = agent_target['steer']
+        throttle = agent_target['throttle']
+        brake = agent_target['brake']
+        clutch = agent_target['clutch']
+        
         text_steer =    'steer:  {:+.3f}'.format(steer)
         text_throttle = 'throttle: {:.3f}'.format(throttle)
         text_brake =    'brake:   {:.3f}'.format(brake)
@@ -137,7 +204,6 @@ class Visualizer(VisualizeInterface):
         brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
         # brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
         clutch = np.int(np.clip(clutch, 0.0, 1.0) * 41)
-
 
         ste_img[:, steer:steer + 1, 1:3] = np.zeros((5, 1, 2), dtype=np.uint8)
         thr_img[:, :throttle, 1] = thr_img[:, :throttle, 1] * 0

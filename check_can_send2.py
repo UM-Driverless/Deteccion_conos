@@ -1,11 +1,12 @@
 import os
 import time
 import can
-from globals import can_constants
 import math
 import struct
-import can.interfaces.socketcan.socketcan
 import select
+
+import can.interfaces.socketcan.socketcan
+import can_constants
 
 CAN_FRAME_HEADER_STRUCT = struct.Struct("=IBB2x")
 
