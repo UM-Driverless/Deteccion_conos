@@ -36,15 +36,16 @@ ipywebrtc
 
 
 # OUR REQUIREMENTS
-opencv-python # To use webcam camera
-opencv-contrib-python #?
+opencv-python
 python-can # Can communications
 simple-pid
 pillow #?
 matplotlib # Various graphs
 pandas #?
 
-# ZED camera dependencies
+# ZED camera dependencies - Commented if already run before
+# opencv-python # Also to use webcam camera and image processing
+opencv-contrib-python #?
 cython
 pyopengl
 numpy

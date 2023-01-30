@@ -65,7 +65,17 @@
     * `sudo apt-get install python3-tk`
 
 # NVIDIA JETSON XAVIER NX SETUP
-TODO
+TODO Testing with Jetpack 5.1
+- [Prepare Xavier](https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit#prepare)
+    - Takes about 30 min
+- Install ZED camera drivers
+    - [ZED SDK for L4T 35.1 (Jetpack 5.0)](https://download.stereolabs.com/zedsdk/3.8/l4t35.1/jetsons)
+    - (https://www.stereolabs.com/developers/release/)
+    - [Python API](https://www.stereolabs.com/docs/app-development/python/install/)
+    - (Test Record: https://github.com/SusanaPineda/utils_zed/blob/master/capture_loop.py)
+- Startup script (Setup all the programs on startup)
+    - Add in Startup Applications: "python3 startup_script.py"
+- (CAN: https://medium.com/@ramin.nabati/enabling-can-on-nvidia-jetson-xavier-developer-kit-aaaa3c4d99c9)
 
 # Cliente para realizar la detección de conos en el simulador
 
