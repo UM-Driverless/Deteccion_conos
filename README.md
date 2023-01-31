@@ -11,12 +11,16 @@
     ```bash
     conda activate formula
     ```
-- Install git, pip, numpy, update the compiler
+- Update the compiler
+    ```bash
+    conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
+    ```
+- Install git, pip, numpy, cv2
     ```bash
     sudo apt install git
     conda install pip
     conda install numpy # With conda instead of pip, otherwise odd errors
-    conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
+    conda install -c conda-forge opencv
     
     # If outside of conda environment:
     # sudo apt install python3-pip
