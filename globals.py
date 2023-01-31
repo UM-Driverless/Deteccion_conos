@@ -1,10 +1,7 @@
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 1 # 0 -> Webcam, 1 -> ZED, 2 -> Image file, 3 -> Read video file (VIDEO_FILE_NAME required)
+CAMERA_MODE = 0 # 0 -> Webcam, 1 -> ZED, 2 -> Image file, 3 -> Read video file (VIDEO_FILE_NAME required)
 VISUALIZE = 1
-
-# For webcam
-CAM_INDEX = 0
 
 # For video file
 VIDEO_FILE_NAME = 'test_media/video.mp4' # Only used if CAMERA_MODE == 1
@@ -15,6 +12,8 @@ WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best.pt'
 IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
 # IMAGE_RESOLUTION = (240, 240) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
 
+# For webcam
+CAM_INDEX = 0
 
 
 # Actual state values of the car
