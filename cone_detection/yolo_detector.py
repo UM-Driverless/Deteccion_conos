@@ -3,7 +3,7 @@ import torch
 from cone_detection.detector_base import ConeDetectorInterface
 
 class ConeDetector(ConeDetectorInterface):
-
+    # TODO FALTA LLAMAR AL INIT
     def __init__(self, checkpoint_path="yolov5/weights/yolov5_models/best.pt", logger=None):
         self.checkpoint_path = checkpoint_path
         print(f'Using weights in: {checkpoint_path}')
