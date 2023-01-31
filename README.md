@@ -15,12 +15,15 @@
     ```bash
     conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
     ```
-- Install git, pip, numpy, cv2
+- Install git, pip, numpy, cv2, pytorch
     ```bash
     sudo apt install git
     conda install pip
     conda install numpy # With conda instead of pip, otherwise odd errors
     conda install -c conda-forge opencv
+    
+    # TODO CHECK (PYTORCH Dependencies - https://pytorch.org/get-started/locally/)
+    conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
     
     # If outside of conda environment:
     # sudo apt install python3-pip
