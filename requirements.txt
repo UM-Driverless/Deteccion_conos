@@ -36,16 +36,15 @@ ipywebrtc
 
 
 # OUR REQUIREMENTS
-opencv-python
+# opencv-python # To use webcam camera. Commented because installed with conda (conda install -c conda-forge opencv)
+# opencv-contrib-python #?
 python-can # Can communications
 simple-pid
 pillow #?
 matplotlib # Various graphs
 pandas #?
 
-# ZED camera dependencies - Commented if already run before
-# opencv-python # Also to use webcam camera and image processing
-opencv-contrib-python #?
+# ZED camera dependencies
 cython
 pyopengl
 numpy
