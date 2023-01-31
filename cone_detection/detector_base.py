@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 
+# TODO interfaz. borrar parentesis e init, quitar decorador dejar detect_cones
 class ConeDetectorInterface(object, metaclass=ABCMeta):
 
     def __init__(self, checkpoint_path):
