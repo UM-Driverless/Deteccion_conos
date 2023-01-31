@@ -31,7 +31,6 @@
 - Clone the GitHub directory:
     ```bash
     git clone https://github.com/UM-Driverless/Deteccion_conos.git
-    git checkout Test_Portatil
     ```
 - Install the requirements (for yolo network and for our scripts)
     ```bash
@@ -72,9 +71,73 @@
     * `sudo apt-get install python3-tk`
 
 # NVIDIA JETSON XAVIER NX SETUP
-TODO Testing with Jetpack 5.1
-- [Prepare Xavier](https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit#prepare)
-    - Takes about 30 min
+TODO Testing with Jetpack 5.0.2
+- Start here: [https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit](https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit)
+    - Takes about 1h.
+    - Prepare SD card with >=32GB, a way to connect it to a computer (sd to usb adapter), fast internet, 
+    - First download the [Jetson Xavier NX Developer Kit SD Card Image](https://developer.nvidia.com/embedded/jetpack). Older versions [here](https://developer.nvidia.com/embedded/jetpack-archive). JetPack 5.1 is the latest version. JetPack 5.0.2 is the latest with docker pytorch installation available, and it's the one we've used.
+    - Then you'll be asked to install "SD Card formatter" and "Etcher"
+    - Follow the tutorial for the rest
+- Set power mode (up right in task bar)
+- ```bash
+  sudo apt update
+  sudo apt upgrade
+  ```
+- Install anaconda
+    - [Download ARM64 installer](https://www.anaconda.com/products/distribution)
+    - ```bash
+      # Allow executing as program and run
+      # Right click -> Open in Terminal -> Run this
+      chmod +777 {FILENAME.sh}
+      bash {FILENAME.sh}
+      ```
+    - Add to the PATH (It doesn't work by default)
+        - Run:
+        ```bash
+        sudo apt install nano # editor
+        nano ~/.bashrc
+        ```
+        - Add at the end:
+        ```bash
+        # ADD CONDA TO PATH
+        export PATH=~/anaconda3/bin:$PATH
+        ```
+        - `Ctrl+O` to write, `Enter` to confirm name, `Ctrl+X` to exit.
+        - To check version: `conda --version`
+- Create a conda environment:
+    ```bash
+    conda create -n formula -y
+    
+    # To remove it:
+    # conda env remove -n formula
+    ```  
+- Clone the GitHub directory:
+    ```bash
+    git clone https://github.com/UM-Driverless/Deteccion_conos.git
+    ```
+- Try to use a preconfigured JetPack 5.0.2 PyTorch Docker container, with all the dependencies and versiones solved: https://blog.roboflow.com/deploy-yolov5-to-jetson-nx/
+    - Register in docker website
+    - Login. If it doesn't work, reboot and try again.
+        ```bash
+        docker login
+        ```
+    - Take the tag of a container from here: https://catalog.ngc.nvidia.com/orgs/nvidia/containers/l4t-pytorch . For example, for JetPack 5.0.2 (L4T R35.1.0) it's `l4t-pytorch:r35.1.0-pth1.13-py3`
+    - Pull container
+        ```bash
+        # l4t-pytorch:r35.1.0-pth1.13-py3 ->
+        sudo docker pull nvcr.io/nvidia/l4t-pytorch:r35.1.0-pth1.13-py3
+        ```
+    - Run container
+        ```bash
+        # Will download about 10GB of stuff
+        sudo docker run -it --rm --runtime nvidia --network host nvcr.io/nvidia/l4t-pytorch:r35.1.0-pth1.13-py3
+        ```
+    - TODO FINISH
+
+
+(Install visual studio, pycharm, telegram, ...)
+
+
 - Install ZED camera drivers
     - [ZED SDK for L4T 35.1 (Jetpack 5.0)](https://download.stereolabs.com/zedsdk/3.8/l4t35.1/jetsons)
     - (https://www.stereolabs.com/developers/release/)
