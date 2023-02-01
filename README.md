@@ -65,7 +65,7 @@
         ```
 - You should be able to run:
     ```bash
-    python3 own_camera_main_no_can.py
+    python3 main.py
     ```
 * To explore if something fails:
     * `sudo apt-get install python3-tk`
