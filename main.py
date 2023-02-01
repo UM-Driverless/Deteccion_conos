@@ -44,6 +44,8 @@ import time
 import numpy as np
 import multiprocessing
 import matplotlib.pyplot as plt # For representation of time consumed
+import sys
+print(f'Python version: {sys.version}')
 
 ## Camera libraries
 import cv2 # Webcam
