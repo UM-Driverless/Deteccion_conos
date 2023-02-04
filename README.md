@@ -59,7 +59,7 @@
     6. Now it should be installed in the deault installation path: `/usr/local/zed`
     7. To get the Python API (Otherwise pyzed won't be installed and will throw an error):
         ```bash
-        python3 /usr/local/zed/get_python_api.py 
+        python3 /usr/local/zed/get_python_api.py
         ```
 - You should be able to run:
     ```bash
@@ -125,6 +125,6 @@ git clone https://github.com/UM-Driverless/Deteccion_conos.git
 cd Deteccion_conos
 pip3 install -r yolov5/yolo_requeriments.txt
 sh can_scripts/enable_CAN.sh
-python3 car_actuator_testing_zed_conect_yolo.py 
+python3 car_actuator_testing_zed_conect_yolo.py
 ```
 

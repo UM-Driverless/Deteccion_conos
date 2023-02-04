@@ -40,7 +40,7 @@ class Visualizer(VisualizeInterface):
         
         controls:
         
-        fps: boolean with the current frames per second 
+        fps: boolean with the current frames per second
         save_frames: Whether to save the frames to a file, or just show them
         '''
         
@@ -160,7 +160,7 @@ class Visualizer(VisualizeInterface):
             # lab = '{} {:.1f}'.format(lab[0], float(lab[1]))
             
             # NEW
-            clase = str(lab[0]) # INT -> STR            
+            clase = str(lab[0]) # INT -> STR
             lab = f'{lab[0]} {lab[1]}'
             
             # For bounding box

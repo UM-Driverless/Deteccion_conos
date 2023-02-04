@@ -91,7 +91,7 @@ class CAN1(CANInterface):
         clutch = math.trunc(clutch * can_constants.CAN_ACTION_DIMENSION)
         upgear = math.trunc(upgear * can_constants.CAN_ACTION_DIMENSION)
         downgear = math.trunc(downgear * can_constants.CAN_ACTION_DIMENSION)
-        print('Send actions: ', throttle, clutch, brake, steer, upgear, downgear)
+        # print('Send actions: ', throttle, clutch, brake, steer, upgear, downgear)
 		#enviar datos actuadores
         data = [throttle, clutch, brake, 0, upgear, downgear, 0, 0]
         #self.logger.write_can_log("Send actions message -> " + str(data))
@@ -107,9 +107,8 @@ class CAN1(CANInterface):
 
         #envia los datos
         ba = bytearray(struct.pack("i", steer))
-        # steer_values = ["0x%02x" % b for b in ba]
         steer_values = [b for b in ba]
-        print('steer_values: ', steer_values)
+        # print('steer_values: ', steer_values)
         data_steer_msg_d = [can_constants.STEER_ID['MSG_10'], can_constants.STEER_ID['MSG_11'], can_constants.STEER_ID['MSG_12'], can_constants.STEER_ID['MSG_13'], steer_values[0], steer_values[1], steer_values[2], steer_values[3]]
         #self.logger.write_can_log("Send actions message -> " + str(data_steer_msg_d))
         self.send_message(can_constants.STEER_ID['STEER_ID'], 8, data_steer_msg_d)
@@ -150,7 +149,7 @@ class CAN1(CANInterface):
         #    Sen CAN message
         #############################################################
 		#DJU 17.02.2022         msg = can.Message(arbitration_id=can_constants.TRAJ_ID['TRAJ_ACT'], data=data, extended_id=False)
-        print(data)
+        # print(data)
         msg = can.Message(arbitration_id=idcan, data=data, extended_id=False)
         self.logger.write_can_log("MSG: " + str(msg))
 
@@ -159,7 +158,7 @@ class CAN1(CANInterface):
         try:
             self.bus.send(msg, timeout=can_constants.CAN_SEND_MSG_TIMEOUT)
         except can.CanError as e:
-            print('Error al mandare msg CAN')
+            print('ERROR sending CAN message')
             error = e
             if hasattr(e, 'message'):
                 error = e.message
@@ -392,7 +391,7 @@ class CAN(CANInterface):
         clutch = math.trunc(clutch * can_constants.CAN_ACTION_DIMENSION)
         upgear = math.trunc(upgear * can_constants.CAN_ACTION_DIMENSION)
         downgear = math.trunc(downgear * can_constants.CAN_ACTION_DIMENSION)
-        print('Send actions: ', throttle, clutch, brake, steer, upgear, downgear)
+        # print('Send actions: ', throttle, clutch, brake, steer, upgear, downgear)
         # enviar datos actuadores
         data = [throttle, clutch, brake, 0, upgear, downgear, 0, 0]
         # self.logger.write_can_log("Send actions message -> " + str(data))
@@ -412,7 +411,7 @@ class CAN(CANInterface):
         ba = bytearray(struct.pack("i", steer))
         # steer_values = ["0x%02x" % b for b in ba]
         steer_values = [b for b in ba]
-        print('steer_values: ', steer_values)
+        # print('steer_values: ', steer_values)
         data_steer_msg_d = [can_constants.STEER_ID['MSG_10'], can_constants.STEER_ID['MSG_11'],
                             can_constants.STEER_ID['MSG_12'], can_constants.STEER_ID['MSG_13'], steer_values[0],
                             steer_values[1], steer_values[2], steer_values[3]]
@@ -458,7 +457,7 @@ class CAN(CANInterface):
         #    Sen CAN message
         #############################################################
         # DJU 17.02.2022         msg = can.Message(arbitration_id=can_constants.TRAJ_ID['TRAJ_ACT'], data=data, extended_id=False)
-        print(data)
+        # print(data)
         msg = can.Message(arbitration_id=idcan, data=data)
         self.logger.write_can_log("MSG: " + str(msg))
 

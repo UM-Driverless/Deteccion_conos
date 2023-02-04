@@ -42,7 +42,7 @@ class ConnectionManager(ComunicationInterface):
         """
         Send the actions to performs to the car actuators or to simulator.
         """
-        print('Send throttle: ', throttle, ' clutch: ', clutch, ' brake: ', brake, ' steer: ', steer,  ' upgear: ', upgear, ' downgear: ', downgear)
+        # print('Send throttle: ', throttle, ' clutch: ', clutch, ' brake: ', brake, ' steer: ', steer,  ' upgear: ', upgear, ' downgear: ', downgear)
         self.can.send_action_msg(throttle, brake, steer, clutch, upgear, downgear)
 
 class ConnectionManager_dummy(ComunicationInterface):

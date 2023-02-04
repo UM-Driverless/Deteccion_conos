@@ -15,6 +15,6 @@ print(f"Found {num_channels} channels")
 for ch in range(num_channels):
 # The data of each specific channel is saved in chd.
     chd = canlib.ChannelData(ch)
-# Lastly the channel, channel name, product number, serial number, and local 
+# Lastly the channel, channel name, product number, serial number, and local
 # channel number on the device are printed.
     print(f"{ch}. {chd.channel_name} ({chd.card_upc_no.product()}:{chd.card_serial_no}/{chd.chan_no_on_card})")

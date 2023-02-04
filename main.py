@@ -19,6 +19,7 @@ vulture . --min-confidence 100
 
 # TODO
 - Kvaser CAN!!!!
+- Check NVIDIA drivers -525
 - Print number of cones detected (per color or total)
 - Xavier why network takes 3s to execute.
 - Better color recognition
@@ -359,7 +360,9 @@ try:
             connect_mng.send_actions(throttle = agent_target['throttle'],
                                     brake = agent_target['brake'],
                                     steer = agent_target['steer'],
-                                    clutch = agent_target['clutch'])
+                                    clutch = agent_target['clutch'],
+                                    upgear = 0,
+                                    downgear = 0)
         
         # VISUALIZE
         # TODO add parameters to class
