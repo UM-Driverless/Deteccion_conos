@@ -157,6 +157,46 @@ Se debe descomprimir el archivo dentro de la carpeta: /PyUMotorsport/cone_detect
 Los pesos de la red neuronal para el main_2.py se encuentran en el siguiente enlace: https://drive.google.com/file/d/1NFDBKxpRcfPs8PV3oftLya_M9GxW8O5h/view?usp=sharing
 Se debe descomprimir el archivo dentro de la carpeta: /PyUMotorsport_v2/ObjectDetectionSegmentation/DetectionData/
 
+# KVASER Setup in Ubuntu
+- Reference: https://www.kvaser.com/linux-drivers-and-sdk/
+- Video: https://www.youtube.com/watch?v=Gz-lIVIU7ys
+- SDK: https://www.kvaser.com/downloads-kvaser/?utm_source=software&utm_ean=7330130980754&utm_status=latest
+
+```bash
+tar -xvzf linuxcan.tar.gz
+sudo apt-get install build-essential
+sudo apt-get install linux-headers-`uname -r`
+```
+In linuxcan, and linuxcan/canlib, run:
+```bash
+make
+sudo make install
+```
+In linuxcan/common, run:
+```bash
+make
+sudo ./installscript.sh
+```
+To DEBUG:
+```bash
+make KV_Debug_ON=1
+```
+
+## To install any driver (canlib and kvcommon must be installed first):
+```bash
+make
+sudo ./installscript.sh
+```
+
+## To test
+Go to canlib/examples
+```bash
+./listChannels
+./canmonitor 0
+```
+
+
+---
 # Old (install tensorflow detection)
 
 Crea tu entorno virtual en python 3.8 y activalo
