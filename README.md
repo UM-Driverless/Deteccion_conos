@@ -182,12 +182,6 @@ To DEBUG:
 make KV_Debug_ON=1
 ```
 
-## To install any driver (canlib and kvcommon must be installed first):
-```bash
-make
-sudo ./installscript.sh
-```
-
 ## To test
 Go to canlib/examples
 ```bash
@@ -195,6 +189,11 @@ Go to canlib/examples
 ./canmonitor 0
 ```
 
+## To install any driver (canlib and kvcommon must be installed first):
+```bash
+make
+sudo ./installscript.sh
+```
 
 ---
 # Old (install tensorflow detection)
