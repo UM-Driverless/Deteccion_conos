@@ -37,6 +37,9 @@ vulture . --min-confidence 100
 #if __name__ == '__main__': # removed because this file should never be imported as a module.
 To stop: Ctrl+C in the terminal
 
+# INFO
+In ruben laptop: YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+
 """
 
 # IMPORTS
