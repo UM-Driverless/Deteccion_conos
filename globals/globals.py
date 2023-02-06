@@ -18,7 +18,11 @@ CAM_INDEX = 0
 
 CONFIDENCE_THRESHOLD = 0.5 # 0.5
 
+# CAN
 COMPUTER_CAN_ID = 123 # TODO WHICH ONE?
+CAN_SEND_MSG_TIMEOUT = 0.005
+CAN_ACTION_DIMENSION = 100.
+CAN_STEER_DIMENSION = 122880.
 
 # ---
 # CAN input variables TODO do we need them? Or just merge with car_state. I think delete and edit state when variables out of message queue
@@ -36,7 +40,8 @@ can_variables = {
 car_state = {
     "speed": 0.,
     "gear": 0.,
-    "rpm": 0.
+    "rpm": 0.,
+    
 }
 
 # Target values obtained from agent.get_action()

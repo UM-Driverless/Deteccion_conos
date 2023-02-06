@@ -273,6 +273,7 @@ class AgentAccelerationYolo(AgentAcceleration):
     def get_action(self, agent_target, car_state, detections, cone_centers=None, orig_im_shape=(1, 180, 320, 3), image=None):
         """
         Figure out what to do to drive the car. Updates agent_target values.
+        TODO rename agent_target so it's different than the global name?
         
         """
         bboxes, labels = detections

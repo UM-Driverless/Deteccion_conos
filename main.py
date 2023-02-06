@@ -12,24 +12,21 @@ vulture . --min-confidence 100
 
 # CHECKS
 - Weights in yolov5/weights/yolov5_models
-- Active bash folder is Deteccion_conos
+- Active bash folder is ~/Deteccion_conos/
 - Check requirements. Some might need to be installed with conda instead of pip
 - ZED /usr/local/zed/get_python_api.py run to have pyzed library
 - gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
 
 # TODO
-edgeimpulse
+- SET SPEED ACCORDING TO CAN PROTOCOL (SEN BOARD)
+- check edgeimpulse
 - USE CAN_MODE VARIABLE TO TURN OFF
 - Check NVIDIA drivers -525
 - Print number of cones detected per color
 - Xavier why network takes 3s to execute. How to make it use GPU?
 - Make net faster. Remove cone types that we don't use? Reduce resolution of yolov5?
+- Move threads to different files to make main.py shorter
 - Check NVPMODEL with high power during xavier installation
-- KVASER
-    https://www.kvaser.com/developer-blog/running-python-wrapper-linux/
-    https://www.kvaser.com/developer-blog/kvaser-canlib-and-python-part-1-initial-setup/
-
-- Can't install anaconda on xavier, it says it's not compatible due to arch64 architecture.
 
 - Wanted to make visualize work in a thread and for any resolution, but now it works for any resolution, don't know why, and it's always about 3ms so it's not worth it for now.
 
@@ -250,12 +247,12 @@ def agent_thread():
 def can_read_thread():
     print(f'Starting CAN receive thread...')
     while True:
-        frame = can_receive.receive_frame()
-        print(f'FRAME RECEIVED: {frame}')
-        
-        # Process the frame
-        # can_queue.put(frame)
-
+        can_receive.receive_frame() # can_receive.frame updated
+        # print(f'FRAME RECEIVED: {can_receive.frame}')
+        # global car_state
+        car_state_local = can_receive.new_state(car_state)
+        # print(car_state_local)
+        can_queue.put(car_state_local)
         
 ''' Visualize thread doesn't work. It's not required for the car to work so ignore it.
 # def visualize_thread():
@@ -399,6 +396,7 @@ try:
                                     upgear = 0,
                                     downgear = 0)
         
+        car_state = can_queue.get()
         can_read.send_frame()
         
         # VISUALIZE

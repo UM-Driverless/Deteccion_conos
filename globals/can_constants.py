@@ -1,3 +1,68 @@
+# CAN ID CONSTANTS IN NESTED DICTIONARIES
+CAN_ID = {
+    "SENFL": { # Front Left wheel
+        "IMU": int("300", 16), # 8 bytes - [Ax Ay Az Gx Gy Gz Mx My]
+        "SIG": int("301", 16), # 8 bytes - [Analog1 Analog2 Analog3 Digital Rel1 Rel2 Rel3]
+        "STATE": int("302", 16), # 8 bytes - [Error id Null Null Null Null Null Null Null]
+    },
+    "SENFR": { # Front Right wheel
+        "IMU": int("303", 16),
+        "SIG": int("304", 16),
+        "STATE": int("305", 16),
+    },
+    "SENRL": { # Rear Left wheel (UNUSED)
+        "IMU": int("306", 16),
+        "SIG": int("307", 16),
+        "STATE": int("308", 16),
+    },
+    "SENRR": { # Rear Right wheel (UNUSED)
+        "IMU": int("309", 16),
+        "SIG": int("310", 16),
+        "STATE": int("311", 16),
+    },
+    "TRAJ": {
+        "ACT": int("320", 16),
+        "GPS": int("321", 16),
+        "IMU": int("322", 16),
+        "STATE": int("323", 16),
+    },
+    "STEER": {
+        "ID": int("601", 16),  # 0x601
+        # MSG F: Toggle New Position Bit
+        "MSG_00": int("2B", 16),  # 0x2B Envíar 2 bytes a la controladora
+        "MSG_01": int("40", 16),  # 0x40 Indice low
+        "MSG_02": int("60", 16),  # 0x60 Indice High
+        "MSG_03": int("00", 16),  # 0x00 Subindice
+        "MSG_04": int("0F", 16),  # 0x0F Datos 0
+        "MSG_05": int("00", 16),  # 0x00 Datos 1
+        # MSG D: Posicion objetivo
+        "MSG_10": int("23", 16),  # 0x23 Envíar 4 bytes a la controladora
+        "MSG_11": int("7A", 16),  # 0x7A Indice low
+        "MSG_12": int("60", 16),  # 0x60 Indice High
+        "MSG_13": int("00", 16),  # 0x00 Subindice
+        # MSG E: Orden de posicionamiento
+        "MSG_20": int("2B", 16),  # 0x2B Envíar 2 bytes a la controladora
+        "MSG_21": int("40", 16),  # 0x40 Indice low
+        "MSG_22": int("60", 16),  # 0x60 Indice High
+        "MSG_23": int("00", 16),  # 0x00 Subindice
+        "MSG_24": int("3F", 16),  # 0x3F Datos 0
+        "MSG_25": int("00", 16),  # 0x00 Datos 1
+    },
+    "ASSIS": { # State lights of the car
+        "COCKPIT": int("350", 16),
+        "RIGHT": int("351", 16),
+        "LEFT": int("352", 16),
+    },
+    "ASB": { # Autonomous System Brake
+        "ANALOG": int("360", 16),
+        "SIGNALS": int("361", 16),
+        "STATE": int("362", 16),
+    },
+    "ARDUINO": int("201", 16)  
+}
+
+
+# TODO DELETEME MOVED TO Can_communication Class.
 ## IDs de SEN
 SEN_ID = {
 # Rueda delantera izquierda
@@ -102,6 +167,7 @@ ARD_ID = {
 "ID": int("201", 16)
 }
 
+# TODO deleteme moved to globals.py
 CAN_SEND_MSG_TIMEOUT = 0.005
 CAN_ACTION_DIMENSION = 100.
 CAN_STEER_DIMENSION = 122880.
