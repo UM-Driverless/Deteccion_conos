@@ -4,9 +4,9 @@ import struct
 import time
 
 from connection_utils.communication_controllers.can_interface import CANInterface
-import can_constants
+from globals import can_constants
 
-#CLASE CAN
+'''
 class CAN1(CANInterface):
     def __init__(self, logger=None):
         super().__init__()
@@ -113,14 +113,14 @@ class CAN1(CANInterface):
         #self.logger.write_can_log("Send actions message -> " + str(data_steer_msg_d))
         self.send_message(can_constants.STEER_ID['STEER_ID'], 8, data_steer_msg_d)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
-        '''
-        slSteer = long (
-        SteerL  = ( slSteer & 0x000000FF )
-        SteerCL = ( slSteer & 0x0000FF00 )
-        SteerCH = ( slSteer & 0x00FF0000 )
-        SteerH  = ( slSteer & 0xFF000000 )
-        dataSteer = [0x22, 0x40, 0x60, 0, SteerL, SteerCL, SteerCH, SteerH]
-        '''
+        
+        # slSteer = long (
+        # SteerL  = ( slSteer & 0x000000FF )
+        # SteerCL = ( slSteer & 0x0000FF00 )
+        # SteerCH = ( slSteer & 0x00FF0000 )
+        # SteerH  = ( slSteer & 0xFF000000 )
+        # dataSteer = [0x22, 0x40, 0x60, 0, SteerL, SteerCL, SteerCH, SteerH]
+        
 
         #ejecuta el movimiento
         data_steer_msg_e = [can_constants.STEER_ID['MSG_20'], can_constants.STEER_ID['MSG_21'], can_constants.STEER_ID['MSG_22'], can_constants.STEER_ID['MSG_23'], can_constants.STEER_ID['MSG_24'], can_constants.STEER_ID['MSG_25']] #valores absolutos
@@ -224,6 +224,7 @@ class CAN1(CANInterface):
 
         return [wheel, analog_1, analog_2, analog_3, digital, speed, revolutions]
 
+
 class CAN_dummy(CANInterface):
     def __init__(self, logger=None):
         super().__init__()
@@ -282,6 +283,7 @@ class CAN_dummy(CANInterface):
 
     def get_sen_signals(self, wheel, data):
         pass
+'''
 
 # #CLASE KVASER
 # class CAN(CAN1):
@@ -436,6 +438,7 @@ class CAN(CANInterface):
         time.sleep(
             self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes. Esta espera no debería hacer falta.
 
+    '''
     def send_status_msg(self):
         """
         Send the status of the system through CAN message.
@@ -451,6 +454,7 @@ class CAN(CANInterface):
         Params to be defined.
         """
         pass
+    '''
 
     def send_message(self, idcan, datalength, data):
         #############################################################

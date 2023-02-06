@@ -1,5 +1,5 @@
 
-# MAIN script to execute all the others. Shall contain the main classes, top level functions etc.
+# MAIN script to run all the others. Shall contain the main classes, top level functions etc.
 
 """
 # HOW TO USE
@@ -18,12 +18,12 @@ vulture . --min-confidence 100
 - gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
 
 # TODO
-- Kvaser CAN!!!!
+edgeimpulse
+- USE CAN_MODE VARIABLE TO TURN OFF
 - Check NVIDIA drivers -525
-- Print number of cones detected (per color or total)
-- Xavier why network takes 3s to execute.
-- Better color recognition
-- Make net faster. Remove cone types that we don't use?
+- Print number of cones detected per color
+- Xavier why network takes 3s to execute. How to make it use GPU?
+- Make net faster. Remove cone types that we don't use? Reduce resolution of yolov5?
 - Check NVPMODEL with high power during xavier installation
 - KVASER
     https://www.kvaser.com/developer-blog/running-python-wrapper-linux/
@@ -48,6 +48,7 @@ import time
 import numpy as np
 import multiprocessing
 import matplotlib.pyplot as plt # For representation of time consumed
+from canlib import canlib, Frame
 import sys
 print(f'Python version: {sys.version}')
 
@@ -56,19 +57,46 @@ import cv2 # Webcam
 import pyzed.sl as sl # ZED.
 
 ## Our imports
-from globals import * # Global variables and constants, as if they were here
+from globals.globals import * # Global variables and constants, as if they were here
+
+from connection_utils.can_communication import Can_communication
 from connection_utils.car_comunication import ConnectionManager
-from controller_agent.agent import AgentAccelerationYolo as AgentAcceleration
+
+from agent.agent import AgentAccelerationYolo as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
 
 cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
 
+# INITIALIZE things
+## Logger
+logger_path = os.path.join(os.getcwd(), "logs")
+init_message = "actuator_zed_testing.py"
+logger = Logger(logger_path, init_message)
+
+## Cone detector
+detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger) # TODO why does ConeDetector need a logger?
+
+## Connections
+if (CAN_MODE == 1):
+    connect_mng = ConnectionManager(logger=logger)
+    print('CAN connection initialized')
+
+can_receive = Can_communication()
+can_read = Can_communication()
+can_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None TODO probably bad parameters, increase maxsize etc.
+
+## Agent
+agent = AgentAcceleration(logger=logger, target_speed=60.)
+agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
+
+
+# FUNCTIONS
 def read_image_webcam():
-    '''Reads the webcam
+    """Reads the webcam
     It usually takes about 35e-3 s to read an image, but in parallel it doesn't matter.
-    '''
+    """
     
     print(f'Starting read_image_webcam thread...')
     
@@ -106,8 +134,8 @@ def read_image_webcam():
         
 
 def read_image_video():
-    '''Reads a video file
-    '''
+    """Reads a video file
+    """
     
     print(f'Starting read_image_video thread...')
     
@@ -142,8 +170,8 @@ def read_image_video():
 
 
 def read_image_zed():
-    '''Read the ZED camera - https://www.stereolabs.com/docs/video/camera-controls/
-    '''
+    """Read the ZED camera - https://www.stereolabs.com/docs/video/camera-controls/
+    """
     
     print(f'Starting read_image_zed thread...')
     
@@ -190,10 +218,11 @@ def read_image_zed():
             # recorded_times_1 = time.time()
             # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
 
+
 def read_image_file():
-    '''
+    """
     Reads an image file
-    '''
+    """
     
     print(f'Starting read_image_file thread...')
     
@@ -217,6 +246,17 @@ def agent_thread():
         # Output values to queue as an array
         agent_queue.put([agent_target_local, data])
 
+
+def can_read_thread():
+    print(f'Starting CAN receive thread...')
+    while True:
+        frame = can_receive.receive_frame()
+        print(f'FRAME RECEIVED: {frame}')
+        
+        # Process the frame
+        # can_queue.put(frame)
+
+        
 ''' Visualize thread doesn't work. It's not required for the car to work so ignore it.
 # def visualize_thread():
 #     print(f'Starting visualize thread...')
@@ -280,23 +320,11 @@ elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_
 
 cam_worker.start()
 
-# INITIALIZE things
-## Logger
-logger_path = os.path.join(os.getcwd(), "logs")
-init_message = "actuator_zed_testing.py"
-logger = Logger(logger_path, init_message)
+# SETUP CAN
+can_read_worker = multiprocessing.Process(target=can_read_thread, args=(), daemon=False)
+can_read_worker.start()
 
-## Cone detector
-detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger)
-
-## Connections
-if (CAN_MODE == 1):
-    connect_mng = ConnectionManager(logger=logger)
-    print('CAN connection initialized')
-
-## Agent
-agent = AgentAcceleration(logger=logger, target_speed=60.)
-agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
+# SETUP AGENT
 agent_worker = multiprocessing.Process(target=agent_thread, args=(), daemon=False)
 
 # READ TIMES
@@ -320,9 +348,8 @@ try:
     while True:
         recorded_times[0] = time.time()
         
-        # Get CAN Data (To the car sensors or the simulator)
+        # Get data from CAN
         if CAN_MODE == 1:
-            # Get data from CAN
             in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
 
         # GET IMAGE (Either from webcam, video, or ZED camera)
@@ -331,8 +358,11 @@ try:
         # Resize to IMAGE_RESOLUTION no matter how we got the image
         image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        
         # image = cv2.flip(image, flipCode=1) # For testing purposes
         # image = np.array(image)
+        # Save to file (optional)
+        # cv2.imwrite('image.png',image)
         
         recorded_times[1] = time.time()
 
@@ -368,6 +398,8 @@ try:
                                     clutch = agent_target['clutch'],
                                     upgear = 0,
                                     downgear = 0)
+        
+        can_read.send_frame()
         
         # VISUALIZE
         # TODO add parameters to class

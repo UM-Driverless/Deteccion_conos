@@ -1,5 +1,5 @@
 from connection_utils.car_comunication import ConnectionManager
-from controller_agent.testing_agent import AgentActuatorsTest as Agent
+from agent.testing_agent import AgentActuatorsTest as Agent
 #from cone_detection.cone_segmentation import ConeDetector
 from visualization_utils.visualizer_test_actuators import VisualizeActuators as Visualizer
 import os

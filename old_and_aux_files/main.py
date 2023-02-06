@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from connection_utils.my_client import ConnectionManager
-from controller_agent import agent_v0
+from agent import agent_v0
 from cone_detection.detection_utils import ConeDetector
 from cone_detection.detection_utils import BLUE_COLOR, YELLOW_COLOR, ORANGE_COLOR, DARK_ORANGE_COLOR
 import utils

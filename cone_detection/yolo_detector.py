@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from cone_detection.detector_base import ConeDetectorInterface
+from globals.globals import * # Global variables and constants, as if they were here
 
 class ConeDetector(ConeDetectorInterface):
     # TODO FALTA LLAMAR AL INIT
@@ -35,7 +36,7 @@ class ConeDetector(ConeDetectorInterface):
         
         for _, row in results.pandas().xyxy[0].iterrows():
             # Filter how many cones we want to use, according to the confidence value (0 to 1)
-            if float(row['confidence']) > 0.0:
+            if float(row['confidence']) > CONFIDENCE_THRESHOLD:
                 # Add bounding box: [ (min)[x,y], (max)[x,y] ]
                 bboxes.append([[int(row['xmin']), int(row['ymin'])], [int(row['xmax']), int(row['ymax'])]])
                 

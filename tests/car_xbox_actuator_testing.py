@@ -1,6 +1,6 @@
 from connection_utils.car_comunication import ConnectionManager
 #from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
-from controller_agent.xbox_agent import AgentXboxController as Agent
+from agent.xbox_agent import AgentXboxController as Agent
 from visualization_utils.visualizer_test_actuators import VisualizeActuators as Visualizer
 from visualization_utils.logger import Logger
 import os

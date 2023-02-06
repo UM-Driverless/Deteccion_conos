@@ -1,10 +1,10 @@
-from controller_agent.agent_base import AgentInterface
+from agent.agent_base import AgentInterface
 from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessingNoWrapped
 import cv2
 import simple_pid
 import numpy as np
 
-from globals import * # Global variables and constants, as if they were here
+from globals.globals import * # Global variables and constants, as if they were here
 
 class AgentAcceleration(AgentInterface):
     def __init__(self, logger, target_speed=20.):

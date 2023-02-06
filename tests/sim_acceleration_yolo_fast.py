@@ -1,5 +1,5 @@
 from connection_utils.my_client import ConnectionManager
-from controller_agent.agent import AgentAccelerationYoloFast as AgentAcceleration
+from agent.agent import AgentAccelerationYoloFast as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger

@@ -1,4 +1,4 @@
-from controller_agent.agent_base import AgentInterface
+from agent.agent_base import AgentInterface
 import cv2
 import numpy as np
 import pygame

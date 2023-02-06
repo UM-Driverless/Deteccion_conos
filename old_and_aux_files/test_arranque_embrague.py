@@ -1,6 +1,6 @@
 # from connection_utils.my_client import ConnectionManager
 from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
-from controller_agent.agent import AgentTestClutchThrottle
+from agent.agent import AgentTestClutchThrottle
 from cone_detection.cone_segmentation import ConeDetector
 from visualization_utils.visualizer_test_actuators import VisualizeActuators as Visualizer
 from visualization_utils.logger import Logger

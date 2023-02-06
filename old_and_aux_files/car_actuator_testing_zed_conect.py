@@ -1,7 +1,7 @@
 from connection_utils.car_comunication import ConnectionManager
 from cone_detection.cone_segmentation import ConeDetector
 # from connection_utils.car_comunication import ConnectionManager_dummy as ConnectionManager
-from controller_agent.agent import AgentAcceleration as Agent
+from agent.agent import AgentAcceleration as Agent
 from visualization_utils.visualizer_con_det_seg import Visualizer
 from visualization_utils.logger import Logger
 import os

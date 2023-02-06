@@ -5,17 +5,32 @@ VISUALIZE = 1
 
 # For video file
 VIDEO_FILE_NAME = 'test_media/video.mp4' # Only used if CAMERA_MODE == 1
-IMAGE_FILE_NAME = 'test_media/image1.png'
+# IMAGE_FILE_NAME = 'test_media/image1.png'
+IMAGE_FILE_NAME = 'test_media/image3.webp'
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 # WEIGHTS_PATH = 'yolov5/weights/yolov5_models/280_adri.pt'
 # WEIGHTS_PATH = 'yolov5/weights/yolov5_models/240.pt'
 # WEIGHTS_PATH = 'yolov5/weights/yolov5_models/TensorRT/240.engine' # TODO MAKE IT WORK with tensorrt weights?
 IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
-# IMAGE_RESOLUTION = (240, 240) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
 
 # For webcam
 CAM_INDEX = 0
 
+CONFIDENCE_THRESHOLD = 0.5 # 0.5
+
+COMPUTER_CAN_ID = 123 # TODO WHICH ONE?
+
+# ---
+# CAN input variables TODO do we need them? Or just merge with car_state. I think delete and edit state when variables out of message queue
+can_variables = {
+    "speed": 0.,
+    "throttle": 0.,
+    "steer": 0.,
+    "brake": 0.,
+    "clutch": 0.,
+    "gear": 0.,
+    "rpm": 0.
+}
 
 # Actual state values of the car
 car_state = {
