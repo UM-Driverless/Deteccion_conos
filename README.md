@@ -75,10 +75,12 @@ TODO Testing with Jetpack 5.0.2
 - Start here: [https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit](https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit)
     - Takes about 1h.
     - Prepare SD card with >=32GB, a way to connect it to a computer (sd to usb adapter), fast internet, 
-    - First download the [Jetson Xavier NX Developer Kit SD Card Image](https://developer.nvidia.com/embedded/jetpack). Older versions [here](https://developer.nvidia.com/embedded/jetpack-archive). JetPack 5.1 is the latest version. JetPack 5.0.2 is the latest with docker pytorch installation available, and it's the one we've used.
+    - First download the [Jetson Xavier NX Developer Kit SD Card Image](https://developer.nvidia.com/embedded/jetpack). Older versions [here](https://developer.nvidia.com/embedded/jetpack-archive).
+        - JetPack 5.1 is the latest version. JetPack 5.0.2 is the latest with docker pytorch installation available, and it's the one we've used.
+        - JetPack 4.5.1 works with Pytorch 1.8 according to https://cognitivexr.at/blog/2021/03/11/installing-pytorch-and-yolov5-on-an-nvidia-jetson-xavier-nx.html
     - Then you'll be asked to install "SD Card formatter" and "Etcher"
     - Follow the tutorial for the rest
-- Set power mode (up right in task bar)
+- Set power mode (up right in task bar) to max
 - ```bash
   sudo apt update
   sudo apt upgrade
@@ -146,6 +148,26 @@ TODO Testing with Jetpack 5.0.2
 - Startup script (Setup all the programs on startup)
     - Add in Startup Applications: "python3 startup_script.py"
 - (CAN: https://medium.com/@ramin.nabati/enabling-can-on-nvidia-jetson-xavier-developer-kit-aaaa3c4d99c9)
+- To make bluetooth work:
+    1. Navigate to the following file:
+    $ sudo vim /lib/systemd/system/bluetooth.service.d/nv-bluetooth-service.conf
+    2. Search for below line:
+    ExecStart=/usr/lib/bluetooth/bluetoothd -d --noplugin=audio,a2dp,avrcp
+    3. Remove all options for no plugin. It should look like below:
+    ExecStart=/usr/lib/bluetooth/bluetoothd -d
+    4. Then update with below command:
+    $ sudo apt-get update
+    5. Install pulse audio using below command:
+    $ sudo apt-get install pulseaudio-module-bluetooth
+    6. Reboot device as per below command:
+    $ sudo reboot
+    7. Pair and use your Bluetooth audio devices.
+
+- To use:
+    - First plug power, then the HDMI port, because otherwise it doesn't turn on
+    - Don't use the upper left USB-A port for high speed (ZED camera). It's 2.0 while the others are 3.1
+
+
 
 # Cliente para realizar la detección de conos en el simulador
 
