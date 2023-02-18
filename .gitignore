@@ -8,3 +8,6 @@
 *.onnx
 *.iml
 *.xml
+.idea/Deteccion_conos.iml
+.idea/misc.xml
+yolov5/weights/yolov5_models.zip
