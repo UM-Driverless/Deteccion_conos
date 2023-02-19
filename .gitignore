@@ -3,7 +3,7 @@
 /logs/
 /Net_7_FP32/
 /cone_detection/data/saved_networks/
-#*.pt # Not ignored because they're a few MB
+#*.pt # Not ignored because they're only a few MB
 *.engine
 *.onnx
 *.zipg

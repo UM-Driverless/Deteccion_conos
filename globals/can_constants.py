@@ -62,7 +62,7 @@ CAN_ID = {
 }
 
 
-# TODO DELETEME MOVED TO Can_communication Class.
+# TODO DELETEME MOVED TO CanKvaser Class.
 ## IDs de SEN
 SEN_ID = {
 # Rueda delantera izquierda

@@ -1,6 +1,6 @@
-from connection_utils.can_communication import Can_communication
+from connection_utils.CanKvaser import CanKvaser
 
-can_bus = Can_communication()
+can_bus = CanKvaser()
 
 # can_bus.send()
 print(can_bus.receive_frame())

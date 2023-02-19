@@ -1,6 +1,6 @@
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 2 # 0 -> Webcam, 1 -> ZED, 2 -> Image file, 3 -> Read video file (VIDEO_FILE_NAME required)
+CAMERA_MODE = 3 # 0 -> Webcam, 1 -> ZED, 2 -> Image file, 3 -> Read video file (VIDEO_FILE_NAME required)
 VISUALIZE = 1
 
 # For video file
@@ -19,7 +19,6 @@ CAM_INDEX = 0
 CONFIDENCE_THRESHOLD = 0.5 # 0.5
 
 # CAN
-COMPUTER_CAN_ID = 123 # TODO WHICH ONE?
 CAN_SEND_MSG_TIMEOUT = 0.005
 CAN_ACTION_DIMENSION = 100.
 CAN_STEER_DIMENSION = 122880.
@@ -41,7 +40,8 @@ car_state = {
     "speed": 0.,
     "gear": 0.,
     "rpm": 0.,
-    
+    "speed_senfl": 0.,
+    "speed_senfl": 0.
 }
 
 # Target values obtained from agent.get_action()

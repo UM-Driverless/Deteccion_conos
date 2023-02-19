@@ -1,5 +1,7 @@
 import numpy as np
 import torch
+print(f'IS CUDA AVAILABLE? : {torch.cuda.is_available()}')
+
 from cone_detection.detector_base import ConeDetectorInterface
 from globals.globals import * # Global variables and constants, as if they were here
 

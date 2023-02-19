@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class CANInterface(object, metaclass=ABCMeta):
-    @abstractmethod
+    @abstractmethod 
     def init_can(self):
         """
         Initialize the CAN parameters.

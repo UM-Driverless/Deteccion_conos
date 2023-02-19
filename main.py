@@ -18,7 +18,12 @@ vulture . --min-confidence 100
 - gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
 
 # TODO
-- SET SPEED ACCORDING TO CAN PROTOCOL (SEN BOARD)
+- Si can = 0, no importar ni siquiera las librerias, ni comprobar canales kvaser disponibles
+- QUITAR CONDA DEL GITHUB
+- IPYTHON TO REQUIREMENTS, also canlib
+- Initialize trackbars of ConeProcessing. Why?
+- Only import used libraries from activations with global config constants
+- SET SPEED ACCORDING TO CAN PROTOCOL, and the rest of state variables (SEN BOARD)
 - check edgeimpulse
 - USE CAN_MODE VARIABLE TO TURN OFF
 - Check NVIDIA drivers -525
@@ -35,7 +40,8 @@ vulture . --min-confidence 100
 To stop: Ctrl+C in the terminal
 
 # INFO
-In ruben laptop: YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+torch.hub.load() (self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=True)):
+    In ruben laptop: YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
 
 """
 
@@ -56,8 +62,13 @@ import pyzed.sl as sl # ZED.
 ## Our imports
 from globals.globals import * # Global variables and constants, as if they were here
 
-from connection_utils.can_communication import Can_communication
-from connection_utils.car_comunication import ConnectionManager
+from connection_utils.car_comunication import ConnectionManager # TODO REMOVE
+from connection_utils.message_processing import MessageProcessing
+
+if (CAN_MODE == 1):
+    from connection_utils.can_kvaser import CanKvaser
+elif (CAN_MODE == 2):
+    from connection_utils.can_xavier import CanXavier
 
 from agent.agent import AgentAccelerationYolo as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
@@ -77,252 +88,59 @@ detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger) # TODO why 
 
 ## Connections
 if (CAN_MODE == 1):
-    connect_mng = ConnectionManager(logger=logger)
-    print('CAN connection initialized')
+    # CAN with Kvaser
 
-can_receive = Can_communication()
-can_read = Can_communication()
-can_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None TODO probably bad parameters, increase maxsize etc.
+    can_receive = CanKvaser()
+    can_send = CanKvaser()
+    can_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None TODO probably bad parameters, increase maxsize etc.
+    
+    can_send_worker = multiprocessing.Process(target=can_send_thread, args=(), daemon=False)
+    can_send_worker.start()
+    
+    print('CAN connection initialized')
+elif (CAN_MODE == 2):
+    # CAN with Xavier
+    can_send = CanXavier()
+    can_send.send_message()
+    
 
 ## Agent
 agent = AgentAcceleration(logger=logger, target_speed=60.)
 agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
+# THREAD FUNCTIONS
+from thread_functions import *
 
-# FUNCTIONS
-def read_image_webcam():
-    """Reads the webcam
-    It usually takes about 35e-3 s to read an image, but in parallel it doesn't matter.
-    """
-    
-    print(f'Starting read_image_webcam thread...')
-    
-    global cam_queue # To access the global cam_queue instead of a local copy
-
-    cam = cv2.VideoCapture(CAM_INDEX)
-    
-    # SETTINGS
-    # cam.set(cv2.CAP_PROP_FPS, 60)
-    cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640) #1280 640 default
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
-    # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
-    
-    if (cam.isOpened() == False): 
-        print("Error opening webcam")
-    
-    while True:
-        # recorded_times_0 = time.time()
-        
-        # Read image from webcam
-        # TODO also check CHECK cam.isOpened()?
-        # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
-        result, image = cam.read()
-        while result == False:
-            result, image = cam.read()
-        
-        # recorded_times_1 = time.time()
-        
-        # cv2.imshow('image',image)
-        # cv2.waitKey(1)
-        
-        cam_queue.put(image)
-        # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
-        
-
-def read_image_video():
-    """Reads a video file
-    """
-    
-    print(f'Starting read_image_video thread...')
-    
-    global cam_queue # Required only to modify cam_queue. We don't. Just in case
-
-    cam = cv2.VideoCapture(VIDEO_FILE_NAME)
-    
-    # SETTINGS
-    # cam.set(cv2.CAP_PROP_FPS, 60)
-    cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640) #1280 640 default
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
-    # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
-    
-    if (cam.isOpened() == False): 
-        print("Error opening video file")
-    
-    while True:
-        # recorded_times_0 = time.time()
-        result, image = cam.read() # TODO also check CHECK cam.isOpened()?
-        while result == False:
-            result, image = cam.read()
-        
-        # print(f'isOpened: {cam.isOpened()}')
-        # cv2.imshow('image',image)
-        # cv2.waitKey(10)
-        
-        # recorded_times_1 = time.time()
-        
-        cam_queue.put(image)
-        # print(f'Video read time: {recorded_times_1-recorded_times_0}')
-
-
-def read_image_zed():
-    """Read the ZED camera - https://www.stereolabs.com/docs/video/camera-controls/
-    """
-    
-    print(f'Starting read_image_zed thread...')
-    
-    global runtime, cam_queue # Required only to modify. We don't. Just in case
-    
-    cam = sl.Camera()
-    
-    # Camera settings
-    cam.set_camera_settings(sl.VIDEO_SETTINGS.GAIN, 100) # We don't want blurry photos, we don't care about noise. The exposure time will still be adjusted automatically to compensate lighting conditions
-    cam.set_camera_settings(sl.VIDEO_SETTINGS.SATURATION, 8) # Maximum so it recognizes the color of the cones better. 0 to 8
-    # cam.set_camera_settings(sl.VIDEO_SETTINGS.SHARPNESS, 0) # Doesn't seem to make much difference. 0 to 8
-    #cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, -1) # Fixed gain, so this is automatic. % of camera framerate (period)
-    
-    # Init parameters: https://www.stereolabs.com/docs/api/structsl_1_1InitParameters.html
-    zed_params = sl.InitParameters()
-    # zed_params.camera_fps = 100 # Not necessary. By default does max fps
-    
-    # RESOLUTION: HD1080 (3840x1080), HD720 (1280x720), VGA (VGA=1344x376)
-    # yolov5 uses 640x640. VGA is much faster, up to 100Hz
-    zed_params.camera_resolution = sl.RESOLUTION.VGA
-    
-    #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
-    
-    status = cam.open(zed_params)
-    if status != sl.ERROR_CODE.SUCCESS:
-        print(f'ZED ERROR: {repr(status)}')
-        exit(1)
-
-    runtime = sl.RuntimeParameters()
-    runtime.enable_depth = False # Deactivates de depth map calculation. We don't need it.
-    
-    # Create an RGBA sl.Mat object
-    mat_img = sl.Mat()
-    
-    while True:
-        # Read ZED camera
-        if (cam.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
-            # recorded_times_0 = time.time()
-            
-            cam.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
-            image = mat_img.get_data() # Creates np.array()
-            cam_queue.put(image)
-            
-            # recorded_times_1 = time.time()
-            # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
-
-
-def read_image_file():
-    """
-    Reads an image file
-    """
-    
-    print(f'Starting read_image_file thread...')
-    
-    while True:
-        image = cv2.imread(IMAGE_FILE_NAME)
-        cam_queue.put(image)
-    
-
-def agent_thread():
+def agent_thread(agent_queue, agent):
     print(f'Starting agent thread...')
-    global agent_target, detections, cone_centers, image
+    global agent_target, detections, image # TODO PASAR POR REFERENCIA EN VEZ DE USAR COMO VARIABLES GLOBALES, y mover a thread_functions.py
     
     while True:
         # This agent_target variable must be local, and sent to the main loop through a queue that manages the concurrency.
+        # TODO como se pasan cone_centers? Tiene que ser por la cola porque es un hilo
         [agent_target_local, data] = agent.get_action(agent_target,
                                                       car_state,
-                                                      detections=detections,
+                                                      detections,
                                                       cone_centers=cone_centers,
-                                                      image=image)
+                                                      image=image
+                                                      )
         
         # Output values to queue as an array
         agent_queue.put([agent_target_local, data])
 
 
-def can_read_thread():
-    print(f'Starting CAN receive thread...')
-    while True:
-        can_receive.receive_frame() # can_receive.frame updated
-        # print(f'FRAME RECEIVED: {can_receive.frame}')
-        # global car_state
-        car_state_local = can_receive.new_state(car_state)
-        # print(car_state_local)
-        can_queue.put(car_state_local)
-        
-''' Visualize thread doesn't work. It's not required for the car to work so ignore it.
-# def visualize_thread():
-#     print(f'Starting visualize thread...')
-#     global visualizer
-#     global image, detections, cone_centers, cenital_map, in_speed
-#     global throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm, fps
-    
-#     print(visualizer)
-#     visualizer.visualize([image, detections, cone_centers, cenital_map, in_speed],
-#                         [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps,
-#                         save_frames=False)
-'''
-
-'''
-# Visualize thread directly here
-def visualize_thread():
-    print(f'Starting visualize thread...')
-    while True:        
-        # image, detections, cone_centers, cenital_map, speed = [image, detections, cone_centers,cenital_map, in_speed]
-        bbox, labels = detections
-        # cenital_map, estimated_center, wrap_img = cenital_map
-        # throttle, brake, steer, clutch, upgear, downgear, gear, rpm = [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm]
-        
-        image = cam_queue.get(block=False, timeout=5) # Read an image but don't remove it. Only the main loop takes it
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-        # Color values of each cone type, in bgr
-        colors = {
-            'blue_cone': (255, 0, 0),
-            'yellow_cone': (0, 255, 255),
-            'orange_cone': (40, 50, 200), #(40, 50, 200)
-            'large_orange_cone': (40, 100, 255), #(40, 100, 255)
-            'unknown_cone': (0,0,0)
-        }
-        
-        # Print boxes around each detected cone
-        image = Visualizer.print_bboxes(image, bbox, labels, colors)
-
-        # Print cenital map
-        # image = self._print_cenital_map(cenital_map, colors, estimated_center, image) # TODO MAKE IT WORK
-
-        # Print the output values of the agent, trying to control the car
-        # image = Visualizer.print_data(0, 0, fps, 0, image, 0, 0, 0, 0, len(labels))
-
-        
-
-        # dim = (np.array(image.shape) * 0.1).astype('int')
-        # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
-
-        #TODO make faster or in parallel #takestime
-        cv2.imshow("Detections", image)
-        cv2.waitKey(100)
-'''
 
 
 # SETUP CAMERA
 if (CAMERA_MODE == 0):   cam_worker = multiprocessing.Process(target=read_image_webcam, args=(), daemon=False)
 elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(), daemon=False)
 elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_file,   args=(), daemon=False)
-elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_video,  args=(), daemon=False)
+elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_video,  args=(cam_queue,), daemon=False)
 
 cam_worker.start()
 
-# SETUP CAN
-can_read_worker = multiprocessing.Process(target=can_read_thread, args=(), daemon=False)
-can_read_worker.start()
-
 # SETUP AGENT
-agent_worker = multiprocessing.Process(target=agent_thread, args=(), daemon=False)
+agent_worker = multiprocessing.Process(target=agent_thread, args=(agent_queue, agent,), daemon=False)
 
 # READ TIMES
 TIMES_TO_MEASURE = 4
@@ -345,10 +163,6 @@ try:
     while True:
         recorded_times[0] = time.time()
         
-        # Get data from CAN
-        if CAN_MODE == 1:
-            in_speed, in_throttle, in_steer, in_brake, in_clutch, in_gear, in_rpm = connect_mng.get_data(verbose=1)
-
         # GET IMAGE (Either from webcam, video, or ZED camera)
         image = cam_queue.get(timeout=5)
         
@@ -367,6 +181,10 @@ try:
         detections, cone_centers = detector.detect_cones(image, get_centers=True)
         
         recorded_times[2] = time.time()
+        
+        # Update car values from CAN
+        if (CAN_MODE == 1):
+            car_state = can_queue.get()
         
         # Get actions from agent
         if (loop_counter == 0):
@@ -388,16 +206,9 @@ try:
         recorded_times[3] = time.time()
 
         # Send actions - CAN
-        if (CAN_MODE == 1):
-            connect_mng.send_actions(throttle = agent_target['throttle'],
-                                    brake = agent_target['brake'],
-                                    steer = agent_target['steer'],
-                                    clutch = agent_target['clutch'],
-                                    upgear = 0,
-                                    downgear = 0)
-        
-        car_state = can_queue.get()
-        can_read.send_frame()
+        if (CAN_MODE == 1):            
+            # Send target values from agent
+            can_send.send_frame()
         
         # VISUALIZE
         # TODO add parameters to class
@@ -429,27 +240,29 @@ finally:
     if loop_counter != 0:
         average_time_taken = integrated_time_taken/loop_counter
         fps = integrated_fps/loop_counter
+        print(f'\n\n\n------------ RESULTS ------------\n',end='')
+        print(f'FPS: {fps}')
+        print(f'LOOPS: {loop_counter}')
+        print(f'AVERAGE TIMES: {average_time_taken}')
+        print(f'---------------------------------\n',end='')
+        
+        ## Plot the times
+        fig = plt.figure(figsize=(12, 4))
+        plt.bar(['cam.read()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
+        plt.ylabel("Average time taken [s]")
+        plt.figtext(.8,.8,f'{fps:.2f}Hz')
+        plt.title("Execution time per section of main loop")
+        plt.savefig("logs/times.png")
     else:
         average_time_taken = -1
         fps = -1
-    print(f'\n\n\n------------RESULTS------------\n',end='')
-    print(f'FPS: {fps}')
-    print(f'LOOPS: {loop_counter}')
-    print(f'AVERAGE TIMES: {average_time_taken}')
-    print(f'-------------------------------\n',end='')
+        print("-------- ERROR, NO RESULTS --------")
     
-    ## Plot the times
-    fig = plt.figure(figsize=(12, 4))
-    plt.bar(['cam.read()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
-    plt.ylabel("Average time taken [s]")
-    plt.figtext(.8,.8,f'{fps:.2f}Hz')
-    plt.title("Execution time per section of main loop")
-    plt.savefig("logs/times.png")
 
     # Close processes and windows
     cam_worker.terminate()
     agent_worker.terminate()
-    cv2.destroyAllWindows()    
+    cv2.destroyAllWindows()
     
     agent_target = {
         "throttle": 0.,

@@ -397,7 +397,7 @@ class CAN(CANInterface):
         # enviar datos actuadores
         data = [throttle, clutch, brake, 0, upgear, downgear, 0, 0]
         # self.logger.write_can_log("Send actions message -> " + str(data))
-        self.send_message(can_constants.TRAJ_ID['TRAJ_ACT'], 8, data)
+        self.send_message(id = can_constants.TRAJ_ID['TRAJ_ACT'], datalength=8, data=data)
         time.sleep(self.sleep_between_msg)
 
         # enviar datos steering
