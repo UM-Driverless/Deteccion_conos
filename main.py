@@ -328,7 +328,6 @@ try:
 
         # Detect cones
         detections, cone_centers = detector.detect_cones(image, get_centers=True)
-        
         recorded_times[2] = time.time()
         
         # Update car values from CAN
