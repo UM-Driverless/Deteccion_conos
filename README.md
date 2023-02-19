@@ -19,25 +19,6 @@ We won't use Conda since it's not necessary, and the several python versions hav
     # conda install --file requirements.txt
     ```
 - [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models?csf=1&web=1&e=nILHR5) in: `"yolov5/weights"`
------
-- Update the compiler
-    ```bash
-    conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
-    ```
-- Install git, pip, numpy, cv2, pytorch
-    ```bash
-    sudo apt install git
-    conda install pip
-    conda install numpy # With conda instead of pip, otherwise odd errors
-    conda install -c conda-forge opencv
-    
-    # TODO CHECK (PYTORCH Dependencies - https://pytorch.org/get-started/locally/)
-    conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
-    
-    # If outside of conda environment:
-    # sudo apt install python3-pip
-    ```
------
 
 - ZED Camera Installation
     1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...)
