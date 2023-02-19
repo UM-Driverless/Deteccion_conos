@@ -56,7 +56,7 @@ print(f'Python version: {sys.version}')
 
 ## Camera libraries
 import cv2 # Webcam
-import pyzed.sl as sl # ZED.
+# import pyzed.sl as sl # ZED.
 
 ## Our imports
 from globals.globals import * # Global variables and constants, as if they were here
@@ -110,7 +110,7 @@ agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 # THREAD FUNCTIONS
 # from thread_functions import *
 import cv2 # Webcam
-import pyzed.sl as sl # ZED.
+#import pyzed.sl as sl # ZED.
 
 def read_image_webcam():
     """Reads the webcam

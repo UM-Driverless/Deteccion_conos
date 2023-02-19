@@ -270,7 +270,7 @@ class AgentAccelerationYolo(AgentAcceleration):
     def __init__(self, logger, target_speed=20.):
         super().__init__(logger=logger)
 
-    def get_action(self, agent_target, car_state, detections, cone_centers, image):
+    def get_action(self, car_state, detections, cone_centers, image, agent_target=dict()):
         """
         Figure out what to do to drive the car. Updates agent_target values.
         TODO rename agent_target so it's different than the global name?

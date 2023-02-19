@@ -8,7 +8,7 @@ import tensorflow as tf
 
 class ConeDetector(ConeDetectorInterface):
 
-    def __init__(self, checkpoint_path="/home/shernandez/PycharmProjects/UMotorsport/v1/UnityTrainerPy-master/PyUMotorsport_v2/ObjectDetectionSegmentation/DetectionData/SNet_3L_saved_model_FP32", logger=None):
+    def __init__(self, checkpoint_path="yolov5/weights/yolov5_models/best_adri.pt", logger=None):
         self.saved_model_loaded = tf.saved_model.load(checkpoint_path, tags=[tag_constants.SERVING])
         self.detection_model = self.saved_model_loaded.signatures['serving_default']
 

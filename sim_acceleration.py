@@ -1,7 +1,10 @@
+import cv2
+
+from Deteccion_conos.globals.globals import IMAGE_RESOLUTION
 from connection_utils.my_client import ConnectionManager
-from agent.agent import AgentAcceleration
-from cone_detection.cone_segmentation import ConeDetector
-from visualization_utils.visualizer_con_det_seg import Visualizer
+from agent.agent import AgentAccelerationYolo as AgentAcceleration
+from cone_detection.yolo_detector import ConeDetector
+from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
 import tensorflow as tf
 import os
@@ -35,19 +38,24 @@ if __name__ == '__main__':
         while True:
             start_time = time.time()
             # Pedir datos al simulador o al coche
-            image, in_speed, in_throttle, in_steer, in_brake, in_gear, in_rpm = connect_mng.get_data(verbose=0)
+            image, speed, throttle, steer, brake, gear, rpm = connect_mng.get_data(verbose=0)
+            car_state = {'speed': speed, 'throttle': throttle, 'steer': steer, 'brake': brake, 'gear': gear, 'rpm': rpm}
+            image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
             # Detectar conos
-            detections, y_hat = detector.detect_cones(image, bbox=False, centers=True)
+            detections, cone_centers = detector.detect_cones(image, get_centers=True)
 
-            [throttle, brake, steer, clutch, upgear, downgear, gear], data = agent.get_action(detections, y_hat, in_speed, in_gear, in_rpm)
-            connect_mng.send_actions(throttle=throttle, brake=brake, steer=steer, clutch=clutch, upgear=upgear, downgear=downgear)
+            agent_target, data = agent.get_action(detections=detections, car_state=car_state, cone_centers=cone_centers, image=image)
+
+            connect_mng.send_actions(throttle=agent_target['throttle'], brake=agent_target['brake'], steer=agent_target['steer'], clutch=agent_target['clutch'], upgear=0, downgear=0)
 
             fps = 1.0 / (time.time() - start_time)
 
-            if verbose==1:
+            if verbose == 1:
                 cenital_map = [data[1], data[2]]
-                visualizer.visualize([image, detections, cenital_map, y_hat, in_speed], [throttle, brake, steer, clutch, upgear, downgear, in_gear, in_rpm], fps, save_frames=False)
+                visualizer.visualize(agent_target, car_state, image, detections, fps, save_frames=False
+                                     )
 
 
     finally:

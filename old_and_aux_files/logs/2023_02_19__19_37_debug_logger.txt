@@ -1,0 +1,2 @@
+[MAIN]: Initialization. sim_acceleration.py [19:37:25.296172]
+[MAIN]: Initialization. sim_acceleration.py [19:37:36.950945]
