@@ -62,7 +62,7 @@ TODO Testing with Jetpack 5.1
 - First apt installs
     ```bash
     sudo apt update && sudo apt upgrade -y; spd-say "I finished installing"
-    sudo apt install curl nano git zstd #zstd is zed dependency
+    sudo apt install curl nano git pip zstd #zstd is zed dependency
     ```
 - Clone the GitHub directory:
     ```bash
