@@ -74,7 +74,7 @@ TODO Testing with Jetpack 5.1
     ```bash
     git clone https://github.com/UM-Driverless/Deteccion_conos.git; spd-say "Done cloning the repository"
     ```
-- To make bluetooth work:
+- To make bluetooth work [link](https://forums.developer.nvidia.com/t/bt-cant-work-after-flash-jetson-tx2-with-jetpacke4-3-no-bt-speaker-and-keyboard/112098/4):
     1. Navigate to the following file:
     $ sudo vim /lib/systemd/system/bluetooth.service.d/nv-bluetooth-service.conf
     2. Search for below line:
