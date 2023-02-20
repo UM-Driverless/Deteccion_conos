@@ -63,9 +63,6 @@ from visualization_utils.logger import Logger
 
 import cv2 # Webcam
 
-if (CAMERA_MODE == 1):
-    import pyzed.sl as sl # ZED.
-
 import os
 import time
 import numpy as np
@@ -73,9 +70,6 @@ import multiprocessing
 import matplotlib.pyplot as plt # For representation of time consumed
 import sys
 print(f'Python version: {sys.version}')
-
-
-
 
 cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
 
@@ -96,7 +90,7 @@ if (CAN_MODE == 1):
     can_send = CanKvaser()
     can_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None TODO probably bad parameters, increase maxsize etc.
     
-    can_send_worker = multiprocessing.Process(target=can_send_thread, args=(), daemon=False)
+    can_send_worker = multiprocessing.Process(target=can_send_thread, args=(can_queue, can_receive,), daemon=False)
     can_send_worker.start()
     
     print('CAN connection initialized')
@@ -111,90 +105,16 @@ agent = AgentAcceleration(logger=logger, target_speed=60.)
 agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
 # THREAD FUNCTIONS
-# from thread_functions import *
-import cv2 # Webcam
+from thread_functions import *
+import cv2
 
-def read_image_webcam():
-    """Reads the webcam
-    It usually takes about 35e-3 s to read an image, but in parallel it doesn't matter.
+def read_image_zed(cam_queue):
     """
-    
-    print(f'Starting read_image_webcam thread...')
-    
-    global cam_queue # To access the global cam_queue instead of a local copy
-
-    cam = cv2.VideoCapture(CAM_INDEX)
-    
-    # SETTINGS
-    # cam.set(cv2.CAP_PROP_FPS, 60)
-    cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640) #1280 640 default
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
-    # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
-    
-    if (cam.isOpened() == False): 
-        print("Error opening webcam")
-    
-    while True:
-        # recorded_times_0 = time.time()
-        
-        # Read image from webcam
-        # TODO also check CHECK cam.isOpened()?
-        # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
-        result, image = cam.read()
-        while result == False:
-            result, image = cam.read()
-        
-        # recorded_times_1 = time.time()
-        
-        # cv2.imshow('image',image)
-        # cv2.waitKey(1)
-        
-        cam_queue.put(image)
-        # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
-        
-
-def read_image_video(cam_queue):
-    """Reads a video file
+    Read the ZED camera - https://www.stereolabs.com/docs/video/camera-controls/
     """
-    
-    print(f'Starting read_image_video thread...')
-
-    cam = cv2.VideoCapture(VIDEO_FILE_NAME)
-    
-    # SETTINGS
-    # cam.set(cv2.CAP_PROP_FPS, 60)
-    cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640) #1280 640 default
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
-    # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
-    
-    if (cam.isOpened() == False): 
-        print("Error opening video file")
-    
-    while True:
-        # recorded_times_0 = time.time()
-        result, image = cam.read() # TODO also check CHECK cam.isOpened()?
-        while result == False:
-            result, image = cam.read()
-        
-        # print(f'isOpened: {cam.isOpened()}')
-        # cv2.imshow('image',image)
-        # cv2.waitKey(10)
-        
-        # recorded_times_1 = time.time()
-        
-        cam_queue.put(image)
-        # print(f'Video read time: {recorded_times_1-recorded_times_0}')
-
-
-def read_image_zed():
-    """Read the ZED camera - https://www.stereolabs.com/docs/video/camera-controls/
-    """
+    import pyzed.sl as sl
     
     print(f'Starting read_image_zed thread...')
-    
-    global runtime, cam_queue # Required only to modify. We don't. Just in case
     
     cam = sl.Camera()
     
@@ -238,21 +158,10 @@ def read_image_zed():
             # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
 
 
-def read_image_file():
-    """
-    Reads an image file
-    """
-    
-    print(f'Starting read_image_file thread...')
-    
-    while True:
-        image = cv2.imread(IMAGE_FILE_NAME)
-        cam_queue.put(image)
-    
 
-def can_send_thread():
+
+def can_send_thread(can_queue, can_receive):
     print(f'Starting CAN receive thread...')
-    global can_receive, can_queue
     
     while True:
         can_receive.receive_frame() # can_receive.frame updated
@@ -283,10 +192,10 @@ def agent_thread(agent_queue, agent):
 
 
 # SETUP CAMERA
-if (CAMERA_MODE == 0):   cam_worker = multiprocessing.Process(target=read_image_webcam, args=(), daemon=False)
-elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(), daemon=False)
-elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_file,   args=(), daemon=False)
-elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_video,  args=(cam_queue,), daemon=False)
+if (CAMERA_MODE == 0):   cam_worker = multiprocessing.Process(target=read_image_file,   args=(cam_queue,), daemon=False)
+elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_video,  args=(cam_queue,), daemon=False)
+elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_webcam, args=(cam_queue,), daemon=False)
+elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
 
 cam_worker.start()
 

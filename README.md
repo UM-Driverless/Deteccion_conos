@@ -49,6 +49,7 @@ We won't use Conda since it's not necessary, and the several python versions hav
         sudo apt autoremove
         sudo ubuntu-drivers autoinstall
         sudo service lightdm restart
+        sudo apt install nvidia-driver-515 nvidia-dkms-515
         sudo reboot
         ```
 * To explore if something fails:
@@ -97,6 +98,10 @@ TODO Testing with Jetpack 5.1
     - (https://www.stereolabs.com/developers/release/)
     - [Python API](https://www.stereolabs.com/docs/app-development/python/install/)
     - (Test Record: https://github.com/SusanaPineda/utils_zed/blob/master/capture_loop.py)
+    - If shared library error:
+        ```bash
+        sudo apt install libturbojpeg0-dev
+        ```
 - Startup script (Setup all the programs on startup)
     - Add in Startup Applications: "python3 startup_script.py"
 - (CAN: https://medium.com/@ramin.nabati/enabling-can-on-nvidia-jetson-xavier-developer-kit-aaaa3c4d99c9)
