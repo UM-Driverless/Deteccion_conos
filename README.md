@@ -3,8 +3,8 @@ We won't use Conda since it's not necessary, and the several python versions hav
 
 - First apt installs
     ```bash
-    sudo apt update && sudo apt upgrade -y; spd-say "I finished installing"
-    sudo apt install curl nano git zstd #zstd is zed dependency
+    sudo apt update && sudo apt upgrade -y; spd-say "I finished the update"
+    sudo apt install curl nano git pip python3 zstd #zstd is zed dependency; spd-say "I finished installing"
     ```
 - Clone the GitHub directory:
     ```bash
