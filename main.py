@@ -46,21 +46,7 @@ torch.hub.load() (self.detection_model = torch.hub.load('yolov5/', 'custom', pat
 """
 
 # IMPORTS
-import os
-import time
-import numpy as np
-import multiprocessing
-import matplotlib.pyplot as plt # For representation of time consumed
-import sys
-print(f'Python version: {sys.version}')
-
-## Camera libraries
-import cv2 # Webcam
-import pyzed.sl as sl # ZED.
-
-## Our imports
 from globals.globals import * # Global variables and constants, as if they were here
-
 from connection_utils.car_comunication import ConnectionManager # TODO REMOVE
 from connection_utils.message_processing import MessageProcessing
 
@@ -73,6 +59,23 @@ from agent.agent import AgentAccelerationYolo as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
+
+
+import cv2 # Webcam
+
+if (CAMERA_MODE == 1):
+    import pyzed.sl as sl # ZED.
+
+import os
+import time
+import numpy as np
+import multiprocessing
+import matplotlib.pyplot as plt # For representation of time consumed
+import sys
+print(f'Python version: {sys.version}')
+
+
+
 
 cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
 
@@ -110,7 +113,6 @@ agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 # THREAD FUNCTIONS
 # from thread_functions import *
 import cv2 # Webcam
-import pyzed.sl as sl # ZED.
 
 def read_image_webcam():
     """Reads the webcam

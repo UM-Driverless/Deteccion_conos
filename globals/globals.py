@@ -24,16 +24,6 @@ CAN_ACTION_DIMENSION = 100.
 CAN_STEER_DIMENSION = 122880.
 
 # ---
-# CAN input variables TODO do we need them? Or just merge with car_state. I think delete and edit state when variables out of message queue
-can_variables = {
-    "speed": 0.,
-    "throttle": 0.,
-    "steer": 0.,
-    "brake": 0.,
-    "clutch": 0.,
-    "gear": 0.,
-    "rpm": 0.
-}
 
 # Actual state values of the car
 car_state = {

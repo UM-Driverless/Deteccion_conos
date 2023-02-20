@@ -13,7 +13,7 @@ We won't use Conda since it's not necessary, and the several python versions hav
 - Install the requirements (for yolo network and for our scripts)
     ```bash
     cd ~/Deteccion_conos
-    pip install -r requirements.txt
+    pip install -r <requirements_file_name>.txt
     
     # To do it with conda:
     # conda install --file requirements.txt
@@ -23,21 +23,17 @@ We won't use Conda since it's not necessary, and the several python versions hav
 - ZED Camera Installation
     1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...)
         https://www.stereolabs.com/developers/release/
-    2. Activate the conda environment (To be safe. Keep the ZED's Python API inside the environment)
-        ```bash
-        conda activate formula
-        ```
-    3. Add permits:
+    2. Add permits:
         ```bash
         sudo chmod 777 {FILENAME}
         ```
-    4. Run it without sudo (You can copy the file and Ctrl+Shift+V into the terminal. Don't know why tab doesn't complete the filename):
+    3. Run it without sudo (You can copy the file and Ctrl+Shift+V into the terminal. Don't know why tab doesn't complete the filename):
         ```bash
         sh {FILENAME}.run
         ```
-    5. By default accept to install cuda, static version of SDK, AI module, samples and **Python API**. Diagnostic not required.
-    6. Now it should be installed in the deault installation path: `/usr/local/zed`
-    7. To get the Python API (Otherwise pyzed won't be installed and will throw an error):
+    4. By default accept to install cuda, static version of SDK, AI module, samples and **Python API**. Diagnostic not required.
+    5. Now it should be installed in the deault installation path: `/usr/local/zed`
+    6. To get the Python API (Otherwise pyzed won't be installed and will throw an error):
         ```bash
         python3 /usr/local/zed/get_python_api.py
         ```
@@ -45,6 +41,16 @@ We won't use Conda since it's not necessary, and the several python versions hav
     ```bash
     python3 main.py
     ```
+- To make sure you are using the GPU (Get IS CUDA AVAILABLE? : True)
+    - Check the GPU driver. X.Org -> nvidia-driver-515. In Software and Updates.
+    - If errors:
+        ```bash
+        sudo apt-get remove --purge nvidia-* -y
+        sudo apt autoremove
+        sudo ubuntu-drivers autoinstall
+        sudo service lightdm restart
+        sudo reboot
+        ```
 * To explore if something fails:
     * `sudo apt-get install python3-tk`
 
