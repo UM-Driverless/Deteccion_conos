@@ -258,8 +258,9 @@ try:
         #     plt.clf()
         #     plt.scatter(data[0][0][:,0], data[0][0][:,1])
         #     plt.scatter(data[0][1][:,0], data[0][1][:,1])
+        #     plt.imshow(f())
         #     plt.show()
-        #     plt.savefig("logs/cone_centers.png")
+        #     # plt.savefig("logs/cone_centers.png")
         
         
         recorded_times[3] = time.time()
