@@ -25,7 +25,6 @@ vulture . --min-confidence 100
 - Only import used libraries from activations with global config constants
 - SET SPEED ACCORDING TO CAN PROTOCOL, and the rest of state variables (SEN BOARD)
 - check edgeimpulse
-- USE CAN_MODE VARIABLE TO TURN OFF
 - Check NVIDIA drivers -525
 - Print number of cones detected per color
 - Xavier why network takes 3s to execute. How to make it use GPU?
@@ -82,31 +81,39 @@ logger = Logger(logger_path, init_message)
 ## Cone detector
 detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger) # TODO why does ConeDetector need a logger?
 
-## Connections
-if (CAN_MODE == 1):
-    # CAN with Kvaser
-
-    can_receive = CanKvaser()
-    can_send = CanKvaser()
-    can_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None TODO probably bad parameters, increase maxsize etc.
-    
-    can_send_worker = multiprocessing.Process(target=can_send_thread, args=(can_queue, can_receive,), daemon=False)
-    can_send_worker.start()
-    
-    print('CAN connection initialized')
-elif (CAN_MODE == 2):
-    # CAN with Xavier
-    can_send = CanXavier()
-    can_send.send_message()
-    
-
-## Agent
-agent = AgentAcceleration(logger=logger, target_speed=60.)
-agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
 # THREAD FUNCTIONS
 from thread_functions import *
 import cv2
+
+
+def can_send_thread(can_queue, can_receive):
+    print(f'Starting CAN receive thread...')
+    
+    while True:
+        can_receive.receive_frame() # can_receive.frame updated
+        # print(f'FRAME RECEIVED: {can_receive.frame}')
+        # global car_state
+        car_state_local = can_receive.new_state(car_state)
+        # print(car_state_local)
+        can_queue.put(car_state_local)
+
+def agent_thread(agent_queue, agent):
+    print(f'Starting agent thread...')
+    global agent_target, detections, image # TODO PASAR POR REFERENCIA EN VEZ DE USAR COMO VARIABLES GLOBALES, y mover a thread_functions.py
+    
+    while True:
+        # This agent_target variable must be local, and sent to the main loop through a queue that manages the concurrency.
+        # TODO como se pasan cone_centers? Tiene que ser por la cola porque es un hilo
+        [agent_target_local, data] = agent.get_action(agent_target,
+                                                      car_state,
+                                                      detections,
+                                                      cone_centers=cone_centers,
+                                                      image=image
+                                                      )
+        
+        # Output values to queue as an array
+        agent_queue.put([agent_target_local, data])
 
 def read_image_zed(cam_queue):
     """
@@ -160,35 +167,28 @@ def read_image_zed(cam_queue):
 
 
 
-def can_send_thread(can_queue, can_receive):
-    print(f'Starting CAN receive thread...')
+
+## Connections
+if (CAN_MODE == 1):
+    # CAN with Kvaser
+
+    can_receive = CanKvaser()
+    can_send = CanKvaser()
+    can_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None TODO probably bad parameters, increase maxsize etc.
     
-    while True:
-        can_receive.receive_frame() # can_receive.frame updated
-        # print(f'FRAME RECEIVED: {can_receive.frame}')
-        # global car_state
-        car_state_local = can_receive.new_state(car_state)
-        # print(car_state_local)
-        can_queue.put(car_state_local)
-
-def agent_thread(agent_queue, agent):
-    print(f'Starting agent thread...')
-    global agent_target, detections, image # TODO PASAR POR REFERENCIA EN VEZ DE USAR COMO VARIABLES GLOBALES, y mover a thread_functions.py
+    can_send_worker = multiprocessing.Process(target=can_send_thread, args=(can_queue, can_receive,), daemon=False)
+    can_send_worker.start()
     
-    while True:
-        # This agent_target variable must be local, and sent to the main loop through a queue that manages the concurrency.
-        # TODO como se pasan cone_centers? Tiene que ser por la cola porque es un hilo
-        [agent_target_local, data] = agent.get_action(agent_target,
-                                                      car_state,
-                                                      detections,
-                                                      cone_centers=cone_centers,
-                                                      image=image
-                                                      )
-        
-        # Output values to queue as an array
-        agent_queue.put([agent_target_local, data])
+    print('CAN connection initialized')
+elif (CAN_MODE == 2):
+    # CAN with Xavier
+    can_send = CanXavier()
+    can_send.send_message()
+    
 
-
+## Agent
+agent = AgentAcceleration(logger=logger, target_speed=60.)
+agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
 
 # SETUP CAMERA
@@ -218,115 +218,116 @@ if (VISUALIZE == 1):
 
 
 # Main loop ------------------------
-try:
-    print(f'Starting main loop...')
-    while True:
-        recorded_times[0] = time.time()
-        
-        # GET IMAGE (Either from webcam, video, or ZED camera)
-        image = cam_queue.get(timeout=5)
-        
-        # Resize to IMAGE_RESOLUTION no matter how we got the image
-        image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        
-        # image = cv2.flip(image, flipCode=1) # For testing purposes
-        # image = np.array(image)
-        # Save to file (optional)
-        # cv2.imwrite('image.png',image)
-        
-        recorded_times[1] = time.time()
+if __name__ == '__main__': # multiprocessing creates child processes that import this file, with __name__ = '__mp_main__'
+    try:
+        print(f'Starting main loop...')
+        while True:
+            recorded_times[0] = time.time()
+            
+            # GET IMAGE (Either from webcam, video, or ZED camera)
+            image = cam_queue.get(timeout=5)
+            
+            # Resize to IMAGE_RESOLUTION no matter how we got the image
+            image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            
+            # image = cv2.flip(image, flipCode=1) # For testing purposes
+            # image = np.array(image)
+            # Save to file (optional)
+            # cv2.imwrite('image.png',image)
+            
+            recorded_times[1] = time.time()
 
-        # Detect cones
-        detections, cone_centers = detector.detect_cones(image, get_centers=True)
-        recorded_times[2] = time.time()
-        
-        # Update car values from CAN
-        if (CAN_MODE == 1):
-            car_state = can_queue.get()
-        
-        # Get actions from agent
-        if (loop_counter == 0):
-            agent_worker.start()
-            # visualize_worker.start() #Visualizer
-        
-        [agent_target, data] = agent_queue.get()
-        
-        # Test with a plot
-        # if (len(cone_centers[0]) > 0):
-        #     plt.figure('cone_centers')
-        #     plt.clf()
-        #     plt.scatter(data[0][0][:,0], data[0][0][:,1])
-        #     plt.scatter(data[0][1][:,0], data[0][1][:,1])
-        #     plt.imshow(f())
-        #     plt.show()
-        #     # plt.savefig("logs/cone_centers.png")
-        
-        
-        recorded_times[3] = time.time()
+            # Detect cones
+            detections, cone_centers = detector.detect_cones(image, get_centers=True)
+            recorded_times[2] = time.time()
+            
+            # Update car values from CAN
+            if (CAN_MODE == 1):
+                car_state = can_queue.get()
+            
+            # Get actions from agent
+            if (loop_counter == 0):
+                agent_worker.start()
+                # visualize_worker.start() #Visualizer
+            
+            [agent_target, data] = agent_queue.get()
+            
+            # Test with a plot
+            # if (len(cone_centers[0]) > 0):
+            #     plt.figure('cone_centers')
+            #     plt.clf()
+            #     plt.scatter(data[0][0][:,0], data[0][0][:,1])
+            #     plt.scatter(data[0][1][:,0], data[0][1][:,1])
+            #     plt.imshow(f())
+            #     plt.show()
+            #     # plt.savefig("logs/cone_centers.png")
+            
+            
+            recorded_times[3] = time.time()
 
-        # Send actions - CAN
-        if (CAN_MODE == 1):            
-            # Send target values from agent
-            can_send.send_frame()
+            # Send actions - CANg
+            if (CAN_MODE == 1):            
+                # Send target values from agent
+                can_send.send_frame()
+            
+            # VISUALIZE
+            # TODO add parameters to class
+            if (VISUALIZE == 1):
+                cenital_map = [data[1], data[2], data[-1]]
+                in_speed = 0
+                in_rpm = 0
+
+                visualizer.visualize(agent_target,
+                                    car_state,
+                                    image,
+                                    detections,
+                                    fps,
+                                    save_frames=False)
+            
+            recorded_times[4] = time.time()
+
+            # END OF LOOP
+            loop_counter += 1
+            fps = 1/(recorded_times[TIMES_TO_MEASURE] - recorded_times[0])
+            integrated_fps += fps
+            integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
+
+    finally:
+        # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
+
+        # TIMES
+        # cam.release()
+        if loop_counter != 0:
+            average_time_taken = integrated_time_taken/loop_counter
+            fps = integrated_fps/loop_counter
+            print(f'\n\n\n------------ RESULTS ------------\n',end='')
+            print(f'FPS: {fps}')
+            print(f'LOOPS: {loop_counter}')
+            print(f'AVERAGE TIMES: {average_time_taken}')
+            print(f'---------------------------------\n',end='')
+            
+            ## Plot the times
+            fig = plt.figure(figsize=(12, 4))
+            plt.bar(['cam.read()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
+            plt.ylabel("Average time taken [s]")
+            plt.figtext(.8,.8,f'{fps:.2f}Hz')
+            plt.title("Execution time per section of main loop")
+            plt.savefig("logs/times.png")
+        else:
+            average_time_taken = -1
+            fps = -1
+            print("-------- ERROR, NO RESULTS --------")
         
-        # VISUALIZE
-        # TODO add parameters to class
-        if (VISUALIZE == 1):
-            cenital_map = [data[1], data[2], data[-1]]
-            in_speed = 0
-            in_rpm = 0
 
-            visualizer.visualize(agent_target,
-                                 car_state,
-                                 image,
-                                 detections,
-                                 fps,
-                                 save_frames=False)
+        # Close processes and windows
+        cam_worker.terminate()
+        agent_worker.terminate()
+        cv2.destroyAllWindows()
         
-        recorded_times[4] = time.time()
-
-        # END OF LOOP
-        loop_counter += 1
-        fps = 1/(recorded_times[TIMES_TO_MEASURE] - recorded_times[0])
-        integrated_fps += fps
-        integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
-
-finally:
-    # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
-
-    # TIMES
-    # cam.release()
-    if loop_counter != 0:
-        average_time_taken = integrated_time_taken/loop_counter
-        fps = integrated_fps/loop_counter
-        print(f'\n\n\n------------ RESULTS ------------\n',end='')
-        print(f'FPS: {fps}')
-        print(f'LOOPS: {loop_counter}')
-        print(f'AVERAGE TIMES: {average_time_taken}')
-        print(f'---------------------------------\n',end='')
-        
-        ## Plot the times
-        fig = plt.figure(figsize=(12, 4))
-        plt.bar(['cam.read()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
-        plt.ylabel("Average time taken [s]")
-        plt.figtext(.8,.8,f'{fps:.2f}Hz')
-        plt.title("Execution time per section of main loop")
-        plt.savefig("logs/times.png")
-    else:
-        average_time_taken = -1
-        fps = -1
-        print("-------- ERROR, NO RESULTS --------")
-    
-
-    # Close processes and windows
-    cam_worker.terminate()
-    agent_worker.terminate()
-    cv2.destroyAllWindows()
-    
-    agent_target = {
-        "throttle": 0.,
-        "brake": 0.,
-        "steer": 0.,
-        "clutch": 0.,
-    }
+        agent_target = {
+            "throttle": 0.,
+            "brake": 0.,
+            "steer": 0.,
+            "clutch": 0.,
+        }
