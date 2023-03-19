@@ -55,7 +55,53 @@ We won't use Conda since it's not necessary, and the several python versions hav
 
 # INSTALL SIMULATOR
 Go to [https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases) and download the latest version. The file has an UNREAL ENGINE file which executes the simulator.
-    
+[Here](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/tree/master/python/examples) you can see Python examples.
+
+If the test python file is inside `Formula-Student-Driverless-Simulator`, you can use this path to link the simulator: `fsds_lib_path = os.path.join(os.getcwd(),"python")`
+
+<details><summary>Test program</summary>
+
+
+```python
+# This code adds the fsds package to the pyhthon path.
+# It assumes the fsds repo is cloned in the home directory.
+# Replace fsds_lib_path with a path to wherever the python directory is located.
+import sys, os
+# fsds_lib_path = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python")
+fsds_lib_path = os.path.join(os.getcwd(),"python")
+print('CARPETA:',fsds_lib_path)
+sys.path.insert(0, fsds_lib_path)
+
+import time
+
+import fsds
+
+# connect to the AirSim simulator 
+client = fsds.FSDSClient()
+
+# Check network connection
+client.confirmConnection()
+
+# After enabling api controll only the api can controll the car. 
+# Direct keyboard and joystick into the simulator are disabled.
+# If you want to still be able to drive with the keyboard while also 
+# controll the car using the api, call client.enableApiControl(False)
+client.enableApiControl(True)
+
+# Instruct the car to go full-speed forward
+car_controls = fsds.CarControls()
+car_controls.throttle = 1
+client.setCarControls(car_controls)
+
+time.sleep(5)
+
+# Places the vehicle back at it's original position
+client.reset()
+```
+</details>
+
+
+
 # NVIDIA JETSON XAVIER NX SETUP
 TODO Testing with Jetpack 5.1
 - Start here to install the OS: [https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit](https://developer.nvidia.com/embedded/learn/get-started-jetson-xavier-nx-devkit)
