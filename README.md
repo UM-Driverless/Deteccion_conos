@@ -3,8 +3,9 @@ We won't use Conda since it's not necessary, and the several python versions hav
 
 - First apt installs
     ```bash
-    sudo apt update && sudo apt upgrade -y; spd-say "I finished the update"
-    sudo apt install curl nano git pip python3 zstd #zstd is zed dependency; spd-say "I finished installing"
+    sudo apt update && sudo apt upgrade -y #; spd-say "I finished the update"
+    sudo apt install curl nano git pip python3 zstd #zstd is zed dependency
+    pip install --upgrade pip; #spd-say "Finished the installs"
     ```
 - Clone the GitHub directory:
     ```bash
@@ -14,9 +15,6 @@ We won't use Conda since it's not necessary, and the several python versions hav
     ```bash
     cd ~/Deteccion_conos
     pip install -r <requirements_file_name>.txt
-    
-    # To do it with conda:
-    # conda install --file requirements.txt
     ```
 - [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/r/personal/r_jimenezm_2017_alumnos_urjc_es/Documents/formula/formula%2022-23/SOFTWARE/FILES/yolov5_models?csf=1&web=1&e=nILHR5) in: `"yolov5/weights"`
 
@@ -71,12 +69,12 @@ TODO Testing with Jetpack 5.1
 - Set power mode (up right in task bar) to max
 - First apt installs
     ```bash
-    sudo apt update && sudo apt upgrade -y; spd-say "I finished installing"
+    sudo apt update && sudo apt upgrade -y
     sudo apt install curl nano git zstd #zstd is zed dependency
     ```
 - Clone the GitHub directory:
     ```bash
-    git clone https://github.com/UM-Driverless/Deteccion_conos.git; spd-say "Done cloning the repository"
+    git clone https://github.com/UM-Driverless/Deteccion_conos.git; #spd-say "Done cloning the repository"
     ```
 - To make bluetooth work [link](https://forums.developer.nvidia.com/t/bt-cant-work-after-flash-jetson-tx2-with-jetpacke4-3-no-bt-speaker-and-keyboard/112098/4):
     1. Navigate to the following file:
@@ -90,6 +88,7 @@ TODO Testing with Jetpack 5.1
         ```bash
         curl https://raw.githubusercontent.com/cognitivexr/edge-node/main/scripts/setup-xavier.sh | bash
         ```
+    - It will have Jetpack 4.5.1, Pytorch 1.8, TensorRT 7.1.3, Cuda 10.2
     - To solve `Illegal instruction (core dumped)`, issue with numpy and openblas:
         ```bash
         pip3 install -U "numpy==1.19.4"
@@ -109,36 +108,10 @@ TODO Testing with Jetpack 5.1
     - Add in Startup Applications: "python3 startup_script.py"
 - (CAN: https://medium.com/@ramin.nabati/enabling-can-on-nvidia-jetson-xavier-developer-kit-aaaa3c4d99c9)
 
-```bash
-tar -xvzf linuxcan.tar.gz
-sudo apt-get install build-essential
-sudo apt-get install linux-headers-`uname -r`
-```
-In linuxcan, and linuxcan/canlib, run:
-```bash
-make
-sudo make install
-```
-In linuxcan/common, run:
-```bash
-make
-sudo ./installscript.sh
-```
-To DEBUG:
-```bash
-make KV_Debug_ON=1
-```
-    1. Then update with below command:
-    $ sudo apt-get update
-    2. Install pulse audio using below command:
-    $ sudo apt-get install pulseaudio-module-bluetooth
-    3. Reboot device as per below command:
-    $ sudo reboot
-    4. Pair and use your Bluetooth audio devices.
-
 - To use:
     - First plug power, then the HDMI port, because otherwise it doesn't turn on
     - Don't use the upper left USB-A port for high speed (ZED camera). It's 2.0 while the others are 3.1
+
 
 # KVASER Setup in Ubuntu
 - Reference: https://www.kvaser.com/linux-drivers-and-sdk/
@@ -169,6 +142,23 @@ To DEBUG:
 make KV_Debug_ON=1
 ```
 
+# conda
+- https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+- Create a conda environment:
+    ```bash
+    conda create -n formula -y
+    
+    # To remove it:
+    # conda env remove -n formula
+    ```
+- Activate the environment
+    ```bash
+    conda activate formula
+    ```
+- Update the compiler
+    ```bash
+    conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
+    ```
 
 # Cliente para realizar la detección de conos en el simulador
 

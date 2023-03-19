@@ -97,6 +97,8 @@ def read_image_webcam(cam_queue):
 
 
 
+
+
 ''' Visualize thread doesn't work. It's not required for the car to work so ignore it.
 # def visualize_thread():
 #     print(f'Starting visualize thread...')
