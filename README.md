@@ -5,7 +5,7 @@ We won't use Conda since it's not necessary, and the several python versions hav
     ```bash
     sudo apt update && sudo apt upgrade -y #; spd-say "I finished the update"
     sudo apt install curl nano git pip python3 zstd #zstd is zed dependency
-    pip install --upgrade pip; spd-say "Finished the installs"
+    pip install --upgrade pip; #spd-say "Finished the installs"
     ```
 - Clone the GitHub directory:
     ```bash
@@ -74,7 +74,7 @@ TODO Testing with Jetpack 5.1
     ```
 - Clone the GitHub directory:
     ```bash
-    git clone https://github.com/UM-Driverless/Deteccion_conos.git; spd-say "Done cloning the repository"
+    git clone https://github.com/UM-Driverless/Deteccion_conos.git; #spd-say "Done cloning the repository"
     ```
 - To make bluetooth work [link](https://forums.developer.nvidia.com/t/bt-cant-work-after-flash-jetson-tx2-with-jetpacke4-3-no-bt-speaker-and-keyboard/112098/4):
     1. Navigate to the following file:
