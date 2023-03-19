@@ -55,7 +55,7 @@ We won't use Conda since it's not necessary, and the several python versions hav
 * To explore if something fails:
     * `sudo apt-get install python3-tk`
 
-#INSTALL SIMULATOR
+# INSTALL SIMULATOR
     Go to https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases and download the latest version. The file has an UNREAL ENGINE       file which executes the simulator.
     
 # NVIDIA JETSON XAVIER NX SETUP
