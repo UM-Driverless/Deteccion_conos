@@ -61,7 +61,6 @@ If the test python file is inside `Formula-Student-Driverless-Simulator`, you ca
 
 <details><summary>Test program</summary>
 
-
 ```python
 # This code adds the fsds package to the pyhthon path.
 # It assumes the fsds repo is cloned in the home directory.
@@ -100,7 +99,7 @@ client.reset()
 ```
 </details>
 
-
+To use, first run the fsds-... file, click "Run simulation", then run the python code
 
 # NVIDIA JETSON XAVIER NX SETUP
 TODO Testing with Jetpack 5.1

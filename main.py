@@ -18,8 +18,10 @@ vulture . --min-confidence 100
 - gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
 
 # TODO
-- Si can = 0, no importar ni siquiera las librerias, ni comprobar canales kvaser disponibles
-- QUITAR CONDA DEL GITHUB
+- COMPROBAR COORDENADAS CONOS EN VISTA CENITAL OK
+- AGENTE SENCILLO
+- CONECTAR AGENTE CON SIMULADOR
+- PROBAR CAN EN UM05
 - IPYTHON TO REQUIREMENTS, also canlib
 - Initialize trackbars of ConeProcessing. Why?
 - Only import used libraries from activations with global config constants
@@ -45,6 +47,16 @@ torch.hub.load() (self.detection_model = torch.hub.load('yolov5/', 'custom', pat
 """
 if __name__ == '__main__': # multiprocessing creates child processes that import this file, with __name__ = '__mp_main__'
     # IMPORTS
+    import os
+    print(f'Current working directory: {os.getcwd()}') # The terminal should be in this directory
+    
+    import time
+    import numpy as np
+    import multiprocessing
+    import matplotlib.pyplot as plt # For representation of time consumed
+    import sys
+    print(f'Python version: {sys.version}')
+    
     from globals.globals import * # Global variables and constants, as if they were here
     from connection_utils.car_comunication import ConnectionManager # TODO REMOVE
     from connection_utils.message_processing import MessageProcessing
@@ -59,16 +71,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     from visualization_utils.visualizer_yolo_det import Visualizer
     from visualization_utils.logger import Logger
 
-
     import cv2 # Webcam
-
-    import os
-    import time
-    import numpy as np
-    import multiprocessing
-    import matplotlib.pyplot as plt # For representation of time consumed
-    import sys
-    print(f'Python version: {sys.version}')
 
     cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
 
@@ -196,9 +199,21 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_video,  args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_webcam, args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
+    
+    if (CAMERA_MODE != 4):
+        cam_worker.start()
+    else:
+        fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
+        sys.path.insert(0, fsds_lib_path)
+        # print(f'SIMULATOR CAMERA FSDS PATH: {fsds_lib_path}')
+        import fsds # TODO why not recognized when debugging
+        
+        # connect to the simulator 
+        client = fsds.FSDSClient()
 
-    cam_worker.start()
-
+        # Check network connection, exit if not connected
+        client.confirmConnection()
+        
     # SETUP AGENT
     agent_worker = multiprocessing.Process(target=agent_thread, args=(agent_queue, agent,), daemon=False)
 
@@ -216,20 +231,28 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         visualizer = Visualizer()
         # visualize_worker = multiprocessing.Process(target=visualize_thread, args=(), daemon=False)
 
-
     # Main loop ------------------------
-
     try:
         print(f'Starting main loop...')
         while True:
             recorded_times[0] = time.time()
             
             # GET IMAGE (Either from webcam, video, or ZED camera)
-            image = cam_queue.get(timeout=5)
+            if (CAMERA_MODE == 4):
+                # Get the image
+                [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'examplecam', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
+                img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
+                image = img_buffer.reshape(img.height, img.width, 3)
+                # cv2.imshow('image',image)
+                # cv2.waitKey(1)
+                
+            else:
+                image = cam_queue.get(timeout=5)
             
             # Resize to IMAGE_RESOLUTION no matter how we got the image
             image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            
             
             # image = cv2.flip(image, flipCode=1) # For testing purposes
             # image = np.array(image)
@@ -252,17 +275,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 # visualize_worker.start() #Visualizer
             
             [agent_target, data] = agent_queue.get()
-            
-            # Test with a plot
-            # if (len(cone_centers[0]) > 0):
-            #     plt.figure('cone_centers')
-            #     plt.clf()
-            #     plt.scatter(data[0][0][:,0], data[0][0][:,1])
-            #     plt.scatter(data[0][1][:,0], data[0][1][:,1])
-            #     plt.imshow(f())
-            #     plt.show()
-            #     # plt.savefig("logs/cone_centers.png")
-            
             
             recorded_times[3] = time.time()
 
@@ -293,8 +305,37 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             integrated_fps += fps
             integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
 
+            
+            plt.scatter(data[0][0][:,0], -data[0][0][:,1],c='b')
+            plt.scatter(data[0][1][:,0], -data[0][1][:,1],c='y')
+
+            # set axis labels and title
+            plt.xlabel('X Axis Label')
+            plt.ylabel('Y Axis Label')
+            plt.title('My Scatter Plot')
+
+            # show the plot
+            # plt.show()
+            plt.savefig('cone_centers.png')
+            
     finally:
         # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
+
+        # generate some random data
+        # create scatter plot
+        plt.scatter(data[0][0][:,0], data[0][0][:,1],c='b')
+        plt.scatter(data[0][1][:,0], data[0][1][:,1],c='y')
+
+        # set axis labels and title
+        plt.xlabel('X Axis Label')
+        plt.ylabel('Y Axis Label')
+        plt.title('My Scatter Plot')
+
+        # show the plot
+        # plt.show()
+        plt.savefig('cone_centers.png')
+
+
 
         # TIMES
         # cam.release()

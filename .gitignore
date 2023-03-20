@@ -3,6 +3,8 @@
 /logs/
 /Net_7_FP32/
 /cone_detection/data/saved_networks/
+/Formula-Student-Driverless-Simulator/
+/fsds-v2.2.0-linux/
 #*.pt # Not ignored because they're only a few MB
 *.engine
 *.onnx
@@ -12,3 +14,4 @@
 *.vscode # Visual Studio config files
 *.coverage
 *.idea
+*.pyc
