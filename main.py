@@ -18,6 +18,7 @@ vulture . --min-confidence 100
 - gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
 
 # TODO
+- IMPRIMIR CONE_CENTERS EN TIEMPO REAL, CON PLT, CV2, O EN VISUALIZE
 - COMPROBAR COORDENADAS CONOS EN VISTA CENITAL OK
 - AGENTE SENCILLO
 - CONECTAR AGENTE CON SIMULADOR
@@ -168,9 +169,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
 
 
-
-
-
     ## Connections
     if (CAN_MODE == 1):
         # CAN with Kvaser
@@ -199,21 +197,9 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_video,  args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_webcam, args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
+    elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,), daemon=False)
+    cam_worker.start()
     
-    if (CAMERA_MODE != 4):
-        cam_worker.start()
-    else:
-        fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
-        sys.path.insert(0, fsds_lib_path)
-        # print(f'SIMULATOR CAMERA FSDS PATH: {fsds_lib_path}')
-        import fsds # TODO why not recognized when debugging
-        
-        # connect to the simulator 
-        client = fsds.FSDSClient()
-
-        # Check network connection, exit if not connected
-        client.confirmConnection()
-        
     # SETUP AGENT
     agent_worker = multiprocessing.Process(target=agent_thread, args=(agent_queue, agent,), daemon=False)
 
@@ -238,17 +224,17 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             recorded_times[0] = time.time()
             
             # GET IMAGE (Either from webcam, video, or ZED camera)
-            if (CAMERA_MODE == 4):
-                # Get the image
-                [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'examplecam', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
-                img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
-                image = img_buffer.reshape(img.height, img.width, 3)
+            # if (CAMERA_MODE == 4):
+            #     # Get the image
+            #     [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'examplecam', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
+            #     img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
+            #     image = img_buffer.reshape(img.height, img.width, 3)
                 # cv2.imshow('image',image)
                 # cv2.waitKey(1)
                 
-            else:
-                image = cam_queue.get(timeout=5)
-            
+            # else:
+                # image = cam_queue.get(timeout=5)
+            image = cam_queue.get(timeout=5)
             # Resize to IMAGE_RESOLUTION no matter how we got the image
             image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -306,17 +292,17 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
 
             
-            plt.scatter(data[0][0][:,0], -data[0][0][:,1],c='b')
-            plt.scatter(data[0][1][:,0], -data[0][1][:,1],c='y')
+            # plt.scatter(data[0][0][:,0], -data[0][0][:,1],c='b')
+            # plt.scatter(data[0][1][:,0], -data[0][1][:,1],c='y')
 
-            # set axis labels and title
-            plt.xlabel('X Axis Label')
-            plt.ylabel('Y Axis Label')
-            plt.title('My Scatter Plot')
+            # # set axis labels and title
+            # plt.xlabel('X Axis Label')
+            # plt.ylabel('Y Axis Label')
+            # plt.title('My Scatter Plot')
 
-            # show the plot
-            # plt.show()
-            plt.savefig('cone_centers.png')
+            # # Show the plot
+            # # plt.show()
+            # plt.savefig('cone_centers.png')
             
     finally:
         # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.

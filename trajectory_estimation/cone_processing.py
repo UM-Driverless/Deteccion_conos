@@ -1,9 +1,7 @@
-from trajectory_estimation.cone_processing_interface import ConeProcessingInterface
 import numpy as np
 import cv2
 
-
-class ConeProcessing(ConeProcessingInterface):
+class ConeProcessing():
     def __init__(self):
         super().__init__()
         self.blue_color = 'blue'
@@ -13,12 +11,18 @@ class ConeProcessing(ConeProcessingInterface):
         intialTracbarVals = [[73, 67, 27], [129, 255, 255], [21, 58, 142], [24, 255, 255], [45, 27, 0, 44]]
         self.initializeTrackbars(intialTracbarVals[4])
 
+    def create_cone_map2(self, cone_centers):
+        '''
+        In progress
+        '''
+        pass
+
     def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
         """
         
         Returns data array, which ...
         data[0] = cone centers per color in top view = [warp_blue_center, warp_yell_center, warp_oran_center]
-        data[1] = [{list with centers of blue cones}, [= for yellow cones], ...] list with centers of each cone
+        data[1] = cone centers per size (left and right) [{list with centers of blue cones}, [= for yellow cones], ...] list with centers of each cone
         data[2] (=data[-2]) returns the reference point
         
         
@@ -71,7 +75,6 @@ class ConeProcessing(ConeProcessingInterface):
         else:
             list_oran_center = []
             warp_oran_center = []
-        # list_blue_center, list_yell_center, list_oran_center = self.split_cones(cone_centers, labels)
 
         if img_to_wrap is not None:
             img_wrap = self.perspective_warp_image(img_to_wrap,
@@ -82,17 +85,15 @@ class ConeProcessing(ConeProcessingInterface):
         else:
             img_wrap = np.zeros((orig_im_shape[2], orig_im_shape[2], 3))
 
-
-        # # algoritmo para unir conos contiguos. Lo aplicamos sobre los conos en perspectiva
-        # order_warp_blue_center = self.join_cones(warp_blue_center, unique_color='blue')
-        # order_warp_yell_center = self.join_cones(warp_yell_center, unique_color='yell')
-        # order_warp_oran_left_center, order_warp_oran_rigth_center = self.join_cones(warp_oran_center,
-        #                                                                                 unique_color='oran')
         order_warp_blue_center = warp_blue_center
         order_warp_yell_center = warp_yell_center
         order_warp_oran_left_center, order_warp_oran_rigth_center = self.split_orange_cones(warp_oran_center)
 
-        # calcular el centro
+        # calcular el centro.
+        # Target point will be the average of 2 points, only taking the horizontal coordinate into account:
+        # The left one will be the median x coordinate of blue cones
+        # The right one will be the median x coordinate of yellow cones
+        
         if len(warp_blue_center) > 1 and len(warp_yell_center) > 1:
             x1 = np.median(np.array(warp_blue_center)[:, 0])
             x2 = np.median(np.array(warp_yell_center)[:, 0])
@@ -103,96 +104,12 @@ class ConeProcessing(ConeProcessingInterface):
             center = int((x1 + x2) / 2)
         else:
             center = 0.
-
-        # import matplotlib.pyplot as plt
-        # fig = plt.figure(0)
-        # plt.plot(list_blue_center[:, 0], list_blue_center[:, 1], 'o')
-        # plt.plot(list_yell_center[:, 0], list_yell_center[:, 1], 'o')
-        # plt.plot(list_oran_center[:, 0], list_oran_center[:, 1], 'o')
-        # fig.canvas.draw()
-        # # convert canvas to image
-        # img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-        # img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-        # # img is rgb, convert to opencv's default bgr
-        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        
-        # # display image with opencv or any operation you like
-        # cv2.imshow("plot", img)
-        
-        # fig = plt.figure(1)
-        # plt.plot(warp_blue_center[:, 0], warp_blue_center[:, 1], 'o')
-        # plt.plot(warp_yell_center[:, 0], warp_yell_center[:, 1], 'o')
-        # plt.plot(warp_oran_center[:, 0], warp_oran_center[:, 1], 'o')
-        # fig.canvas.draw()
-        # # convert canvas to image
-        # img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-        # img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-        # # img is rgb, convert to opencv's default bgr
-        # img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        
-        # # display image with opencv or any operation you like
-        # cv2.imshow("plot_wrap", img)
-        # cv2.waitKey(0)
 
         return [warp_blue_center, warp_yell_center, warp_oran_center], \
                [np.array(order_warp_blue_center), np.array(order_warp_yell_center),
                 np.array(order_warp_oran_left_center), np.array(order_warp_oran_rigth_center)], \
-               center, img_wrap
-
-    '''
-    def create_cone_map_legacy(self, cone_detections, cone_centers, aux_data=None):
-        """
-        Performs the cones detection task. The detection must include the bounding boxes and classification of each
-        cone.
-        :param img: (3D numpy array) Image to process.
-        :param min_score_thresh: (float in [0., 1.]) Min score of confident on a detection.
-        :param show_detections: (bool) If True: The image with detections id displayed. If False: no image is displayed.
-        :param im_name: (string) Name of the detection image when show_detections=True
-        :return: [ndarray, list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
-                                data.
-        """
-        eagle_img, orig_im_shape = aux_data
-
-        src_trapezoide = self.valTrackbars()  # Trapezoide a coger de la imagen original
-
-        list_blue_center, list_yell_center, list_oran_center = self.split_cones_legacy(cone_centers)
-
-        # Transformo las coordenadas a vista de águila
-        warp_blue_center = self.perspective_warp_coordinates_legacy(list_blue_center,
-                                                              eagle_img,
-                                                              dst_size=(orig_im_shape[1], orig_im_shape[1]),
-                                                              src=src_trapezoide)
-        warp_yell_center = self.perspective_warp_coordinates_legacy(list_yell_center,
-                                                              eagle_img,
-                                                              dst_size=(orig_im_shape[1], orig_im_shape[1]),
-                                                              src=src_trapezoide)
-
-        warp_oran_center = self.perspective_warp_coordinates_legacy(list_oran_center,
-                                                              eagle_img,
-                                                              dst_size=(
-                                                                  orig_im_shape[1], orig_im_shape[1]),
-                                                              src=src_trapezoide)
-
-        # algoritmo para unir conos contiguos. Lo aplicamos sobre los conos en perspectiva
-        order_warp_blue_center = self.join_cones(warp_blue_center, unique_color='blue')
-        order_warp_yell_center = self.join_cones(warp_yell_center, unique_color='yell')
-        order_warp_oran_left_center, order_warp_oran_rigth_center = self.join_cones(warp_oran_center,
-                                                                                        unique_color='oran')
-        if len(warp_blue_center) > 1 and len(warp_yell_center) > 1:
-            x1 = np.median(np.array(warp_blue_center)[:, 0])
-            x2 = np.median(np.array(warp_yell_center)[:, 0])
-            center = int((x2 - x1) / 2 + x1)
-        elif len(order_warp_oran_left_center) > 1 and len(order_warp_oran_rigth_center) > 1:
-            x1 = np.median(np.array(order_warp_oran_left_center)[:, 0])
-            x2 = np.median(np.array(order_warp_oran_rigth_center)[:, 0])
-            center = int((x2 - x1) / 2 + x1)
-        else:
-            center = 0.
-
-        return [warp_blue_center, warp_yell_center, warp_oran_center], \
-               [order_warp_blue_center, order_warp_yell_center, order_warp_oran_left_center, order_warp_oran_rigth_center], \
-               center
-    '''
+                center, \
+                img_wrap
 
     def perspective_warp_coordinates(self,
                                     coord_list,
@@ -240,59 +157,6 @@ class ConeProcessing(ConeProcessingInterface):
             img_warped = np.zeros((dst, dst, 3))
         return img_warped
 
-    def perspective_warp_coordinates_legacy(self, coord_list,
-                                     img,
-                                     dst_size=(1280, 720),
-                                     src=np.float32([(0.43, 0.65), (0.58, 0.65), (0.1, 1), (1, 1)]),
-                                     dst=np.float32([(0, 0), (1, 0), (0, 1), (1, 1)])):
-        coord_list = np.array(coord_list)
-        if coord_list.shape[0] > 0:
-            img_size = np.float32([(img.shape[1], img.shape[0])])
-            src = src * img_size
-            # For destination points, I'm arbitrarily choosing some points to be
-            # a nice fit for displaying our warped result
-            # again, not exact, but close enough for our purposes
-            dst = dst * np.float32(dst_size)
-            # Given src and dst points, calculate the perspective transform matrix
-            M = cv2.getPerspectiveTransform(src, dst)
-            # Warp the image using OpenCV warpPerspective()
-            # warped = cv2.warpPerspective(img, M, dst_size)
-
-            c = np.float32(coord_list[np.newaxis, :])
-            warped = np.int32(cv2.perspectiveTransform(c, M))
-            return warped[0]
-        return []
-
-    def split_cones(self, cone_centers, cone_class):
-        # TODO: reimplementar con numpy sin bucle
-        b_center = []
-        y_center = []
-        o_center = []
-        for center, clase in zip(cone_centers, cone_class):
-            if clase == 0:
-                b_center.append(center)
-            elif clase == 1:
-                y_center.append(center)
-            elif clase == 2 or clase == 3:
-                o_center.append(center)
-
-        return b_center, y_center, o_center
-
-    def split_cones_legacy(self, cone_centers):
-        centers = np.array([c[0] for c in cone_centers])
-        x = centers[:, 0]
-        y = centers[:, 1]
-        color = np.array([c[1] for c in cone_centers])
-        blues = color == self.blue_color
-        yellows = color == self.yellow_color
-        oranges = color == self.orange_color
-
-        b_center = centers[blues]
-        y_center = centers[yellows]
-        o_center = centers[oranges]
-
-        return b_center, y_center, o_center
-
     def initializeTrackbars(self, intialTracbarVals):
         cv2.namedWindow("Trackbars")
         cv2.resizeWindow("Trackbars", 360, 240)
@@ -331,165 +195,14 @@ class ConeProcessing(ConeProcessingInterface):
 
 
             list_oran_left = []
-            list_oran_rigth = []
+            list_oran_right = []
             for c in cone_centers:
                 if c[0] > median:
-                    list_oran_rigth.append(c)
+                    list_oran_right.append(c)
                 else:
                     list_oran_left.append(c)
-            return np.array(list_oran_left), np.array(list_oran_rigth)
+            return np.array(list_oran_left), np.array(list_oran_right)
         return np.array([]), np.array([])
-
-    def join_cones(self, cone_centers, unique_color=None):
-        """
-        :cone_centers list: [[(x_1, y_1), color_tag_1], ..., [(x_n, y_n), color_tag_n]]
-        :unique_color string: 'blue'
-                              'yell'
-                              'oran'
-                              Si se selecciona un único color para la lista de conos la entrada esperada para
-                              cone_centers será: [[x_1, y_1], ... , [x_n, y_n]]
-        """
-
-        if unique_color is None:
-            b_center, y_center, o_center = self.split_cones_legacy(cone_centers)
-        else:
-            b_center = []
-            y_center = []
-            o_center = []
-            if unique_color == self.blue_color:
-                b_center = cone_centers
-            elif unique_color == self.yellow_color:
-                y_center = cone_centers
-            elif unique_color == self.orange_color:
-                o_center = cone_centers
-
-        list_blue_center = []
-        list_yell_center = []
-        list_oran_left = []
-        list_oran_rigth = []
-
-        if len(o_center) > 3:
-            # Cogemos el cono que más abajo esté en la imagen
-            left_orange, rigth_orange = self.take_two_first_oranges(o_center)
-
-            l_index, _ = np.where(o_center == left_orange)
-            r_index, _ = np.where(o_center == rigth_orange)
-
-            l_index = l_index[0]
-            r_index = r_index[0]
-            list_oran_left.append(left_orange)
-            list_oran_rigth.append(rigth_orange)
-
-            if r_index > l_index:
-                o_center = np.delete(o_center, r_index, axis=0)
-                o_center = np.delete(o_center, l_index, axis=0)
-            else:
-                o_center = np.delete(o_center, l_index, axis=0)
-                o_center = np.delete(o_center, r_index, axis=0)
-
-            l_iter = 0
-            r_iter = 0
-            while len(o_center) > 1:
-                # Calculamos distancia a otros conos y cogemos el más cercano
-
-
-                try:
-                    l_angle_condition = False
-                    o_center_copy = np.copy(o_center)
-                    while not l_angle_condition and len(o_center_copy) > 0:
-                        l_distances = self.calc_distances(left_orange, o_center_copy)
-                        l_index = np.argmin(l_distances)
-
-                        if len(list_oran_left) > 0:
-                            if len(list_oran_left) > 1:
-                                v1 = list_oran_left[l_iter - 1] - list_oran_left[l_iter - 2]
-                            else:
-                                v1 = list_oran_left[l_iter - 1] - [list_oran_left[l_iter - 1][0],
-                                                                   list_oran_left[l_iter - 1][1] + 10]
-                            v2 = o_center_copy[l_index] - list_oran_left[l_iter - 1]
-                            angle = self.angle_between(v1, v2)
-                        else:
-                            angle = 0.
-
-                        radians_limit = np.pi / 4.  # np.deg2rad(45)
-                        # radians_limit = 0.05
-                        l_angle_condition = angle <= radians_limit
-
-                        if l_angle_condition:
-                            l_point_select = o_center_copy[l_index]
-                        else:
-                            o_center_copy = np.delete(o_center_copy, l_index, axis=0)
-                except:
-                    pass
-                try:
-                    r_angle_condition = False
-                    o_center_copy = np.copy(o_center)
-                    while not r_angle_condition and len(o_center_copy) > 0:
-                        r_distances = self.calc_distances(rigth_orange, o_center_copy)
-                        r_index = np.argmin(r_distances)
-
-                        if len(list_oran_rigth) > 0:
-                            if len(list_oran_rigth) > 1:
-                                v1 = list_oran_rigth[r_iter - 1] - list_oran_rigth[r_iter - 2]
-                            else:
-                                v1 = list_oran_rigth[r_iter - 1] - [list_oran_rigth[r_iter - 1][0],
-                                                                   list_oran_rigth[r_iter - 1][1] + 10]
-                            v2 = o_center_copy[r_index] - list_oran_rigth[r_iter - 1]
-                            angle = self.angle_between(v1, v2)
-                        else:
-                            angle = 0.
-
-                        radians_limit = np.pi / 4.  # np.deg2rad(45)
-                        # radians_limit = 0.05
-                        r_angle_condition = angle <= radians_limit
-
-                        if r_angle_condition:
-                            r_point_select = o_center_copy[r_index]
-                        else:
-                            o_center_copy = np.delete(o_center_copy, r_index, axis=0)
-                except:
-                    pass
-
-                if l_angle_condition:
-                    # l_point_select = o_center_copy[l_index]
-                    # left_orange = o_center[l_index]
-                    left_orange = l_point_select
-                    list_oran_left.append(left_orange)
-
-                if r_angle_condition:
-                    # r_point_select = o_center_copy[r_index]
-                    # rigth_orange = o_center[r_index]
-                    rigth_orange = r_point_select
-                    list_oran_rigth.append(rigth_orange)
-
-
-                if r_index != l_index:
-                    if r_index > l_index:
-                        o_center = np.delete(o_center, r_index, axis=0)
-                        o_center = np.delete(o_center, l_index, axis=0)
-                    else:
-                        o_center = np.delete(o_center, l_index, axis=0)
-                        o_center = np.delete(o_center, r_index, axis=0)
-
-                l_iter += 1
-                r_iter += 1
-                if len(o_center) < 1 or l_iter > 40 or r_iter > 40:
-                    break
-
-        if len(b_center) > 0:
-            self._join_check_cones(b_center, list_blue_center)
-
-        if len(y_center) > 0:
-            self._join_check_cones(y_center, list_yell_center)
-
-        if unique_color == self.blue_color:
-            return list_blue_center
-        elif unique_color == self.yellow_color:
-            return list_yell_center
-        elif unique_color == self.orange_color:
-            return list_oran_left, list_oran_rigth
-
-        return list_blue_center, list_yell_center, list_oran_left, list_oran_rigth
 
     def take_two_first_oranges(self, cone_list):
         index = np.argmax(cone_list[:, 1])

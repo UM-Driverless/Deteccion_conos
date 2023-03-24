@@ -3,13 +3,14 @@ from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessing
 import cv2
 import simple_pid
 import numpy as np
+from visualization_utils.logger import Logger
 
 from globals.globals import * # Global variables and constants, as if they were here
 
 class agent_simple1():
     # def __init__(self):
         
-    def horinzontal_control(self):
+    def horizontal_control(self):
         print('')
     def longitudinal_control(self):
         print('')
@@ -119,16 +120,13 @@ class AgentAcceleration(AgentInterface):
         data = self.cone_processing.create_cone_map(centers, labels, [eagle_img, image_shape])
 
         img_center = int(orig_im_shape[2] / 2)
-        steer = self.horinzontal_control(ref_point=data[-2], img_center=img_center)
+        steer = self.horizontal_control(ref_point=data[-2], img_center=img_center)
 
         throttle, brake, clutch = self.longitudinal_control(cenital_cones=data[1], speed=speed, rpm=rpm)
 
         return [throttle, brake, steer, clutch], data
 
-    def create_cone_map(self, centers, labels, eagle_img, image_shape):
-        return self.cone_processing.create_cone_map(centers, labels, [eagle_img, image_shape])
-
-    def horinzontal_control(self, ref_point, img_center):
+    def horizontal_control(self, ref_point, img_center):
         turn_point = img_center - ref_point
         val = self.valTrackbarsPID()
         pid = self.pid_steer(Kp=val[0], Ki=val[1], Kd=val[2], setpoint=0, output_limits=(-1., 1.))
@@ -188,18 +186,16 @@ class AgentAccelerationYolo(AgentAcceleration):
         data = self.cone_processing.create_cone_map(cone_centers, labels, None, orig_im_shape=(1,) + image.shape, img_to_wrap=image)
         
         agent_target = self.longitudinal_control(agent_target, car_state, cenital_cones=data[1])
-        agent_target['steer'] = self.horinzontal_control(ref_point=data[-2], img_center=img_center, img_base_len=image.shape[1])
+        agent_target['steer'] = self.horizontal_control(ref_point=data[-2], img_center=img_center, img_base_len=image.shape[1])
         
         return agent_target, data
 
-    def create_cone_map(self, centers, labels, eagle_img, image_shape, image):
-        return self.cone_processing.create_cone_map(centers, labels, [eagle_img], orig_im_shape=image_shape, img_to_wrap=image)
-
-    def horinzontal_control(self, ref_point, img_center, img_base_len):
+    def horizontal_control(self, ref_point, img_center, img_base_len):
         '''
         TODO MAKE IT WORK
         '''
         turn_point = img_center - ref_point
+        # TODO HERE PRINT WITH LOGGER TURN POINT
         # turn_point = -turn_point/img_base_len
         val = self.valTrackbarsPID()
         pid = self.pid_steer(Kp=val[0], Ki=val[1], Kd=val[2], setpoint=0, output_limits=(-1., 1.))
@@ -260,8 +256,6 @@ class AgentAccelerationYolo(AgentAcceleration):
                 agent_target['brake'] = pid_brake(ref_point)
 
         #print(throttle, brake, ref_point, val[3], val[4], val[5], val[6], val[7], val[8])
-
-        agent_target = self.clutch_func(car_state, agent_target)
 
         # upgear, downgear, gear = self.change_gear(gear, rpm, throttle)
         return agent_target
