@@ -1,5 +1,5 @@
 from connection_utils.car_comunication import ConnectionManager
-from agent.agent import AgentAccelerationYolo as AgentAcceleration
+from agent.agent import AgentYolo as Agent
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 
 #######################################################################################################################
-# Este código es más rápido por que usa AgentAccelerationYoloFast. Este agente no realiza una proyección de la imagen y
+# Este código es más rápido por que usa AgentYoloFast. Este agente no realiza una proyección de la imagen y
 # por lo tanto no calcula un mapa de los conos. Resliza directamente los cáculos sobre la imagen en la perspectiva
 # original. Esto lo hace más sensible a errores, pero más rápido
 #######################################################################################################################
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     connect_mng = ConnectionManager(logger=logger)
     print('CAN connection initialized')
     # Inicializar Agente (controlador)
-    agent = AgentAcceleration(logger=logger, target_speed=60.)
+    agent = Agent(logger=logger, target_speed=60.)
     print('agent initialized')
     # Visualización de datos
     visualizer = Visualizer()

@@ -1,5 +1,5 @@
 from connection_utils.car_comunication import ConnectionManager
-from agent.agent import AgentAccelerationYolo as AgentAcceleration
+from agent.agent import AgentYolo as Agent
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
@@ -11,7 +11,7 @@ import pyzed.sl as sl
 import numpy as np
 
 #######################################################################################################################
-# Este código es más lento pero más fiable por que usa AgentAccelerationYolo. Este agente realiza una proyección de la
+# Este código es más lento pero más fiable por que usa AgentYolo. Este agente realiza una proyección de la
 # imagen y por lo tanto calcula un mapa de los conos. A partir de este mapa realiza los cáculos.
 #######################################################################################################################
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     connect_mng = ConnectionManager(logger=logger)
     print('CAN connection initialized')
     # Inicializar Agente (controlador)
-    agent = AgentAcceleration(logger=logger, target_speed=60.)
+    agent = Agent(logger=logger, target_speed=60.)
     print('agent initialized')
     # Visualización de datos
     visualizer = Visualizer()

@@ -15,7 +15,11 @@ class agent_simple1():
         print('')
         
 
-class AgentAcceleration():
+class Agent():
+    '''
+    Main Agent class, with all the common actions between agents.
+    Each different test will inherit from this class and implement the specific actions for the test.
+    '''
     def __init__(self, logger, target_speed=20.):
         # TODO TEST Agent Variables
         ## PID
@@ -166,9 +170,9 @@ class AgentAcceleration():
 
         return agent_target
 
-class AgentAccelerationYolo(AgentAcceleration):
+class AgentYolo(Agent):
     '''
-    Based on AgentAcceleration, adds some specific changes
+    Based on Agent, adds some specific changes
     
     TODO what changes?
     '''

@@ -1,5 +1,5 @@
 from connection_utils.my_client import ConnectionManager
-from agent.agent import AgentAccelerationYolo as AgentAcceleration
+from agent.agent import AgentYolo as Agent
 from cone_detection.yolo_detector import ConeDetector
 from visualization_utils.visualizer_yolo_det import Visualizer
 from visualization_utils.logger import Logger
@@ -9,7 +9,7 @@ import time
 # os.environ["CUDA_DEVICE_ORDER"] = '0'
 
 #######################################################################################################################
-# Este código es más lento pero más fiable por que usa AgentAccelerationYolo. Este agente realiza una proyección de la
+# Este código es más lento pero más fiable por que usa AgentYolo. Este agente realiza una proyección de la
 # imagen y por lo tanto calcula un mapa de los conos. A partir de este mapa realiza los cáculos.
 #######################################################################################################################
 
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     connect_mng = ConnectionManager(logger=logger)
 
     # Inicializar Agente (controlador)
-    agent = AgentAcceleration(logger=logger, target_speed=60.)
+    agent = Agent(logger=logger, target_speed=60.)
     # Visualización de datos
     visualizer = Visualizer()
 

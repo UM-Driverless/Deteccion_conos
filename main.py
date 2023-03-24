@@ -68,7 +68,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAN_MODE == 2):
         from connection_utils.can_xavier import CanXavier
 
-    from agent.agent import AgentAccelerationYolo as AgentAcceleration
+    from agent.agent import AgentYolo as Agent
     from cone_detection.yolo_detector import ConeDetector
     from visualization_utils.visualizer_yolo_det import Visualizer
     from visualization_utils.logger import Logger
@@ -86,7 +86,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     ## Cone detector
     detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger) # TODO why does ConeDetector need a logger?
 
-
     # THREAD FUNCTIONS
     from thread_functions import *
     import cv2
@@ -102,25 +101,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             car_state_local = can_receive.new_state(car_state)
             # print(car_state_local)
             can_queue.put(car_state_local)
-            
-
-    def agent_thread(agent_queue, agent):
-        print(f'Starting agent thread...')
-        global agent_target, detections, image, cone_centers # TODO PASAR POR REFERENCIA EN VEZ DE USAR COMO VARIABLES GLOBALES, y mover a thread_functions.py
-        
-        while True:
-            print(f'!!!!!!!!!!!!!!!!agent_thread. TIME: {time.time()}')
-            # This agent_target variable must be local, and sent to the main loop through a queue that manages the concurrency.
-            # TODO como se pasan cone_centers? Tiene que ser por la cola porque es un hilo
-            [agent_target_local, data_local] = agent.get_action(agent_target,
-                                                        car_state,
-                                                        detections,
-                                                        cone_centers=cone_centers,
-                                                        image=image
-                                                        )
-            
-            # Output values to queue as an array
-            agent_queue.put([agent_target_local, data_local])
 
     def read_image_zed(cam_queue):
         """
@@ -191,7 +171,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         
 
     ## Agent
-    agent = AgentAcceleration(logger=logger, target_speed=60.)
+    agent = Agent(logger=logger, target_speed=60.)
     agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
     agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
@@ -203,9 +183,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,), daemon=False)
     cam_worker.start()
-    
-    # SETUP AGENT
-    agent_worker = multiprocessing.Process(target=agent_thread, args=(agent_queue, agent,), daemon=False)
 
     # READ TIMES
     TIMES_TO_MEASURE = 4
@@ -260,11 +237,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 car_state = can_queue.get()
             
             # Get actions from agent
-            # if (loop_counter == 0):
-                # agent_worker.start()
-                # visualize_worker.start() #Visualizer
-            
-            # [agent_target, data] = agent_queue.get()
             [agent_target, data] = agent.get_action(agent_target,
                                                         car_state,
                                                         detections,
@@ -274,7 +246,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             recorded_times[3] = time.time()
 
-            # Send actions - CANg
+            # Send actions - CAN
             if (CAN_MODE == 1):            
                 # Send target values from agent
                 can_send.send_frame()
