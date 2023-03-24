@@ -3,10 +3,6 @@ import cv2
 
 class ConeProcessing():
     def __init__(self):
-        super().__init__()
-        self.blue_color = 'blue'
-        self.yellow_color = 'yell'
-        self.orange_color = 'oran'
 
         intialTracbarVals = [[73, 67, 27], [129, 255, 255], [21, 58, 142], [24, 255, 255], [45, 27, 0, 44]]
         self.initializeTrackbars(intialTracbarVals[4])
@@ -23,7 +19,7 @@ class ConeProcessing():
         Returns data array, which ...
         data[0] = cone centers per color in top view = [warp_blue_center, warp_yell_center, warp_oran_center]
         data[1] = cone centers per size (left and right) [{list with centers of blue cones}, [= for yellow cones], ...] list with centers of each cone
-        data[2] (=data[-2]) returns the reference point
+        data[2] = reference point to see what's left and right sides
         
         
         Performs the cones detection task. The detection must include the bounding boxes and classification of each
@@ -76,15 +72,6 @@ class ConeProcessing():
             list_oran_center = []
             warp_oran_center = []
 
-        if img_to_wrap is not None:
-            img_wrap = self.perspective_warp_image(img_to_wrap,
-                                                     orig_im_shape,
-                                                     dst_size=(orig_im_shape[2], orig_im_shape[2]),
-                                                     src=src_trapezoide,
-                                                     wrap_img=True)
-        else:
-            img_wrap = np.zeros((orig_im_shape[2], orig_im_shape[2], 3))
-
         order_warp_blue_center = warp_blue_center
         order_warp_yell_center = warp_yell_center
         order_warp_oran_left_center, order_warp_oran_rigth_center = self.split_orange_cones(warp_oran_center)
@@ -108,8 +95,7 @@ class ConeProcessing():
         return [warp_blue_center, warp_yell_center, warp_oran_center], \
                [np.array(order_warp_blue_center), np.array(order_warp_yell_center),
                 np.array(order_warp_oran_left_center), np.array(order_warp_oran_rigth_center)], \
-                center, \
-                img_wrap
+                center
 
     def perspective_warp_coordinates(self,
                                     coord_list,
@@ -132,30 +118,8 @@ class ConeProcessing():
             c = np.float32(coord_list[np.newaxis, :])
             warped = np.int32(cv2.perspectiveTransform(c, M))
             return warped[0]
-        return []
-
-    def perspective_warp_image(self, image,
-                                    input_size,
-                                    dst_size=(180, 180),
-                                    # src=np.float32([(0.43, 0.65), (0.58, 0.65), (0.1, 1), (1, 1)]), # 
-                                    src=np.float32([(0.43, 0.65), (0.58, 0.65), (0.1, 1), (1, 1)]),
-                                    dst=np.float32([(0, 0), (1, 0), (0, 1), (1, 1)]),
-                                    wrap_img=True):
-
-        img_size = np.float32([input_size[2], input_size[1]])
-        src = src * img_size
-        # For destination points, I'm arbitrarily choosing some points to be
-        # a nice fit for displaying our warped result
-        # again, not exact, but close enough for our purposes
-        dst = dst * np.float32(dst_size)
-        # Given src and dst points, calculate the perspective transform matrix
-        M = cv2.getPerspectiveTransform(src, dst)
-        # Warp the image using OpenCV warpPerspective()
-        if wrap_img:
-            img_warped = cv2.warpPerspective(image, M, dst_size)
         else:
-            img_warped = np.zeros((dst, dst, 3))
-        return img_warped
+            return []
 
     def initializeTrackbars(self, intialTracbarVals):
         cv2.namedWindow("Trackbars")

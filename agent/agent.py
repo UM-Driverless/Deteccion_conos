@@ -117,7 +117,7 @@ class AgentAcceleration():
         data = self.cone_processing.create_cone_map(centers, labels, [eagle_img, image_shape])
 
         img_center = int(orig_im_shape[2] / 2)
-        steer = self.horizontal_control(ref_point=data[-2], img_center=img_center)
+        steer = self.horizontal_control(ref_point=data[-1], img_center=img_center)
 
         throttle, brake, clutch = self.longitudinal_control(cenital_cones=data[1], speed=speed, rpm=rpm)
 
@@ -167,6 +167,12 @@ class AgentAcceleration():
         return agent_target
 
 class AgentAccelerationYolo(AgentAcceleration):
+    '''
+    Based on AgentAcceleration, adds some specific changes
+    
+    TODO what changes?
+    '''
+    
     def __init__(self, logger, target_speed=20.):
         super().__init__(logger=logger)
 
@@ -176,6 +182,7 @@ class AgentAccelerationYolo(AgentAcceleration):
         TODO rename agent_target so it's different than the global name?
         
         """
+        
         bboxes, labels = detections
 
         img_center = int(image.shape[1] / 2) # Usually (640,640,3) -> 320
@@ -183,7 +190,7 @@ class AgentAccelerationYolo(AgentAcceleration):
         data = self.cone_processing.create_cone_map(cone_centers, labels, None, orig_im_shape=(1,) + image.shape, img_to_wrap=image)
         
         agent_target = self.longitudinal_control(agent_target, car_state, cenital_cones=data[1])
-        agent_target['steer'] = self.horizontal_control(ref_point=data[-2], img_center=img_center, img_base_len=image.shape[1])
+        agent_target['steer'] = self.horizontal_control(ref_point=data[2], img_center=img_center, img_base_len=image.shape[1])
         
         return agent_target, data
 

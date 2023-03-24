@@ -18,6 +18,7 @@ vulture . --min-confidence 100
 - gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
 
 # TODO
+- RESTORE GENERIC AGENT CLASS FOR NO SPECIFIC TEST. THEN THE TESTS INHERIT FROM IT. COMMENTED.
 - IMPRIMIR CONE_CENTERS EN TIEMPO REAL, CON PLT, CV2, O EN VISUALIZE
 - COMPROBAR COORDENADAS CONOS EN VISTA CENITAL OK
 - AGENTE SENCILLO
@@ -101,15 +102,17 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             car_state_local = can_receive.new_state(car_state)
             # print(car_state_local)
             can_queue.put(car_state_local)
+            
 
     def agent_thread(agent_queue, agent):
         print(f'Starting agent thread...')
-        global agent_target, detections, image # TODO PASAR POR REFERENCIA EN VEZ DE USAR COMO VARIABLES GLOBALES, y mover a thread_functions.py
+        global agent_target, detections, image, cone_centers # TODO PASAR POR REFERENCIA EN VEZ DE USAR COMO VARIABLES GLOBALES, y mover a thread_functions.py
         
         while True:
+            print(f'!!!!!!!!!!!!!!!!agent_thread. TIME: {time.time()}')
             # This agent_target variable must be local, and sent to the main loop through a queue that manages the concurrency.
             # TODO como se pasan cone_centers? Tiene que ser por la cola porque es un hilo
-            [agent_target_local, data] = agent.get_action(agent_target,
+            [agent_target_local, data_local] = agent.get_action(agent_target,
                                                         car_state,
                                                         detections,
                                                         cone_centers=cone_centers,
@@ -117,7 +120,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                                                         )
             
             # Output values to queue as an array
-            agent_queue.put([agent_target_local, data])
+            agent_queue.put([agent_target_local, data_local])
 
     def read_image_zed(cam_queue):
         """
@@ -190,6 +193,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     ## Agent
     agent = AgentAcceleration(logger=logger, target_speed=60.)
     agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
+    agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
 
     # SETUP CAMERA
@@ -234,7 +238,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 
             # else:
                 # image = cam_queue.get(timeout=5)
-            image = cam_queue.get(timeout=5)
+            image = cam_queue.get(timeout=1)
             # Resize to IMAGE_RESOLUTION no matter how we got the image
             image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -256,11 +260,17 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 car_state = can_queue.get()
             
             # Get actions from agent
-            if (loop_counter == 0):
-                agent_worker.start()
+            # if (loop_counter == 0):
+                # agent_worker.start()
                 # visualize_worker.start() #Visualizer
             
-            [agent_target, data] = agent_queue.get()
+            # [agent_target, data] = agent_queue.get()
+            [agent_target, data] = agent.get_action(agent_target,
+                                                        car_state,
+                                                        detections,
+                                                        cone_centers=cone_centers,
+                                                        image=image
+                                                        )
             
             recorded_times[3] = time.time()
 
@@ -272,7 +282,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             # VISUALIZE
             # TODO add parameters to class
             if (VISUALIZE == 1):
-                cenital_map = [data[1], data[2], data[-1]]
                 in_speed = 0
                 in_rpm = 0
 
@@ -281,7 +290,10 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                                     image,
                                     detections,
                                     fps,
+                                    data=data,
                                     save_frames=False)
+                
+                # print(f'blue cones: {data[0][0][0]}')
             
             recorded_times[4] = time.time()
 

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import time # Measure time taken
+from globals.globals import * # Global variables and constants, as if they were here
 
 class Visualizer():
     def __init__(self):
@@ -15,11 +16,16 @@ class Visualizer():
             'unknown_cone': (0,0,0)
         }
 
-    def visualize(self, agent_target, car_state, image, detections, fps, save_frames=False):
+    def visualize(self, agent_target, car_state, image, detections, fps, data, save_frames=False):
         """
-        Main method that gets called to generate the visualization
+        Generates the visualization
+        
+        ...
+        save_frames: Whether to save the frames to a file, or just show them
         
         
+        
+        ---
         :param data: List of: [image, detections, cenital_map, y_hat, in_speed]
                      image: ndarray (h, w, channels)
                      detections: bboxes
@@ -38,52 +44,43 @@ class Visualizer():
         :param fps: int
         :param save_frames: bool. Allows store the resulting frame in a list to later create a video with save_in_video function
         """
-        self.make_images(agent_target, car_state, image, detections, fps, save_frames=save_frames)
+        image = self.make_image(agent_target, car_state, image, detections, fps, data)
+        
+        # Show and save image
+        cv2.imshow("Detections", image)
+        cv2.waitKey(1)
 
-    def make_images(self, agent_target, car_state, image, detections, fps, save_frames=False):
+        if save_frames:
+            self.saved_frames.append(image)
+
+    def make_image(self, agent_target, car_state, image, detections, fps, data):
         '''Creates the new image with overlays of the detections.
         
-        data:
         
-        
-        controls:
         
         fps: boolean with the current frames per second
-        save_frames: Whether to save the frames to a file, or just show them
         '''
         
         bbox, labels = detections
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-        
-
-        # Old neural net
-        # colors = [(255, 0, 0), (0, 255, 255), (100, 0, 255), (100, 0, 255)]
         
         # Print boxes around each detected cone
-        image = self.print_bboxes(image, bbox, labels)
+        image = self._print_bboxes(image, bbox, labels)
 
         # Print cenital map
-        image = self._print_cenital_map(self, cenital_map, estimated_center, image) # TODO MAKE IT WORK
+        image = self._print_cenital_map(data[0], image) # TODO MAKE IT WORK
 
         # Print the output values of the agent, trying to control the car
-        image = self.print_data(agent_target, car_state, fps, image, len(labels))
+        image = self._print_data(agent_target, car_state, fps, image, len(labels))
 
         # dim = (np.array(image.shape) * 0.1).astype('int')
         # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
         
         #TODO TAKES 3ms OF TIME. make faster or in parallel
         
-        # Show and save
-        cv2.imshow("Detections", image)
-        cv2.waitKey(1)
-
-        if save_frames:
-            self.saved_frames.append(image)
-        
         return image
 
-    def print_data(self, agent_target, car_state, fps, image, cone_amount):
+    def _print_data(self, agent_target, car_state, fps, image, cone_amount):
         # config
         font = cv2.FONT_HERSHEY_SIMPLEX
         fontScale = 0.5
@@ -123,28 +120,42 @@ class Visualizer():
         
         return image
 
-    def _print_cenital_map(self, cenital_map, estimated_center, image):
-        cenital_img_size = 0.1
+    def _print_cenital_map(self, cenital_map, image):
+        '''
+        Returns the image with cones represented as circles from a previously-calculated top view.
+        
+        Takes:
+            image: The original image, to add the cenital map to it
+            cenital_map: The coordinates of the cones to show, as an array
+                = [{array of blue cones},{array of yellow cones},...]
+                = [[[x,y],[x,y],[x,y],...],[[x,y],[x,y],[x,y],...],...]
+        
+        The size of the image is configured using the x coordinate, horizontal
+        '''
+        img_size = image.shape[1]
+        
+        cenit_perc = VISUALIZER_CENITAL_MAP_SIZE_PERC
+        cenital_size = int(img_size * cenit_perc)
+        
         # Pintar centros de masa de los conos
-        dim = image.shape
-        cenital_img = np.zeros((dim[1], dim[1], 3)) * 255
-        for c in cenital_map[0]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, self.colors["blue_cone"], -1)
-        # for c in cenital_map[1]:
-        #     cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[1], -1)
-        # for c in cenital_map[2]:
-        #     cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[2], -1)
-        # for c in cenital_map[3]:
-        #     cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[3], -1)
+        cenital_img = np.zeros((img_size, img_size, 3)) * 255
+        
+        for cone_pos in cenital_map[0]:
+            cv2.circle(cenital_img, (int(cenital_size/2 + cone_pos[0]*cenit_perc), int((cone_pos[1]-655)*cenit_perc*20)), 4, self.colors["blue_cone"], -1)
+        
+        for cone_pos in cenital_map[1]:
+            cv2.circle(cenital_img, (int(cenital_size/2 + cone_pos[0]*cenit_perc), int((cone_pos[1]-655)*cenit_perc*20)), 4, self.colors["yellow_cone"], -1)
+        
+        for cone_pos in cenital_map[2]:
+            cv2.circle(cenital_img, (int(cenital_size/2 + cone_pos[0]*cenit_perc), int((cone_pos[1]-655)*cenit_perc*20)), 4, self.colors["orange_cone"], -1)
+        
+        # cv2.circle(cenital_img, (int(estimated_center), int(img_size / 2)), 50, (0, 255, 0), -1)
 
-        cv2.circle(cenital_img, (int(estimated_center), int(dim[1] / 2)), 50, (0, 255, 0), -1)
-
-        dim = (np.array(image.shape) * cenital_img_size).astype('int')
-        image[2:2 + dim[1], 10:10 + dim[1]] = cv2.resize(cenital_img, (dim[1], dim[1]))
+        image[0:cenital_size, 0:cenital_size] = cv2.resize(cenital_img, (cenital_size, cenital_size))
 
         return image
 
-    def print_bboxes(self, image, bbox, label):
+    def _print_bboxes(self, image, bbox, label):
         ''' Print bounding boxes around each detected cone
         
         '''
