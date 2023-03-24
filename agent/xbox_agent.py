@@ -1,9 +1,8 @@
-from agent.agent_base import AgentInterface
 import numpy as np
 import pygame
 from pygame import locals
 
-class AgentXboxController(AgentInterface):
+class AgentXboxController():
     """
     Agent to test the actuators.
 

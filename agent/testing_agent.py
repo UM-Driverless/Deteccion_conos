@@ -1,9 +1,7 @@
-from agent.agent_base import AgentInterface
-
 import numpy as np
 
 
-class AgentActuatorsTest(AgentInterface):
+class AgentActuatorsTest():
     """
     Agent to test the actuators.
 

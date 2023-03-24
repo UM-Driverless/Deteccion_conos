@@ -1,9 +1,7 @@
 import cv2
 import numpy as np
-from visualization_utils.visualize_base import VisualizeInterface
 
-
-class Visualizer(VisualizeInterface):
+class Visualizer():
     def __init__(self):
         self.saved_frames = []
 

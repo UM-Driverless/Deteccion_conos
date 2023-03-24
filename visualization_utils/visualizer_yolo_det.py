@@ -1,11 +1,19 @@
 import cv2
 import numpy as np
-from visualization_utils.visualize_base import VisualizeInterface
 import time # Measure time taken
 
-class Visualizer(VisualizeInterface):
+class Visualizer():
     def __init__(self):
         self.saved_frames = []
+        
+        # Color values of each cone type, in bgr
+        self.colors = {
+            'blue_cone': (255, 0, 0),
+            'yellow_cone': (0, 255, 255),
+            'orange_cone': (40, 50, 200), #(40, 50, 200)
+            'large_orange_cone': (40, 100, 255), #(40, 100, 255)
+            'unknown_cone': (0,0,0)
+        }
 
     def visualize(self, agent_target, car_state, image, detections, fps, save_frames=False):
         """
@@ -47,31 +55,26 @@ class Visualizer(VisualizeInterface):
         bbox, labels = detections
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-        # Color values of each cone type, in bgr
-        colors = {
-            'blue_cone': (255, 0, 0),
-            'yellow_cone': (0, 255, 255),
-            'orange_cone': (40, 50, 200), #(40, 50, 200)
-            'large_orange_cone': (40, 100, 255), #(40, 100, 255)
-            'unknown_cone': (0,0,0)
-        }
+        
 
         # Old neural net
         # colors = [(255, 0, 0), (0, 255, 255), (100, 0, 255), (100, 0, 255)]
         
         # Print boxes around each detected cone
-        image = self.print_bboxes(image, bbox, labels, colors)
+        image = self.print_bboxes(image, bbox, labels)
 
         # Print cenital map
-        # image = self._print_cenital_map(cenital_map, colors, estimated_center, image) # TODO MAKE IT WORK
+        image = self._print_cenital_map(self, cenital_map, estimated_center, image) # TODO MAKE IT WORK
 
         # Print the output values of the agent, trying to control the car
         image = self.print_data(agent_target, car_state, fps, image, len(labels))
 
         # dim = (np.array(image.shape) * 0.1).astype('int')
         # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
-
+        
         #TODO TAKES 3ms OF TIME. make faster or in parallel
+        
+        # Show and save
         cv2.imshow("Detections", image)
         cv2.waitKey(1)
 
@@ -120,20 +123,19 @@ class Visualizer(VisualizeInterface):
         
         return image
 
-    '''
-    def _print_cenital_map(self, cenital_map, color, estimated_center, image):
+    def _print_cenital_map(self, cenital_map, estimated_center, image):
         cenital_img_size = 0.1
         # Pintar centros de masa de los conos
         dim = image.shape
         cenital_img = np.zeros((dim[1], dim[1], 3)) * 255
-        # for c in cenital_map[0]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[0], -1)
+        for c in cenital_map[0]:
+            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, self.colors["blue_cone"], -1)
         # for c in cenital_map[1]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[1], -1)
-        for c in cenital_map[2]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[2], -1)
-        for c in cenital_map[3]:
-            cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[3], -1)
+        #     cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[1], -1)
+        # for c in cenital_map[2]:
+        #     cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[2], -1)
+        # for c in cenital_map[3]:
+        #     cv2.circle(cenital_img, (int(c[0]), int(c[1])), 20, color[3], -1)
 
         cv2.circle(cenital_img, (int(estimated_center), int(dim[1] / 2)), 50, (0, 255, 0), -1)
 
@@ -141,9 +143,8 @@ class Visualizer(VisualizeInterface):
         image[2:2 + dim[1], 10:10 + dim[1]] = cv2.resize(cenital_img, (dim[1], dim[1]))
 
         return image
-    '''
 
-    def print_bboxes(self, image, bbox, label, colors):
+    def print_bboxes(self, image, bbox, label):
         ''' Print bounding boxes around each detected cone
         
         '''
@@ -164,7 +165,7 @@ class Visualizer(VisualizeInterface):
             lab = f'{lab[0]} {lab[1]}'
             
             # For bounding box
-            image = cv2.rectangle(image, (x1, y1), (x2, y2), colors[clase], 2)
+            image = cv2.rectangle(image, (x1, y1), (x2, y2), self.colors[clase], 2)
             
             # For the text background
             # Finds space required by the text so that we can put a background with that amount of width.

@@ -1,4 +1,3 @@
-from agent.agent_base import AgentInterface
 from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessingNoWrapped
 import cv2
 import simple_pid
@@ -16,10 +15,8 @@ class agent_simple1():
         print('')
         
 
-class AgentAcceleration(AgentInterface):
+class AgentAcceleration():
     def __init__(self, logger, target_speed=20.):
-        super().__init__(logger=logger)
-
         # TODO TEST Agent Variables
         ## PID
         self.pid_acc_kp = 1

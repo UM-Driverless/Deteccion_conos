@@ -1,9 +1,8 @@
-from agent.agent_base import AgentInterface
 import cv2
 import numpy as np
 import pygame
 
-class Agent(AgentInterface):
+class Agent():
     def __init__(self, im_width=1295, im_height=638, logger=None):
         super().__init__(logger=logger)
 
