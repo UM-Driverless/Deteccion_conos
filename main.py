@@ -321,22 +321,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     finally:
         # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
 
-        # generate some random data
-        # create scatter plot
-        plt.scatter(data[0][0][:,0], data[0][0][:,1],c='b')
-        plt.scatter(data[0][1][:,0], data[0][1][:,1],c='y')
-
-        # set axis labels and title
-        plt.xlabel('X Axis Label')
-        plt.ylabel('Y Axis Label')
-        plt.title('My Scatter Plot')
-
-        # show the plot
-        # plt.show()
-        plt.savefig('cone_centers.png')
-
-
-
         # TIMES
         # cam.release()
         if loop_counter != 0:
