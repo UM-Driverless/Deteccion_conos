@@ -63,7 +63,7 @@ class Visualizer(VisualizeInterface):
         image = self.print_bboxes(image, bbox, labels, colors)
 
         # Print cenital map
-        # # image = self._print_cenital_map(cenital_map, colors, estimated_center, image) # TODO MAKE IT WORK
+        # image = self._print_cenital_map(cenital_map, colors, estimated_center, image) # TODO MAKE IT WORK
 
         # Print the output values of the agent, trying to control the car
         image = self.print_data(agent_target, car_state, fps, image, len(labels))

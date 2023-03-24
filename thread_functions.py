@@ -115,7 +115,6 @@ def read_image_simulator(cam_queue):
         img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
         image = img_buffer.reshape(img.height, img.width, 3)
         cam_queue.put(image)
-        i = i+1
 
 
 ''' Visualize thread doesn't work. It's not required for the car to work so ignore it.
