@@ -1,6 +1,6 @@
 import cv2
 
-from Deteccion_conos.globals.globals import IMAGE_RESOLUTION
+from globals.globals import IMAGE_RESOLUTION
 from connection_utils.my_client import ConnectionManager
 from agent.agent import AgentAccelerationYolo as AgentAcceleration
 from cone_detection.yolo_detector import ConeDetector
