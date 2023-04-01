@@ -218,7 +218,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             recorded_times[1] = time.time()
 
             # Detect cones
-            detections, cone_centers = detector.detect_cones(image, get_centers=True)
+            cones = detector.detect_cones(image)
             recorded_times[2] = time.time()
             
             # Update car values from CAN
@@ -226,12 +226,11 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 car_state = can_queue.get()
             
             # Get actions from agent
-            [agent_target, data] = agent.get_action(agent_target,
-                                                        car_state,
-                                                        detections,
-                                                        cone_centers=cone_centers,
-                                                        image=image
-                                                        )
+            # agent_target = agent.get_action(agent_target,
+                                            # car_state,
+                                            # cones,
+                                            # image=image
+                                            # )
             
             recorded_times[3] = time.time()
 
@@ -249,12 +248,9 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 visualizer.visualize(agent_target,
                                     car_state,
                                     image,
-                                    detections,
+                                    cones,
                                     fps,
-                                    data=data,
                                     save_frames=False)
-                
-                # print(f'blue cones: {data[0][0][0]}')
             
             recorded_times[4] = time.time()
 
@@ -263,19 +259,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             fps = 1/(recorded_times[TIMES_TO_MEASURE] - recorded_times[0])
             integrated_fps += fps
             integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
-
-            
-            # plt.scatter(data[0][0][:,0], -data[0][0][:,1],c='b')
-            # plt.scatter(data[0][1][:,0], -data[0][1][:,1],c='y')
-
-            # # set axis labels and title
-            # plt.xlabel('X Axis Label')
-            # plt.ylabel('Y Axis Label')
-            # plt.title('My Scatter Plot')
-
-            # # Show the plot
-            # # plt.show()
-            # plt.savefig('cone_centers.png')
             
     finally:
         # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.

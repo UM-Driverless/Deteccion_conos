@@ -10,10 +10,12 @@ class ConeProcessing():
     def create_cone_map2(self, cone_centers):
         '''
         In progress
+        
+        Takes cone_centers, 
         '''
         pass
 
-    def create_cone_map(self, cone_centers, labels, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
+    def create_cone_map(self, cones, aux_data=None, orig_im_shape=(1, 180, 320, 3), img_to_wrap=None):
         """
         
         Returns data array, which ...
@@ -31,9 +33,19 @@ class ConeProcessing():
         :return: [ndarray, list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
                                 data.
         """
+        
+        cone_centers = [
+            [cone[2] for cone in cones if cone[0] == 'blue_cone'],
+            [cone[2] for cone in cones if cone[0] == 'yellow_cone'],
+            [cone[2] for cone in cones if cone[0] == 'orange_cone'],
+            [cone[2] for cone in cones if cone[0] == 'large_orange_cone'],
+            [cone[2] for cone in cones if cone[0] == 'unknown_cone'],
+            [cone[2] for cone in cones if cone[0] == 'unknown_cone']
+        ]
+        
         src_trapezoide = self.valTrackbars()  # Trapezoide a coger de la imagen original
 
-        if cone_centers[0].shape[0]:
+        if np.array(cone_centers[0]).shape[0]:
             list_blue_center = cone_centers[0]
             # Transformo las coordenadas a vista de águila
             warp_blue_center = self.perspective_warp_coordinates(list_blue_center,
@@ -44,7 +56,7 @@ class ConeProcessing():
             list_blue_center = []
             warp_blue_center = []
 
-        if cone_centers[1].shape[0]:
+        if np.array(cone_centers[1]).shape[0]:
             list_yell_center = cone_centers[1]
             warp_yell_center = self.perspective_warp_coordinates(list_yell_center,
                                                                  orig_im_shape,
@@ -54,15 +66,15 @@ class ConeProcessing():
             list_yell_center = []
             warp_yell_center = []
 
-        if cone_centers[2].shape[0]:
+        if np.array(cone_centers[2]).shape[0]:
             list_oran_center = cone_centers[2]
-            if cone_centers[3].shape[0]:
+            if np.array(cone_centers[3]).shape[0]:
                 list_oran_center = np.concatenate([list_oran_center, cone_centers[3]])
             warp_oran_center = self.perspective_warp_coordinates(list_oran_center,
                                                                  orig_im_shape,
                                                                  dst_size=(orig_im_shape[2], orig_im_shape[2]),
                                                                  src=src_trapezoide)
-        elif cone_centers[3].shape[0]:
+        elif np.array(cone_centers[3]).shape[0]:
             list_oran_center = cone_centers[3]
             warp_oran_center = self.perspective_warp_coordinates(list_oran_center,
                                                                  orig_im_shape,

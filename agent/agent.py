@@ -6,14 +6,7 @@ from visualization_utils.logger import Logger
 
 from globals.globals import * # Global variables and constants, as if they were here
 
-class agent_simple1():
-    # def __init__(self):
-        
-    def horizontal_control(self):
-        print('')
-    def longitudinal_control(self):
-        print('')
-        
+# TODO SIMPLE AGENT THAT INHERITS FROM GENERAL
 
 class Agent():
     '''
@@ -180,37 +173,46 @@ class AgentYolo(Agent):
     def __init__(self, logger, target_speed=20.):
         super().__init__(logger=logger)
 
-    def get_action(self, agent_target, car_state, detections, cone_centers, image):
+    def get_action(self, agent_target, car_state, cones, image):
         """
         Figure out what to do to drive the car. Updates agent_target values.
         TODO rename agent_target so it's different than the global name?
         
         """
-        
-        bboxes, labels = detections
 
         img_center = int(image.shape[1] / 2) # Usually (640,640,3) -> 320
         
-        data = self.cone_processing.create_cone_map(cone_centers, labels, None, orig_im_shape=(1,) + image.shape, img_to_wrap=image)
+        # data = self.cone_processing.create_cone_map(cones, None, orig_im_shape=(1,) + image.shape, img_to_wrap=image)
         
-        agent_target = self.longitudinal_control(agent_target, car_state, cenital_cones=data[1])
-        agent_target['steer'] = self.horizontal_control(ref_point=data[2], img_center=img_center, img_base_len=image.shape[1])
+        agent_target = self.longitudinal_control(agent_target, car_state, cones)
+        agent_target['steer'] = self.horizontal_control(img_center=img_center)
         
-        return agent_target, data
+        return agent_target
 
-    def horizontal_control(self, ref_point, img_center, img_base_len):
+    def horizontal_control(self, target=0, img_center=0):
         '''
         TODO MAKE IT WORK
         '''
-        turn_point = img_center - ref_point
+        turn_point = img_center - target
         # TODO HERE PRINT WITH LOGGER TURN POINT
         # turn_point = -turn_point/img_base_len
         val = self.valTrackbarsPID()
         pid = self.pid_steer(Kp=val[0], Ki=val[1], Kd=val[2], setpoint=0, output_limits=(-1., 1.))
         return pid(turn_point)
 
-    def longitudinal_control(self, agent_target, car_state, cenital_cones):
-        blue_center, yell_center, oran_left_center, oran_rigth_center = cenital_cones
+    def longitudinal_control(self, agent_target, car_state, cones):
+        
+        cone_centers = [
+            [cone[2] for cone in cones if cone[0] == 'blue_cone'],
+            [cone[2] for cone in cones if cone[0] == 'yellow_cone'],
+            [cone[2] for cone in cones if cone[0] == 'orange_cone'],
+            [cone[2] for cone in cones if cone[0] == 'large_orange_cone'],
+            [cone[2] for cone in cones if cone[0] == 'unknown_cone'],
+            [cone[2] for cone in cones if cone[0] == 'unknown_cone']
+        ]
+        
+        
+        blue_center, yell_center, oran_left_center, oran_rigth_center, _, _ = cone_centers
 
         # Calculate the amount of blue or yellow cones, which means run, and orange cones, which means stop.
         n_color_cones = len(blue_center) + len(yell_center)
