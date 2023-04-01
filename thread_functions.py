@@ -112,11 +112,9 @@ def read_image_simulator(cam_queue):
     
     import cv2
     while True:
-        [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'examplecam', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
+        [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'cam', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
         img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
         image = img_buffer.reshape(img.height, img.width, 3)
-        cv2.imshow(img)
-        cv2.wait(0)
         cam_queue.put(image)
 
 ''' Visualize thread doesn't work. It's not required for the car to work so ignore it.
