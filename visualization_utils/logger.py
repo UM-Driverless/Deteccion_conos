@@ -3,7 +3,7 @@ import os
 import sys
 
 class Logger:
-    def __init__(self, logs_path, init_message="logger ready"):
+    def __init__(self, init_message="logger ready", logs_path = os.path.join(os.getcwd(), "logs")):
         # Create a file for debug logs
         date = datetime.datetime.now()
         self.debug_path = os.path.join(logs_path, date.strftime("%Y_%m_%d__%H_%M_") + 'debug_logger' + '.txt')

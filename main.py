@@ -4,6 +4,8 @@
 """
 # HOW TO USE
 - Configuration variables in globals.py
+- If CAMERA_MODE = 4, start the simulator first, running fsds-v2.2.0-linux/FSDS.sh (This program can be located anywhere)
+
 
 
 # REFERENCES
@@ -79,9 +81,8 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
 
     # INITIALIZE things
     ## Logger
-    logger_path = os.path.join(os.getcwd(), "logs")
     init_message = "actuator_zed_testing.py"
-    logger = Logger(logger_path, init_message)
+    logger = Logger(init_message)
 
     ## Cone detector
     detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger) # TODO why does ConeDetector need a logger?
@@ -89,7 +90,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     # THREAD FUNCTIONS
     from thread_functions import *
     import cv2
-
 
     def can_send_thread(can_queue, can_receive):
         print(f'Starting CAN receive thread...')
@@ -203,19 +203,8 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         print(f'Starting main loop...')
         while True:
             recorded_times[0] = time.time()
-            
-            # GET IMAGE (Either from webcam, video, or ZED camera)
-            # if (CAMERA_MODE == 4):
-            #     # Get the image
-            #     [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'examplecam', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
-            #     img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
-            #     image = img_buffer.reshape(img.height, img.width, 3)
-                # cv2.imshow('image',image)
-                # cv2.waitKey(1)
-                
-            # else:
-                # image = cam_queue.get(timeout=5)
-            image = cam_queue.get(timeout=1)
+        
+            image = cam_queue.get(timeout=4)
             # Resize to IMAGE_RESOLUTION no matter how we got the image
             image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -317,7 +306,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
 
         # Close processes and windows
         cam_worker.terminate()
-        agent_worker.terminate()
         cv2.destroyAllWindows()
         
         agent_target = {

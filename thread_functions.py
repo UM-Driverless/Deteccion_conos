@@ -98,10 +98,10 @@ def read_image_webcam(cam_queue):
         # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
 
 
-def read_image_simulator(cam_queue):
+def read_image_simulator(cam_queue):    
     fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
     sys.path.insert(0, fsds_lib_path)
-    # print(f'SIMULATOR CAMERA FSDS PATH: {fsds_lib_path}')
+    print(f'FSDS simulator path: {fsds_lib_path}')
     import fsds # TODO why not recognized when debugging
     
     # connect to the simulator 
@@ -110,12 +110,14 @@ def read_image_simulator(cam_queue):
     # Check network connection, exit if not connected
     client.confirmConnection()
     
+    import cv2
     while True:
         [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'examplecam', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
         img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
         image = img_buffer.reshape(img.height, img.width, 3)
+        cv2.imshow(img)
+        cv2.wait(0)
         cam_queue.put(image)
-
 
 ''' Visualize thread doesn't work. It's not required for the car to work so ignore it.
 # def visualize_thread():
