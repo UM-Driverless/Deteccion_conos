@@ -18,7 +18,6 @@ class ConeDetector(ConeDetectorInterface):
         self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=True)
         self.detection_model.conf = 0.3
         self.logger = logger
-        
 
     def detect_cones(self, image):
         """
@@ -46,7 +45,7 @@ class ConeDetector(ConeDetectorInterface):
             # {confidence} is part of the net
         cones = []
         
-        xmax_coords = [row['xmax'] for _, row in results.pandas().xyxy[0].iterrows()]
+        x_coords = [(row['xmax']+row['xmin'])/2 for _, row in results.pandas().xyxy[0].iterrows()]
         ymax_coords = [row['ymax'] for _, row in results.pandas().xyxy[0].iterrows()]
         
         # Intento de vista cenital con warp, no sale bien
@@ -69,15 +68,18 @@ class ConeDetector(ConeDetectorInterface):
         # xmax_coords = cone_coords_transformed[:, 0]
         # ymax_coords = cone_coords_transformed[:, 1]
         
-        for _, row in results.pandas().xyxy[0].iterrows():
+        for i, row in results.pandas().xyxy[0].iterrows():
             # Filter how many cones we want to use, according to the confidence value (0 to 1)
-            if float(row['confidence']) > CONFIDENCE_THRESHOLD:                
-                cones.append([ # TODO ARRAY OF DICTIONARIES INSTEAD?
-                            str(row['name'].split('class')[-1]), # label
-                            [[int(row['xmin']), int(row['ymin'])],[int(row['xmax']), int(row['ymax'])]], # bbox
-                            # [(row['ymax']), (row['ymin'])/2], # coords x,y
-                            [xmax_coords[_], ymax_coords[_]],
-                            row['confidence']
-                            ])
+            if float(row['confidence']) > CONFIDENCE_THRESHOLD:
+                
+                cones.append({
+                    'label': str(row['name'].split('class')[-1]),
+                    'bbox': [[int(row['xmin']), int(row['ymin'])],[int(row['xmax']), int(row['ymax'])]],
+                    'coords': { # TODO DO THE RIGHT CALCULATION HERE
+                        'x': x_coords[i],
+                        'y': ymax_coords[i]
+                    },
+                    'confidence':  row['confidence']
+                })
         
         return cones

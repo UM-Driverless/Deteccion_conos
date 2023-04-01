@@ -116,12 +116,10 @@ class Visualizer():
         
         cenit_perc = VISUALIZER_CENITAL_MAP_SIZE_PERC
         cenital_size = int(img_size * cenit_perc)
-        
-        # Pintar centros de masa de los conos
-        cenital_img = np.zeros((img_size, img_size, 3)) * 255
+        cenital_img = np.zeros((img_size, img_size, 3))
         
         for cone in cones:
-            cenital_img = cv2.circle(cenital_img, (int((cone[2][0])*cenit_perc), int(cone[2][1]*cenit_perc)), 3, self.colors[cone[0]], -1)
+            cenital_img = cv2.circle(cenital_img, (int(cone['coords']['x']*cenit_perc), int(cone['coords']['y']*cenit_perc)), 3, self.colors[cone['label']], -1)
 
         image[0:cenital_size, 0:cenital_size] = cv2.resize(cenital_img, (cenital_size, cenital_size))
 
@@ -133,7 +131,7 @@ class Visualizer():
         '''
         
         for cone in cones:
-            image = cv2.rectangle(image, (cone[1][0][0], cone[1][0][1]), (cone[1][1][0], cone[1][1][1]), self.colors[cone[0]], 1)
+            image = cv2.rectangle(image, (cone['bbox'][0][0], cone['bbox'][0][1]), (cone['bbox'][1][0], cone['bbox'][1][1]), self.colors[cone['label']], 1)
         
         return image
 

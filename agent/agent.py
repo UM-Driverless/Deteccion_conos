@@ -202,17 +202,14 @@ class AgentYolo(Agent):
 
     def longitudinal_control(self, agent_target, car_state, cones):
         
-        cone_centers = [
-            [cone[2] for cone in cones if cone[0] == 'blue_cone'],
-            [cone[2] for cone in cones if cone[0] == 'yellow_cone'],
-            [cone[2] for cone in cones if cone[0] == 'orange_cone'],
-            [cone[2] for cone in cones if cone[0] == 'large_orange_cone'],
-            [cone[2] for cone in cones if cone[0] == 'unknown_cone'],
-            [cone[2] for cone in cones if cone[0] == 'unknown_cone']
+        blue_center, yell_center, oran_left_center, oran_rigth_center, _, _ = [
+            [cone['coords'] for cone in cones if cone['label'] == 'blue_cone'],
+            [cone['coords'] for cone in cones if cone['label'] == 'yellow_cone'],
+            [cone['coords'] for cone in cones if cone['label'] == 'orange_cone'],
+            [cone['coords'] for cone in cones if cone['label'] == 'large_orange_cone'],
+            [cone['coords'] for cone in cones if cone['label'] == 'unknown_cone'],
+            [cone['coords'] for cone in cones if cone['label'] == 'unknown_cone']
         ]
-        
-        
-        blue_center, yell_center, oran_left_center, oran_rigth_center, _, _ = cone_centers
 
         # Calculate the amount of blue or yellow cones, which means run, and orange cones, which means stop.
         n_color_cones = len(blue_center) + len(yell_center)

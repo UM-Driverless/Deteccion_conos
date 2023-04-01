@@ -235,7 +235,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             recorded_times[3] = time.time()
 
             # Send actions - CAN
-            if (CAN_MODE == 1):            
+            if (CAN_MODE == 1):
                 # Send target values from agent
                 can_send.send_frame()
             
