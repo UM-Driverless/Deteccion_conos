@@ -119,7 +119,7 @@ class Visualizer():
         cenital_img = np.zeros((img_size, img_size, 3))
         
         for cone in cones:
-            cenital_img = cv2.circle(cenital_img, (int(cone['coords']['x']*cenit_perc), int(cone['coords']['y']*cenit_perc)), 3, self.colors[cone['label']], -1)
+            cenital_img = cv2.circle(cenital_img, (320+int(cone['coords']['x']*cenit_perc*8), int(320+cone['coords']['y']*cenit_perc*8)), 4, self.colors[cone['label']], -1)
 
         image[0:cenital_size, 0:cenital_size] = cv2.resize(cenital_img, (cenital_size, cenital_size))
 

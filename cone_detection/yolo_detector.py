@@ -48,6 +48,7 @@ class ConeDetector(ConeDetectorInterface):
         x_coords = [(row['xmax']+row['xmin'])/2 for _, row in results.pandas().xyxy[0].iterrows()]
         ymax_coords = [row['ymax'] for _, row in results.pandas().xyxy[0].iterrows()]
         
+        '''
         # Intento de vista cenital con warp, no sale bien
         # cone_coords = np.column_stack((xmax_coords, ymax_coords)).astype(np.float32)
         # # cone_coords = np.array([xmax_coords, ymax_coords], dtype=np.float32)
@@ -67,6 +68,40 @@ class ConeDetector(ConeDetectorInterface):
         # # Extract the xmax and ymax coordinates from the transformed coordinates
         # xmax_coords = cone_coords_transformed[:, 0]
         # ymax_coords = cone_coords_transformed[:, 1]
+        '''
+        
+        '''
+        # INTENTO DE TRIANGULACIÓN. LO DEJO COMO REFERENCIA HASTA QUE TENGAMOS ALGO QUE FUNCIONE BIEN
+        # Define intrinsic camera parameters
+        K = np.array([[500, 0, 320], [0, 500, 320], [0, 0, 1]])
+
+        # Define extrinsic camera parameters
+        R = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])  # Identity rotation matrix
+        t = np.array([0., 0., 1.0])  # Camera position in world coordinates
+
+        # Define image coordinates of the cones
+        img_pts = np.array([[x_coords[i], ymax_coords[i]] for i in range(len(x_coords))])
+
+        # Define a dummy set of image coordinates for the second camera
+        img_pts_2 = img_pts+0.1 # por poner algo de diferencia
+        R_2 = np.array([[0, 0, -1], [0, 1, 0], [0, 1, 0]])  # Identity rotation matrix
+        t_2 = np.array([0., 0., 1.])  # Camera position in world coordinates
+        
+        # Compute the projection matrices
+        P = np.dot(K, np.hstack((R, t.reshape(3, 1))))
+        P_2 = np.dot(K, np.hstack((R_2, t_2.reshape(3, 1))))
+        
+        # Convert image coordinates to homogeneous coordinates
+        img_pts_h = np.hstack((img_pts, np.ones((img_pts.shape[0], 1))))
+        img_pts_2_h = np.hstack((img_pts_2, np.ones((img_pts_2.shape[0], 1))))
+        
+        # Triangulate the 3D coordinates of the cones
+        X_h = cv2.triangulatePoints(P, P_2, img_pts.T, img_pts_2.T).T
+        X = X_h[:, :3] / X_h[:, 3:]
+
+        # Convert to real-world coordinates
+        X_world = np.dot(R.T, X.T - t.reshape(3, 1)).T
+        '''
         
         for i, row in results.pandas().xyxy[0].iterrows():
             # Filter how many cones we want to use, according to the confidence value (0 to 1)
@@ -76,8 +111,8 @@ class ConeDetector(ConeDetectorInterface):
                     'label': str(row['name'].split('class')[-1]),
                     'bbox': [[int(row['xmin']), int(row['ymin'])],[int(row['xmax']), int(row['ymax'])]],
                     'coords': { # TODO DO THE RIGHT CALCULATION HERE
-                        'x': x_coords[i],
-                        'y': ymax_coords[i]
+                        'x': x_coords[i], #x_coords[i], # X_world[i,0],
+                        'y': ymax_coords[i] #ymax_coords[i] #X_world[i,1]
                     },
                     'confidence':  row['confidence']
                 })
