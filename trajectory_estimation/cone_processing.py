@@ -109,30 +109,6 @@ class ConeProcessing():
                 np.array(order_warp_oran_left_center), np.array(order_warp_oran_rigth_center)], \
                 center
 
-    def perspective_warp_coordinates(self,
-                                    coord_list,
-                                    input_size,
-                                    dst_size=(180, 180),
-                                    src=np.float32([(0.43, 0.65), (0.58, 0.65), (0.1, 1), (1, 1)]),
-                                    dst=np.float32([(0, 0), (1, 0), (0, 1), (1, 1)])):
-        coord_list = np.array(coord_list)
-        if coord_list.shape[0] > 0:
-            # img_size = np.float32([(input_size[1], input_size[0])])
-            img_size = np.float32([input_size[2], input_size[1]])
-            src = src * img_size
-            # For destination points, I'm arbitrarily choosing some points to be
-            # a nice fit for displaying our warped result
-            # again, not exact, but close enough for our purposes
-            dst = dst * np.float32(dst_size)
-            # Given src and dst points, calculate the perspective transform matrix
-            M = cv2.getPerspectiveTransform(src, dst)
-
-            c = np.float32(coord_list[np.newaxis, :])
-            warped = np.int32(cv2.perspectiveTransform(c, M))
-            return warped[0]
-        else:
-            return []
-
     def initializeTrackbars(self, intialTracbarVals):
         cv2.namedWindow("Trackbars")
         cv2.resizeWindow("Trackbars", 360, 240)

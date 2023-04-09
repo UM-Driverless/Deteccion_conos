@@ -10,6 +10,9 @@ print(f'IS CUDA AVAILABLE? : {torch.cuda.is_available()}')
 
 from cone_detection.detector_base import ConeDetectorInterface
 from globals.globals import * # Global variables and constants, as if they were here
+import tools.tools as tools
+
+
 
 class ConeDetector(ConeDetectorInterface):
     def __init__(self, checkpoint_path="yolov5/weights/yolov5_models/best.pt", logger=None):
@@ -45,7 +48,7 @@ class ConeDetector(ConeDetectorInterface):
             # {confidence} is part of the net
         cones = []
         
-        x_coords = [(row['xmax']+row['xmin'])/2 for _, row in results.pandas().xyxy[0].iterrows()]
+        # x_coords = [(row['xmax']+row['xmin'])/2 for _, row in results.pandas().xyxy[0].iterrows()]
         ymax_coords = [row['ymax'] for _, row in results.pandas().xyxy[0].iterrows()]
         
         '''
@@ -111,10 +114,16 @@ class ConeDetector(ConeDetectorInterface):
                     'label': str(row['name'].split('class')[-1]),
                     'bbox': [[int(row['xmin']), int(row['ymin'])],[int(row['xmax']), int(row['ymax'])]],
                     'coords': { # TODO DO THE RIGHT CALCULATION HERE
-                        'x': x_coords[i], #x_coords[i], # X_world[i,0],
-                        'y': ymax_coords[i] #ymax_coords[i] #X_world[i,1]
+                        'x': (row['xmax']+row['xmin'])/2, #x_coords[i], # X_world[i,0],
+                        'y': row['ymax'] #ymax_coords[i] #X_world[i,1]
                     },
                     'confidence':  row['confidence']
                 })
+        
+        warped = tools.perspective_warp_coordinates([[cone["coords"]['x'] for cone in cones], [cone["coords"]['y'] for cone in cones]],dst_size=(640,640))
+        
+        for i, cone in enumerate(cones):
+            cone['coords']['x'] = warped[i,0]
+            cone['coords']['y'] = warped[i,1]
         
         return cones
