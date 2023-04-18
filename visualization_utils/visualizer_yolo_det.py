@@ -47,6 +47,17 @@ class Visualizer():
         # Print boxes around each detected cone
         image = self._print_bboxes(image, cones)
 
+        # Add text with distance (x,y)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        fontScale = 0.4
+        color = (255, 255, 255)
+        thickness = 1
+        for cone in cones:
+            x_mid = int((cone['bbox'][0][0] + cone['bbox'][1][0])/2)
+            y_bottom = int(cone['bbox'][0][1])
+            # Print x distance in m
+            image = cv2.putText(image, f"({cone['coords']['x']:3.1f},{cone['coords']['y']:3.1f})", (x_mid, y_bottom), font, fontScale, color, thickness, cv2.LINE_AA)
+        
         # Print cenital map
         image = self._print_cenital_map(image, cones)
 
@@ -119,8 +130,9 @@ class Visualizer():
         cenital_img = np.zeros((img_size, img_size, 3))
         
         for cone in cones:
-            cenital_img = cv2.circle(cenital_img, (100+int(cone['coords']['x']*cenit_perc*0.2), 100+int(cone['coords']['y']*cenit_perc*0.2)), 4, self.colors[cone['label']], -1)
-
+            # cenital_img = cv2.circle(cenital_img, (int(cone['coords']['x']*cenit_perc), int(cone['coords']['y']*cenit_perc)), 4, self.colors[cone['label']], -1)
+            cenital_img = cv2.circle(cenital_img, (int(320 + 320/12 * cone['coords']['y']), int(640 - 640/18 * cone['coords']['x'])), 4, self.colors[cone['label']], -1)
+            
         image[0:cenital_size, 0:cenital_size] = cv2.resize(cenital_img, (cenital_size, cenital_size))
 
         return image
@@ -131,8 +143,8 @@ class Visualizer():
         '''
         
         for cone in cones:
-            image = cv2.rectangle(image, (cone['bbox'][0][0], cone['bbox'][0][1]), (cone['bbox'][1][0], cone['bbox'][1][1]), self.colors[cone['label']], 1)
-        
+            image = cv2.rectangle(image, (int(cone['bbox'][0][0]), int(cone['bbox'][0][1])), (int(cone['bbox'][1][0]), int(cone['bbox'][1][1])), self.colors[cone['label']], 1)
+            
         return image
 
     def _controls_img(self, agent_target):

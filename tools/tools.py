@@ -32,7 +32,8 @@ def perspective_warp_coordinates(
         M = cv2.getPerspectiveTransform(src, dst)
 
         c = np.float32(coord_list[np.newaxis, :])
-        warped = np.int32(cv2.perspectiveTransform(c, M))
+        # warped = np.int32(cv2.perspectiveTransform(c, M))
+        warped = cv2.perspectiveTransform(c, M)
         return warped[0]
     else:
         return []

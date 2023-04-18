@@ -94,6 +94,8 @@ def read_image_webcam(cam_queue):
         # cv2.imshow('image',image)
         # cv2.waitKey(1)
         
+        image = cv2.flip(image, flipCode=1) # For testing purposes
+        
         cam_queue.put(image)
         # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
 

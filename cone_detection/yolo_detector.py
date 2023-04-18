@@ -49,7 +49,7 @@ class ConeDetector(ConeDetectorInterface):
         cones = []
         
         # x_coords = [(row['xmax']+row['xmin'])/2 for _, row in results.pandas().xyxy[0].iterrows()]
-        ymax_coords = [row['ymax'] for _, row in results.pandas().xyxy[0].iterrows()]
+        #ymax_coords = [row['ymax'] for _, row in results.pandas().xyxy[0].iterrows()]
         
         '''
         # Intento de vista cenital con warp, no sale bien
@@ -106,24 +106,46 @@ class ConeDetector(ConeDetectorInterface):
         X_world = np.dot(R.T, X.T - t.reshape(3, 1)).T
         '''
         
+        image_size_px = 640
+        f = 2.8e-3 #m # does not affect
+        FOV_Rad = 90 * math.pi / 180 
+        cam_height = 785e-3 # m
+        horizon_px_from_top = image_size_px * 0.50 # horizon at 50% from top. HUGE EFFECT.
+        pix_to_rad = FOV_Rad / image_size_px
+        pixel_size = f * math.tan(FOV_Rad/2) * 2 / image_size_px# m
         for i, row in results.pandas().xyxy[0].iterrows():
             # Filter how many cones we want to use, according to the confidence value (0 to 1)
-            if float(row['confidence']) > CONFIDENCE_THRESHOLD:
+            if row['confidence'] > CONFIDENCE_THRESHOLD:                
+                # Distance using cone base height in camera
+                projected_height_from_top = f * math.tan((row['ymax'] - horizon_px_from_top) * pix_to_rad)
+                projected_lateral = ((row['xmax']+row['xmin'])/2 - image_size_px/2) * pixel_size # m
+                distance_horiz = f * cam_height / projected_height_from_top
+                
+                angle_z = math.atan(projected_lateral / f)
+                
+                # x is longitudinal, y is lateral
+                longit = distance_horiz * math.cos(angle_z)
+                lateral = distance_horiz * math.sin(angle_z)
                 
                 cones.append({
                     'label': str(row['name'].split('class')[-1]),
-                    'bbox': [[int(row['xmin']), int(row['ymin'])],[int(row['xmax']), int(row['ymax'])]],
+                    'bbox': [[row['xmin'], row['ymin']],[row['xmax'], row['ymax']]],
                     'coords': { # TODO DO THE RIGHT CALCULATION HERE
-                        'x': (row['xmax']+row['xmin'])/2, #x_coords[i], # X_world[i,0],
-                        'y': row['ymax'] #ymax_coords[i] #X_world[i,1]
+                        # 'x': (row['xmax']+row['xmin'])/2, #x_coords[i], # X_world[i,0],
+                        # 'y': row['ymax'] #ymax_coords[i] #X_world[i,1]
+                        'x': longit, # m
+                        'y': lateral, # m
                     },
-                    'confidence':  row['confidence']
+                    'confidence': row['confidence']
                 })
         
-        warped = tools.perspective_warp_coordinates([[cone["coords"]['x'] for cone in cones], [cone["coords"]['y'] for cone in cones]],dst_size=(640,640))
-        
-        for i, cone in enumerate(cones):
-            cone['coords']['x'] = warped[i,0]
-            cone['coords']['y'] = warped[i,1]
-        
         return cones
+        
+        # Method 2 - Warp
+        # warped = tools.perspective_warp_coordinates([[cone["coords"]['x'] for cone in cones], [cone["coords"]['y'] for cone in cones]],dst_size=(640,640))
+        
+        # for i, cone in enumerate(cones):
+        #     cone['coords']['x'] = warped[i,0]
+        #     cone['coords']['y'] = warped[i,1]
+           
+    

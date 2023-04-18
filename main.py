@@ -5,6 +5,8 @@
 # HOW TO USE
 - Configuration variables in globals.py
 - If CAMERA_MODE = 4, start the simulator first, running fsds-v2.2.0-linux/FSDS.sh (This program can be located anywhere)
+    - Make sure there's a camera called 'cam'
+    - Make sure the simulator folder is called 'Formula-Student-Driverless-Simulator'
 
 
 
@@ -209,8 +211,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             
-            
-            # image = cv2.flip(image, flipCode=1) # For testing purposes
             # image = np.array(image)
             # Save to file (optional)
             # cv2.imwrite('image.png',image)
