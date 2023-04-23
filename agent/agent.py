@@ -210,7 +210,7 @@ class AgentYolo(Agent):
             # I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
             print(f'center:{center}')
-            agent_target['steer'] = center/10 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
+            agent_target['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
             agent_target['steer'] = 1 # -1 left, 1 right, 0 neutral
         elif len(yellows) > 0:
