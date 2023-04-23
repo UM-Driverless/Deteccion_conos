@@ -94,9 +94,10 @@ class Visualizer():
             f'    fps: {int(fps):.2f}',
             f'    Cones: {len(cones)}',
             f'AGENT TARGET:',
+            f'    acc: {agent_target["acc"]}',
+            f'    steer: {agent_target["steer"]}',
             f'    throttle: {agent_target["throttle"]}',
             f'    brake: {agent_target["brake"]}',
-            f'    steer: {agent_target["steer"]}',
             f'    clutch: {agent_target["clutch"]}',
         ]
         
@@ -131,7 +132,7 @@ class Visualizer():
         
         for cone in cones:
             # cenital_img = cv2.circle(cenital_img, (int(cone['coords']['x']*cenit_perc), int(cone['coords']['y']*cenit_perc)), 4, self.colors[cone['label']], -1)
-            cenital_img = cv2.circle(cenital_img, (int(320 + 320/12 * cone['coords']['y']), int(640 - 640/18 * cone['coords']['x'])), 4, self.colors[cone['label']], -1)
+            cenital_img = cv2.circle(cenital_img, (int(320 + 640/48 * cone['coords']['y']), int(640 - 640/48 * cone['coords']['x'])), 4, self.colors[cone['label']], -1)
             
         image[0:cenital_size, 0:cenital_size] = cv2.resize(cenital_img, (cenital_size, cenital_size))
 

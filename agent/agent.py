@@ -173,22 +173,70 @@ class AgentYolo(Agent):
     def __init__(self, logger, target_speed=20.):
         super().__init__(logger=logger)
 
-    def get_action(self, agent_target, car_state, cones, image):
+    def get_action(self, agent_target, car_state, cones, image, sim_client2, simulator_car_controls):
         """
         Figure out what to do to drive the car. Updates agent_target values.
         TODO rename agent_target so it's different than the global name?
         
         """
-
-        img_center = int(image.shape[1] / 2) # Usually (640,640,3) -> 320
+        # img_center = int(image.shape[1] / 2) # Usually (640,640,3) -> 320
         
         # data = self.cone_processing.create_cone_map(cones, None, orig_im_shape=(1,) + image.shape, img_to_wrap=image)
         
-        agent_target = self.longitudinal_control(agent_target, car_state, cones)
-        agent_target['steer'] = self.horizontal_control(img_center=img_center)
+        # agent_target = self.longitudinal_control(agent_target, car_state, cones)
+        # agent_target = self.longitudinal_control2(agent_target, cones, client, simulator_car_controls)
+        # agent_target['steer'] = self.horizontal_control(img_center=img_center)
+        # agent_target = self.horizontal_control2(agent_target, cones, client, simulator_car_controls)
         
+        
+        # SPEED
+        car_state = sim_client2.getCarState()
+        
+        if (car_state.speed < 5):
+            simulator_car_controls.throttle = 0.5
+            agent_target['acc'] = 0.5
+        else:
+            simulator_car_controls.throttle = 0.0
+            agent_target['acc'] = 0.0
+        
+        # STEER
+        def sort_func(cone): return cone['coords']['x']
+        blues = [cone for cone in cones if (cone['label'] == 'blue_cone')]
+        blues.sort(key=sort_func)
+        yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
+        yellows.sort(key=sort_func)
+        
+        if (len(blues) > 0) and (len(yellows) > 0):
+            # I assume they're sorted from closer to further
+            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
+            print(f'center:{center}')
+            agent_target['steer'] = center/10 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
+        elif len(blues) > 0:
+            agent_target['steer'] = 1 # -1 left, 1 right, 0 neutral
+        elif len(yellows) > 0:
+            agent_target['steer'] = -1 # -1 left, 1 right, 0 neutral
+        
+        simulator_car_controls.steering = agent_target['steer']
+        simulator_car_controls.throttle = agent_target['acc']
+        sim_client2.setCarControls(simulator_car_controls)
+
         return agent_target
 
+    def horizontal_control2(self, agent_target, cones, client, simulator_car_controls):
+        agent_target['steer'] = 0.5 # -1 left, 1 right, 0 neutral
+        simulator_car_controls.steering = agent_target['steer']
+        client.setCarControls(simulator_car_controls)
+
+        return agent_target
+    
+    def longitudinal_control2(self, agent_target, cones, client, simulator_car_controls):
+        agent_target['acc'] = 0.1
+        # TODO ACHIEVE TARGET SPEED
+        simulator_car_controls.throttle = agent_target['acc']
+        client.setCarControls(simulator_car_controls)
+                
+        return agent_target
+    
     def horizontal_control(self, target=0, img_center=0):
         '''
         TODO MAKE IT WORK

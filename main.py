@@ -9,7 +9,6 @@
     - Make sure the simulator folder is called 'Formula-Student-Driverless-Simulator'
 
 
-
 # REFERENCES
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 vulture . --min-confidence 100
@@ -49,6 +48,7 @@ To stop: Ctrl+C in the terminal
 # INFO
 torch.hub.load() (self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=True)):
     In ruben laptop: YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+    CUDA 11.7, but ZED installs CUDA 11.8
 
 """
 if __name__ == '__main__': # multiprocessing creates child processes that import this file, with __name__ = '__mp_main__'
@@ -89,6 +89,25 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     ## Cone detector
     detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger) # TODO why does ConeDetector need a logger?
 
+    # SIMULATOR
+    if (CAMERA_MODE == 4):
+        fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
+        sys.path.insert(0, fsds_lib_path)
+        print(f'FSDS simulator path: {fsds_lib_path}')
+        import fsds # TODO why not recognized when debugging
+        
+        # connect to the simulator 
+        sim_client1 = fsds.FSDSClient() # To get the image
+        sim_client2 = fsds.FSDSClient() # To control the car
+
+        # Check network connection, exit if not connected
+        sim_client1.confirmConnection()
+        sim_client2.confirmConnection()
+        
+        # TO CONTROL TODO CAMERA_MODE 5 MOVES AUTONOMOUS, 4 JUST SIMULATOR IMAGE
+        sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
+        simulator_car_controls = fsds.CarControls()
+    
     # THREAD FUNCTIONS
     from thread_functions import *
     import cv2
@@ -183,7 +202,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_video,  args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_webcam, args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
-    elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,), daemon=False)
+    elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,sim_client1), daemon=False)
     cam_worker.start()
 
     # READ TIMES
@@ -205,11 +224,17 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         print(f'Starting main loop...')
         while True:
             recorded_times[0] = time.time()
-        
+
             image = cam_queue.get(timeout=4)
             # Resize to IMAGE_RESOLUTION no matter how we got the image
-            image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
+            
+            # CROP
+            # height = len(image)
+            # width = len(image[0])
+            # image = np.array(image)[height-640:height, int(width/2)-320:int(width/2)+320]
+            
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             
             # image = np.array(image)
             # Save to file (optional)
@@ -226,11 +251,14 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 car_state = can_queue.get()
             
             # Get actions from agent
-            # agent_target = agent.get_action(agent_target,
-                                            # car_state,
-                                            # cones,
-                                            # image=image
-                                            # )
+            agent_target = agent.get_action(agent_target,
+                                            car_state,
+                                            cones,
+                                            image=image,
+                                            sim_client2 = sim_client2,
+                                            simulator_car_controls = simulator_car_controls
+                                            )
+            
             
             recorded_times[3] = time.time()
 
@@ -297,3 +325,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             "steer": 0.,
             "clutch": 0.,
         }
+        
+        # Give sim control back
+        sim_client2.enableApiControl(False) # Allows mouse control, only API with this code

@@ -106,11 +106,18 @@ class ConeDetector(ConeDetectorInterface):
         X_world = np.dot(R.T, X.T - t.reshape(3, 1)).T
         '''
         
+        # To calibrate camera:
+            # Field of view (angle)
+            # Horizon position in camera view
+            # Camera height
+        
         image_size_px = 640
         f = 2.8e-3 #m # does not affect
-        FOV_Rad = 90 * math.pi / 180 
-        cam_height = 785e-3 # m
-        horizon_px_from_top = image_size_px * 0.50 # horizon at 50% from top. HUGE EFFECT.
+        
+        # MAIN CONFIGURATION DATA
+        FOV_Rad = CAMERA_FOV_DEG * math.pi / 180
+        horizon_px_from_top = image_size_px * CAM_HORIZON_POS # horizon at 50% from top. HUGE EFFECT.
+        
         pix_to_rad = FOV_Rad / image_size_px
         pixel_size = f * math.tan(FOV_Rad/2) * 2 / image_size_px# m
         for i, row in results.pandas().xyxy[0].iterrows():
@@ -119,7 +126,7 @@ class ConeDetector(ConeDetectorInterface):
                 # Distance using cone base height in camera
                 projected_height_from_top = f * math.tan((row['ymax'] - horizon_px_from_top) * pix_to_rad)
                 projected_lateral = ((row['xmax']+row['xmin'])/2 - image_size_px/2) * pixel_size # m
-                distance_horiz = f * cam_height / projected_height_from_top
+                distance_horiz = f * CAM_HEIGHT / projected_height_from_top
                 
                 angle_z = math.atan(projected_lateral / f)
                 
