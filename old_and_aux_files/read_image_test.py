@@ -1,0 +1,17 @@
+"""
+Reads an image file
+"""
+import cv2
+
+print(f'Starting read_image_file thread...')
+cam = cv2.VideoCapture(2)
+cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+# cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640) #1280 640 default
+# cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
+
+while True:
+    # image = cv2.imread('test_media/image1.png')
+    result, image = cam.read()
+    print(result)
+    cv2.imshow('im',image)
+    cv2.waitKey(0)
