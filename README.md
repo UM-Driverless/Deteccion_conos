@@ -39,6 +39,7 @@ We won't use Conda since it's not necessary, and the several python versions hav
     ```bash
     python3 main.py
     ```
+- Now pytorch should use the same CUDA version as the ZED camera. Check this: https://www.stereolabs.com/docs/pytorch/
 - To make sure you are using the GPU (Get IS CUDA AVAILABLE? : True)
     - Check the GPU driver. X.Org -> nvidia-driver-515. In Software and Updates.
     - If errors:
