@@ -255,7 +255,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
 
             if (CAMERA_MODE == 4):
                 agent_target = agent.get_action_sim(agent_target,
-                                            car_state,
                                             cones,
                                             image=image,
                                             sim_client2 = sim_client2,
@@ -263,7 +262,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                                             )
             else:
                 agent_target = agent.get_action(agent_target,
-                                                car_state,
                                                 cones,
                                                 image=image)    
 

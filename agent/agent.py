@@ -173,31 +173,21 @@ class AgentYolo(Agent):
     def __init__(self, logger, target_speed=20.):
         super().__init__(logger=logger)
 
-    def get_action_sim(self, agent_target, car_state, cones, image, sim_client2, simulator_car_controls):
+    def get_action_sim(self, agent_target, cones, image, sim_client2, simulator_car_controls):
         """
         Figure out what to do to drive the car. Updates agent_target values.
         TODO rename agent_target so it's different than the global name?
         
         """
-        # img_center = int(image.shape[1] / 2) # Usually (640,640,3) -> 320
-        
-        # data = self.cone_processing.create_cone_map(cones, None, orig_im_shape=(1,) + image.shape, img_to_wrap=image)
-        
-        # agent_target = self.longitudinal_control(agent_target, car_state, cones)
-        # agent_target = self.longitudinal_control2(agent_target, cones, client, simulator_car_controls)
-        # agent_target['steer'] = self.horizontal_control(img_center=img_center)
-        # agent_target = self.horizontal_control2(agent_target, cones, client, simulator_car_controls)
-        
-        
         # SPEED
-        car_state = sim_client2.getCarState()
+        sim_state = sim_client2.getCarState()
+        car_state['speed'] = sim_state.speed
         
-        if (car_state.speed < 5):
+        
+        if (sim_state.speed < 5):
             agent_target['acc'] = 0.5
         else:
             agent_target['acc'] = 0.0
-            
-        simulator_car_controls.throttle = agent_target['acc']
         
         # STEER
         def sort_func(cone): return cone['coords']['x']
@@ -222,7 +212,7 @@ class AgentYolo(Agent):
 
         return agent_target
 
-    def get_action(self, agent_target, car_state, cones, image):
+    def get_action(self, agent_target, cones, image):
         
         "Actual agent without the sim"
 

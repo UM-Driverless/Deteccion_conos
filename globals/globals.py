@@ -34,7 +34,7 @@ CAN_STEER_DIMENSION = 122880.
 
 # ---
 
-# Actual state values of the car
+# Actual state values of the car, from sensors
 car_state = {
     "speed": 0.,
     "gear": 0.,
