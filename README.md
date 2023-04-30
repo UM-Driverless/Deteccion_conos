@@ -57,6 +57,7 @@ We won't use Conda since it's not necessary, and the several python versions hav
 
 * To explore if something fails:
     * `sudo apt-get install python3-tk`
+- To install cuda manually: https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
 
 # INSTALL SIMULATOR
 Go to [https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases) and download the latest version. The file has an UNREAL ENGINE file which executes the simulator.
