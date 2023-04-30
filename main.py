@@ -108,6 +108,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
         simulator_car_controls = fsds.CarControls()
     
+    
     # THREAD FUNCTIONS
     from thread_functions import *
     import cv2
@@ -251,15 +252,21 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 car_state = can_queue.get()
             
             # Get actions from agent
-            agent_target = agent.get_action(agent_target,
+
+            if (CAMERA_MODE == 4):
+                agent_target = agent.get_action_sim(agent_target,
                                             car_state,
                                             cones,
                                             image=image,
                                             sim_client2 = sim_client2,
                                             simulator_car_controls = simulator_car_controls
                                             )
-            
-            
+            else:
+                agent_target = agent.get_action(agent_target,
+                                                car_state,
+                                                cones,
+                                                image=image)    
+
             recorded_times[3] = time.time()
 
             # Send actions - CAN

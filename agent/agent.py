@@ -173,7 +173,7 @@ class AgentYolo(Agent):
     def __init__(self, logger, target_speed=20.):
         super().__init__(logger=logger)
 
-    def get_action(self, agent_target, car_state, cones, image, sim_client2, simulator_car_controls):
+    def get_action_sim(self, agent_target, car_state, cones, image, sim_client2, simulator_car_controls):
         """
         Figure out what to do to drive the car. Updates agent_target values.
         TODO rename agent_target so it's different than the global name?
@@ -193,11 +193,11 @@ class AgentYolo(Agent):
         car_state = sim_client2.getCarState()
         
         if (car_state.speed < 5):
-            simulator_car_controls.throttle = 0.5
             agent_target['acc'] = 0.5
         else:
-            simulator_car_controls.throttle = 0.0
             agent_target['acc'] = 0.0
+            
+        simulator_car_controls.throttle = agent_target['acc']
         
         # STEER
         def sort_func(cone): return cone['coords']['x']
@@ -219,6 +219,12 @@ class AgentYolo(Agent):
         simulator_car_controls.steering = agent_target['steer']
         simulator_car_controls.throttle = agent_target['acc']
         sim_client2.setCarControls(simulator_car_controls)
+
+        return agent_target
+
+    def get_action(self, agent_target, car_state, cones, image):
+        
+        "Actual agent without the sim"
 
         return agent_target
 
