@@ -334,4 +334,5 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         }
         
         # Give sim control back
-        sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
+        if (CAMERA_MODE == 4):
+            sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
