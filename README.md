@@ -35,22 +35,25 @@ We won't use Conda since it's not necessary, and the several python versions hav
         ```bash
         python3 /usr/local/zed/get_python_api.py
         ```
-- You should be able to run:
-    ```bash
-    python3 main.py
-    ```
-- Now pytorch should use the same CUDA version as the ZED camera. Check this: https://www.stereolabs.com/docs/pytorch/
 - To make sure you are using the GPU (Get IS CUDA AVAILABLE? : True)
-    - Check the GPU driver. X.Org -> nvidia-driver-515. In Software and Updates.
-    - If errors:
+    - Check what GPU driver you should install: https://www.nvidia.co.uk/Download/index.aspx?lang=en-uk
+    - Check what GPU driver you have. X.Org -> nvidia-driver-515. In Software and Updates.
+    - If errors, reinstall the driver from scratch:
         ```bash
         sudo apt-get remove --purge nvidia-* -y
         sudo apt autoremove
         sudo ubuntu-drivers autoinstall
         sudo service lightdm restart
-        sudo apt install nvidia-driver-515 nvidia-dkms-515
+        sudo apt install nvidia-driver-525 nvidia-dkms-525
         sudo reboot
         ```
+- You can check your cuda version (if the driver is working) with `nvidia-smi` or the built-in app in xavier o orin modules.
+- Now pytorch should use the same CUDA version as the ZED camera. Check this: https://www.stereolabs.com/docs/pytorch/
+- You should be able to run:
+    ```bash
+    python3 main.py
+    ```
+
 * To explore if something fails:
     * `sudo apt-get install python3-tk`
 
