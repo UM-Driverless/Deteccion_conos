@@ -10,7 +10,7 @@ print(f'IS CUDA AVAILABLE? : {torch.cuda.is_available()}')
 
 from cone_detection.detector_base import ConeDetectorInterface
 from globals.globals import * # Global variables and constants, as if they were here
-import tools.tools as tools
+# import tools.tools as tools
 
 
 
@@ -146,12 +146,3 @@ class ConeDetector(ConeDetectorInterface):
                 })
         
         return cones
-        
-        # Method 2 - Warp
-        # warped = tools.perspective_warp_coordinates([[cone["coords"]['x'] for cone in cones], [cone["coords"]['y'] for cone in cones]],dst_size=(640,640))
-        
-        # for i, cone in enumerate(cones):
-        #     cone['coords']['x'] = warped[i,0]
-        #     cone['coords']['y'] = warped[i,1]
-           
-    
