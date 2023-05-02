@@ -8,7 +8,6 @@
     - Make sure there's a camera called 'cam'
     - Make sure the simulator folder is called 'Formula-Student-Driverless-Simulator'
 
-
 # REFERENCES
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 vulture . --min-confidence 100
