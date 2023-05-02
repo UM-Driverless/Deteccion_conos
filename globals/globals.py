@@ -1,7 +1,8 @@
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 8 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR
-SIMULATOR_CONTROL = 1
+CAMERA_MODE = 3 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR
+# Choose webcam
+CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
 
 VISUALIZE = 1
 VISUALIZER_CENITAL_MAP_SIZE_PERC = 0.5
@@ -11,8 +12,6 @@ CAMERA_FOV_DEG = 120
 CAM_HEIGHT = 0.95 # m
 CAM_HORIZON_POS = 0.5 # % of image from top
 
-# Choose webcam
-CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
 
 # For video file
 VIDEO_FILE_NAME = 'test_media/video.mp4' # Only used if CAMERA_MODE == 1

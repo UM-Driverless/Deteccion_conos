@@ -62,8 +62,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     print(f'Python version: {sys.version}')
     
     from globals.globals import * # Global variables and constants, as if they were here
-    from connection_utils.car_comunication import ConnectionManager # TODO REMOVE
-    from connection_utils.message_processing import MessageProcessing
 
     if (CAN_MODE == 1):
         from connection_utils.can_kvaser import CanKvaser
@@ -76,7 +74,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     from visualization_utils.logger import Logger
 
     import cv2 # Webcam
-
+    
     cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
 
     # INITIALIZE things
@@ -104,8 +102,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         # TO CONTROL TODO CAMERA_MODE 5 MOVES AUTONOMOUS, 4 JUST SIMULATOR IMAGE
         sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
         simulator_car_controls = fsds.CarControls()
-    
-    
+            
     # THREAD FUNCTIONS
     from thread_functions import *
     import cv2
@@ -122,9 +119,51 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             can_queue.put(car_state_local)
 
     def read_image_zed(cam_queue):
-        """
+        '''
         Read the ZED camera - https://www.stereolabs.com/docs/video/camera-controls/
-        """
+        '''
+        
+        import cv2
+    
+        print(f'Starting read_image_webcam thread...')
+
+        cam = cv2.VideoCapture(CAM_INDEX)
+        
+        # SETTINGS
+        # cam.set(cv2.CAP_PROP_FPS, 60)
+        cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640*2) #1280 640 default
+        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
+        # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
+        
+        if (cam.isOpened() == False): 
+            print("Error opening webcam")
+        
+        while True:
+            # recorded_times_0 = time.time()
+            
+            # Read image from webcam
+            # TODO also check CHECK cam.isOpened()?
+            # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
+            result, image = cam.read()
+            while result == False:
+                result, image = cam.read()
+            
+            # recorded_times_1 = time.time()
+            
+            # cv2.imshow('image',image)
+            # cv2.waitKey(1)
+                        
+            image = cv2.resize(image, (640*2,640), interpolation=cv2.INTER_AREA)
+            image = np.array(image)[:,0:640,:]
+            
+            image = cv2.flip(image, flipCode=1) # For testing purposes
+            
+            cam_queue.put(image)
+            # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
+        
+        
+        '''
         import pyzed.sl as sl
         
         print(f'Starting read_image_zed thread...')
@@ -148,10 +187,12 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
         
         status = zed.open(zed_params)
-        if status != sl.ERROR_CODE.SUCCESS:
-            print(f'ZED ERROR: {repr(status)}')
-            exit(-1)
-
+        
+        while status != sl.ERROR_CODE.SUCCESS:
+            print(f'ZED ERROR: {status}')
+            time.sleep(0.5)
+            status = zed.open(zed_params)
+        print('SUCESSSSSSS, zed opened')
         runtime = sl.RuntimeParameters()
         runtime.enable_depth = False # Deactivates de depth map calculation. We don't need it.
         
@@ -161,6 +202,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         while True:
             # Read ZED camera
             if (zed.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
+                print('.')
                 # recorded_times_0 = time.time()
                 
                 zed.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
@@ -169,6 +211,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 
                 # recorded_times_1 = time.time()
                 # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
+        '''
 
     ## Connections
     if (CAN_MODE == 1):
@@ -186,21 +229,19 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         # CAN with Xavier
         can_send = CanXavier()
         can_send.send_message()
-        
 
     ## Agent
     agent = Agent(logger=logger, target_speed=60.)
     agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
     agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
-
     # SETUP CAMERA
     if (CAMERA_MODE == 0):   cam_worker = multiprocessing.Process(target=read_image_file,   args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 1): cam_worker = multiprocessing.Process(target=read_image_video,  args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_webcam, args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
-    elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,sim_client1), daemon=False)
-    # cam_worker.start()
+    elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,sim_client1,), daemon=False)
+    cam_worker.start()
 
     # READ TIMES
     TIMES_TO_MEASURE = 4
@@ -216,39 +257,16 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         visualizer = Visualizer()
         # visualize_worker = multiprocessing.Process(target=visualize_thread, args=(), daemon=False)
 
-#############
-    import pyzed.sl as sl
-
-    zed = sl.Camera()
-
-    init_params = sl.InitParameters()
-    init_params.camera_resolution = sl.RESOLUTION.HD1080
-    init_params.camera_fps = 30
-
-    # Open the camera
-    err = zed.open(init_params)
-    if err != sl.ERROR_CODE.SUCCESS:
-        print(f'error: {err}')
-        exit(-1)
-
-    runtime = sl.RuntimeParameters()
-    runtime.enable_depth = False # Deactivates de depth map calculation. We don't need it.
-
-    # Create an RGBA sl.Mat object
-    mat_img = sl.Mat()
-################
-
     # Main loop ------------------------
     try:
         print(f'Starting main loop...')
-        while True:
+        while True:  
             recorded_times[0] = time.time()
 
-            if (zed.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame            
-                zed.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
-                image = mat_img.get_data() # Creates np.array()
-
-            # image = cam_queue.get() #timeout=4
+            image = cam_queue.get(timeout=4)
+            cv2.imshow('im',image)
+            cv2.waitKey(1)
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             # Resize to IMAGE_RESOLUTION no matter how we got the image
             
             # CROP
@@ -256,7 +274,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             # width = len(image[0])
             # image = np.array(image)[height-640:height, int(width/2)-320:int(width/2)+320]
             
-            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             image = cv2.resize(image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             
             # image = np.array(image)
