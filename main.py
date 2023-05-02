@@ -16,28 +16,25 @@ vulture . --min-confidence 100
 # CHECKS
 - Weights in yolov5/weights/yolov5_models
 - Active bash folder is ~/Deteccion_conos/
-- Check requirements. Some might need to be installed with conda instead of pip
-- ZED /usr/local/zed/get_python_api.py run to have pyzed library
-- gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
+- Check requirements{*}.txt, ZED API and gcc compiler up to date (12.1.0), etc.
 
 # TODO
+- Solve TORNADO.PLATFORM.AUTO ERROR, WHEN USING SIMULATOR
+- MAKE ZED WORK AGAIN
 - RESTORE GENERIC AGENT CLASS FOR NO SPECIFIC TEST. THEN THE TESTS INHERIT FROM IT. COMMENTED.
-- IMPRIMIR CONE_CENTERS EN TIEMPO REAL, CON PLT, CV2, O EN VISUALIZE
-- COMPROBAR COORDENADAS CONOS EN VISTA CENITAL OK
-- AGENTE SENCILLO
-- CONECTAR AGENTE CON SIMULADOR
+- PUT GLOBAL VARS AS ATTRIBUTE OF CAR OBJECT?
 - PROBAR CAN EN UM05
 - IPYTHON TO REQUIREMENTS, also canlib
 - Initialize trackbars of ConeProcessing. Why?
 - Only import used libraries from activations with global config constants
 - SET SPEED ACCORDING TO CAN PROTOCOL, and the rest of state variables (SEN BOARD)
 - check edgeimpulse
-- Check NVIDIA drivers -525
 - Print number of cones detected per color
 - Xavier why network takes 3s to execute. How to make it use GPU?
 - Make net faster. Remove cone types that we don't use? Reduce resolution of yolov5?
 - Move threads to different files to make main.py shorter
 - Check NVPMODEL with high power during xavier installation
+- Reuse logger
 
 - Wanted to make visualize work in a thread and for any resolution, but now it works for any resolution, don't know why, and it's always about 3ms so it's not worth it for now.
 
@@ -46,9 +43,10 @@ vulture . --min-confidence 100
 To stop: Ctrl+C in the terminal
 
 # INFO
-torch.hub.load() (self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=True)):
-    In ruben laptop: YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
-    CUDA 11.7, but ZED installs CUDA 11.8
+In ruben laptop:
+    torch.hub.load(): YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+    torch.hub.load(): YOLOv5 🚀 2023-4-1 Python-3.10.6 torch-1.11.0+cu102 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+    CUDA11.7, nvidia-driver-515 (propietary), pytorch 2.0.0 (The version is automatically set. I didn't choose it)
 
 """
 if __name__ == '__main__': # multiprocessing creates child processes that import this file, with __name__ = '__mp_main__'
@@ -83,11 +81,10 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
 
     # INITIALIZE things
     ## Logger
-    init_message = "actuator_zed_testing.py"
-    logger = Logger(init_message)
+    logger = Logger("Logger initialized")
 
     ## Cone detector
-    detector = ConeDetector(checkpoint_path=WEIGHTS_PATH, logger=logger) # TODO why does ConeDetector need a logger?
+    detector = ConeDetector(checkpoint_path=WEIGHTS_PATH)
 
     # SIMULATOR
     if (CAMERA_MODE == 4):
@@ -132,13 +129,13 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         
         print(f'Starting read_image_zed thread...')
         
-        cam = sl.Camera()
+        zed = sl.Camera()
         
         # Camera settings
-        cam.set_camera_settings(sl.VIDEO_SETTINGS.GAIN, 100) # We don't want blurry photos, we don't care about noise. The exposure time will still be adjusted automatically to compensate lighting conditions
-        cam.set_camera_settings(sl.VIDEO_SETTINGS.SATURATION, 8) # Maximum so it recognizes the color of the cones better. 0 to 8
+        zed.set_camera_settings(sl.VIDEO_SETTINGS.GAIN, 100) # We don't want blurry photos, we don't care about noise. The exposure time will still be adjusted automatically to compensate lighting conditions
+        zed.set_camera_settings(sl.VIDEO_SETTINGS.SATURATION, 8) # Maximum so it recognizes the color of the cones better. 0 to 8
         # cam.set_camera_settings(sl.VIDEO_SETTINGS.SHARPNESS, 0) # Doesn't seem to make much difference. 0 to 8
-        #cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, -1) # Fixed gain, so this is automatic. % of camera framerate (period)
+        #cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, -1) # We have fixed gain, so this is automatic. % of camera framerate (period)
         
         # Init parameters: https://www.stereolabs.com/docs/api/structsl_1_1InitParameters.html
         zed_params = sl.InitParameters()
@@ -150,10 +147,10 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         
         #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
         
-        status = cam.open(zed_params)
+        status = zed.open(zed_params)
         if status != sl.ERROR_CODE.SUCCESS:
             print(f'ZED ERROR: {repr(status)}')
-            exit(1)
+            exit(-1)
 
         runtime = sl.RuntimeParameters()
         runtime.enable_depth = False # Deactivates de depth map calculation. We don't need it.
@@ -163,16 +160,15 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         
         while True:
             # Read ZED camera
-            if (cam.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
+            if (zed.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
                 # recorded_times_0 = time.time()
                 
-                cam.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
+                zed.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
                 image = mat_img.get_data() # Creates np.array()
                 cam_queue.put(image)
                 
                 # recorded_times_1 = time.time()
                 # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
-
 
     ## Connections
     if (CAN_MODE == 1):
@@ -204,7 +200,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_webcam, args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,sim_client1), daemon=False)
-    cam_worker.start()
+    # cam_worker.start()
 
     # READ TIMES
     TIMES_TO_MEASURE = 4
@@ -220,13 +216,39 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         visualizer = Visualizer()
         # visualize_worker = multiprocessing.Process(target=visualize_thread, args=(), daemon=False)
 
+#############
+    import pyzed.sl as sl
+
+    zed = sl.Camera()
+
+    init_params = sl.InitParameters()
+    init_params.camera_resolution = sl.RESOLUTION.HD1080
+    init_params.camera_fps = 30
+
+    # Open the camera
+    err = zed.open(init_params)
+    if err != sl.ERROR_CODE.SUCCESS:
+        print(f'error: {err}')
+        exit(-1)
+
+    runtime = sl.RuntimeParameters()
+    runtime.enable_depth = False # Deactivates de depth map calculation. We don't need it.
+
+    # Create an RGBA sl.Mat object
+    mat_img = sl.Mat()
+################
+
     # Main loop ------------------------
     try:
         print(f'Starting main loop...')
         while True:
             recorded_times[0] = time.time()
 
-            image = cam_queue.get(timeout=4)
+            if (zed.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame            
+                zed.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
+                image = mat_img.get_data() # Creates np.array()
+
+            # image = cam_queue.get() #timeout=4
             # Resize to IMAGE_RESOLUTION no matter how we got the image
             
             # CROP
