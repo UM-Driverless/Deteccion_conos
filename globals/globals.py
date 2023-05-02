@@ -1,8 +1,13 @@
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
+<<<<<<< HEAD
 CAMERA_MODE = 3 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR
 # Choose webcam
 CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
+=======
+CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR
+SIMULATOR_CONTROL = 1
+>>>>>>> 1ccb0698e854d50864fe3b8006c80951622a4863
 
 VISUALIZE = 1
 VISUALIZER_CENITAL_MAP_SIZE_PERC = 0.5
@@ -33,7 +38,7 @@ CAN_STEER_DIMENSION = 122880.
 
 # ---
 
-# Actual state values of the car
+# Actual state values of the car, from sensors
 car_state = {
     "speed": 0.,
     "gear": 0.,

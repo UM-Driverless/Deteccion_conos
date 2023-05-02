@@ -47,6 +47,7 @@ simple-pid
 # ZED camera dependencies
 cython
 pyopengl
+tornado # ZED and pytorch dependency
 # numpy
 
 # STUFF

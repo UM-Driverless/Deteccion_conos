@@ -21,6 +21,8 @@ vulture . --min-confidence 100
 # TODO
 - Solve TORNADO.PLATFORM.AUTO ERROR, WHEN USING SIMULATOR
 - MAKE ZED WORK AGAIN
+- Solve TORNADO.PLATFORM.AUTO ERROR, WHEN USING SIMULATOR
+- MAKE ZED WORK AGAIN
 - RESTORE GENERIC AGENT CLASS FOR NO SPECIFIC TEST. THEN THE TESTS INHERIT FROM IT. COMMENTED.
 - PUT GLOBAL VARS AS ATTRIBUTE OF CAR OBJECT?
 - PROBAR CAN EN UM05
@@ -68,7 +70,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAN_MODE == 2):
         from connection_utils.can_xavier import CanXavier
 
-    from agent.agent import AgentYolo as Agent
+    from agent.agent import Agent
     from cone_detection.yolo_detector import ConeDetector
     from visualization_utils.visualizer_yolo_det import Visualizer
     from visualization_utils.logger import Logger
@@ -231,7 +233,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         can_send.send_message()
 
     ## Agent
-    agent = Agent(logger=logger, target_speed=60.)
+    agent = Agent()
     agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
     agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
@@ -293,18 +295,13 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             # Get actions from agent
 
             if (CAMERA_MODE == 4):
-                agent_target = agent.get_action_sim(agent_target,
-                                            car_state,
-                                            cones,
-                                            image=image,
-                                            sim_client2 = sim_client2,
-                                            simulator_car_controls = simulator_car_controls
-                                            )
+                agent.get_action_sim(
+                                    cones,
+                                    sim_client2 = sim_client2,
+                                    simulator_car_controls = simulator_car_controls
+                                    )
             else:
-                agent_target = agent.get_action(agent_target,
-                                                car_state,
-                                                cones,
-                                                image=image)    
+                agent.get_action(cones)
 
             recorded_times[3] = time.time()
 
