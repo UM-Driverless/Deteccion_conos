@@ -21,23 +21,22 @@ vulture . --min-confidence 100
 - gcc compiler up to date for zed, conda install -c conda-forge gcc=12.1.0 # Otherwise zed library throws error: version `GLIBCXX_3.4.30' not found
 
 # TODO
+- Solve TORNADO.PLATFORM.AUTO ERROR, WHEN USING SIMULATOR
+- MAKE ZED WORK AGAIN
 - RESTORE GENERIC AGENT CLASS FOR NO SPECIFIC TEST. THEN THE TESTS INHERIT FROM IT. COMMENTED.
-- IMPRIMIR CONE_CENTERS EN TIEMPO REAL, CON PLT, CV2, O EN VISUALIZE
-- COMPROBAR COORDENADAS CONOS EN VISTA CENITAL OK
-- AGENTE SENCILLO
-- CONECTAR AGENTE CON SIMULADOR
+- PUT GLOBAL VARS AS ATTRIBUTE OF CAR OBJECT?
 - PROBAR CAN EN UM05
 - IPYTHON TO REQUIREMENTS, also canlib
 - Initialize trackbars of ConeProcessing. Why?
 - Only import used libraries from activations with global config constants
 - SET SPEED ACCORDING TO CAN PROTOCOL, and the rest of state variables (SEN BOARD)
 - check edgeimpulse
-- Check NVIDIA drivers -525
 - Print number of cones detected per color
 - Xavier why network takes 3s to execute. How to make it use GPU?
 - Make net faster. Remove cone types that we don't use? Reduce resolution of yolov5?
 - Move threads to different files to make main.py shorter
 - Check NVPMODEL with high power during xavier installation
+- Reuse logger
 
 - Wanted to make visualize work in a thread and for any resolution, but now it works for any resolution, don't know why, and it's always about 3ms so it's not worth it for now.
 
@@ -47,8 +46,10 @@ To stop: Ctrl+C in the terminal
 
 # INFO
 torch.hub.load() (self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=True)):
-    In ruben laptop: YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
-    CUDA 11.7, but ZED installs CUDA 11.8
+    In ruben laptop:
+        YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+        YOLOv5 🚀 2023-4-1 Python-3.10.6 torch-1.11.0+cu102 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+        CUDA11.7, nvidia-driver-515 (propietary), pytorch 2.0.0 (The version is automatically set. I didn't choose it)
 
 """
 if __name__ == '__main__': # multiprocessing creates child processes that import this file, with __name__ = '__mp_main__'
@@ -72,7 +73,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAN_MODE == 2):
         from connection_utils.can_xavier import CanXavier
 
-    from agent.agent import AgentYolo as Agent
+    from agent.agent import Agent
     from cone_detection.yolo_detector import ConeDetector
     from visualization_utils.visualizer_yolo_det import Visualizer
     from visualization_utils.logger import Logger
@@ -193,7 +194,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         
 
     ## Agent
-    agent = Agent(logger=logger, target_speed=60.)
+    agent = Agent()
     agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
     agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
@@ -254,16 +255,13 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             # Get actions from agent
 
             if (CAMERA_MODE == 4):
-                agent_target = agent.get_action_sim(agent_target,
-                                            cones,
-                                            image=image,
-                                            sim_client2 = sim_client2,
-                                            simulator_car_controls = simulator_car_controls
-                                            )
+                agent.get_action_sim(
+                                    cones,
+                                    sim_client2 = sim_client2,
+                                    simulator_car_controls = simulator_car_controls
+                                    )
             else:
-                agent_target = agent.get_action(agent_target,
-                                                cones,
-                                                image=image)    
+                agent.get_action(cones)
 
             recorded_times[3] = time.time()
 
@@ -332,4 +330,5 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         }
         
         # Give sim control back
-        sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
+        if (CAMERA_MODE == 4):
+            sim_client2.enableApiControl(False) # Gives back simulator control to keyboard
