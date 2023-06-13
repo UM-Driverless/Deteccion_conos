@@ -1,8 +1,0 @@
-
-# To install all these libraries:
-# pip3 install -r requirements.txt
-# canlib manually installed after KVASER files
-python-can # Can communications
-simple-pid
-ipython
-
