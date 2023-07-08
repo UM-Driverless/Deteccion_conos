@@ -13,7 +13,7 @@ class Acceleration_Mission(Agent):
     def get_action(self, cones):
         super().get_action(cones)
 
-    # METHODS SUPERCHARGED
+    # SUPERCHARGED METHODS 
 
     def get_agent_target(self, car_state, cones):
         '''
@@ -34,8 +34,8 @@ class Acceleration_Mission(Agent):
         orange.sort(key=take_x)
 
 
-        if (len(large_oranges) > 2) and (large_oranges[0]['coords']['x']) < 1:
-              agent_target['steer'] = 1        
+        # if (len(large_oranges) > 2) and (large_oranges[0]['coords']['x']) < 1:
+        #       agent_target['steer'] = 1        
 
         brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
 
@@ -51,7 +51,6 @@ class Acceleration_Mission(Agent):
            
         
         #STEER
-
         if (len(blues) > 0) and (len(yellows) > 0):
             #I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2

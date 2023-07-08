@@ -13,7 +13,7 @@ CAM_HEIGHT = 0.95 # m
 CAM_HORIZON_POS = 0.5 # % of image from top
 
 # MISSION SELECTION CONSTANTS
-MISSION_SELECTED = 0 # 0 -> Acceleration, 1 -> Skidpad, 2 -> Autocross, 3 -> Trackdrive, 4 -> EBS Test, ... (Using the example of the begginers guide, for now only 0 and 1)
+MISSION_SELECTED = 1 # 0 -> Acceleration, 1 -> Skidpad, 2 -> Autocross, 3 -> Trackdrive, 4 -> EBS Test, ... (Using the example of the begginers guide, for now only 0 and 1)
 
 
 # For video file
