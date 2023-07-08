@@ -1,10 +1,9 @@
 from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessingNoWrapped
-import cv2
-import simple_pid
-import numpy as np
-from visualization_utils.logger import Logger
-from simple_pid import PID
-import time
+#import cv2
+#import simple_pid
+#import numpy as np
+#from visualization_utils.logger import Logger
+#from simple_pid import PID
 
 from globals.globals import * # Global variables and constants, as if they were here
 
@@ -72,6 +71,7 @@ class Agent():
     def get_action(self, cones):
         self.get_agent_target(car_state, cones)
 
+
     def get_agent_target(self, car_state, cones):
         '''
         Update agent_target, calculated from the cones and car_state.
@@ -94,10 +94,12 @@ class Agent():
         if (len(large_oranges) > 2) and (large_oranges[0]['coords']['x']) < 1:
               agent_target['steer'] = 1        
 
+        brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
+
         # SPEED
-        if (car_state['speed'] < 5) and (len(orange) < 20): #si va lento y no ve conos naranjas
+        if (car_state['speed'] < 5) and (not brake_condition): #si va lento y no ve conos naranjas
             agent_target['acc'] = 0.5
-        elif (len(orange) > 10): # da igual la velocidad, si ve conos naranjas
+        elif brake_condition: # da igual la velocidad, si ve conos naranjas
             agent_target['acc'] = 0.0
             agent_target['brake'] = 1.0
         else: # si va rapido dejamos de acelerar

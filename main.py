@@ -68,11 +68,17 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAN_MODE == 2):
         from connection_utils.can_xavier import CanXavier
 
+
+    ## Agents imported TODO select just one per mission, main class Agent will no longer be needed as each especialized agent inherits from it
+    # TODO remember to make clear which mission is selected
     from agent.agent import Agent
+    from agent.agent_acceleration_mission import Acceleration_Mission
+    from agent.agent_skidpad_mission import Skidpad_Mission
+
+
     from cone_detection.yolo_detector import ConeDetector
     from visualization_utils.visualizer_yolo_det import Visualizer
     from visualization_utils.logger import Logger
-
     import cv2 # Webcam
     
     cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
@@ -103,6 +109,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
         simulator_car_controls = fsds.CarControls()
 
+    # SIMULATOR MANUAL -> CAR WONT MOVE ON ITS OWN
     if (CAMERA_MODE == 5):
         fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
         sys.path.insert(0, fsds_lib_path)
@@ -116,8 +123,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         # Check network connection, exit if not connected
         sim_client1.confirmConnection()
         sim_client2.confirmConnection()
-        
-        # TO CONTROL TODO CAMERA_MODE 5 MOVES AUTONOMOUS, 4 JUST SIMULATOR IMAGE
             
     # THREAD FUNCTIONS
     from thread_functions import *
@@ -246,8 +251,14 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         can_send = CanXavier()
         can_send.send_message()
 
-    ## Agent
-    agent = Agent()
+    ## Agent selection TODO may as well import the necessary classes just when selected
+    if(MISSION_SELECTED == 0): # Acceleration
+        agent = Acceleration_Mission()
+    elif(MISSION_SELECTED == 1): # Skidpad
+        agent = Skidpad_Mission()
+    else: # The default Agent is the class of which other agents inherit from
+        agent = Agent()
+
     agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
     agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
