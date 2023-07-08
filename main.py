@@ -102,6 +102,22 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         # TO CONTROL TODO CAMERA_MODE 5 MOVES AUTONOMOUS, 4 JUST SIMULATOR IMAGE
         sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
         simulator_car_controls = fsds.CarControls()
+
+    if (CAMERA_MODE == 5):
+        fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
+        sys.path.insert(0, fsds_lib_path)
+        print(f'FSDS simulator path: {fsds_lib_path}')
+        import fsds # TODO why not recognized when debugging
+        
+        # connect to the simulator 
+        sim_client1 = fsds.FSDSClient() # To get the image
+        sim_client2 = fsds.FSDSClient() # To control the car
+
+        # Check network connection, exit if not connected
+        sim_client1.confirmConnection()
+        sim_client2.confirmConnection()
+        
+        # TO CONTROL TODO CAMERA_MODE 5 MOVES AUTONOMOUS, 4 JUST SIMULATOR IMAGE
             
     # THREAD FUNCTIONS
     from thread_functions import *
@@ -241,6 +257,8 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_webcam, args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,sim_client1,), daemon=False)
+    elif (CAMERA_MODE == 5): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,sim_client1,), daemon=False)
+
     cam_worker.start()
 
     # READ TIMES

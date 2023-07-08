@@ -105,7 +105,7 @@ def read_image_simulator(cam_queue, client):
     import fsds
     import cv2
     while True:
-        [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'cam', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
+        [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'cam1', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
         img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
         image = img_buffer.reshape(img.height, img.width, 3)
         cam_queue.put(image)
