@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./Formula-Student-Driverless-Simulator/python"
+    ]
+}

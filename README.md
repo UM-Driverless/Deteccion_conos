@@ -14,13 +14,14 @@ We won't use Conda since it's not necessary, and the several python versions hav
 - Install the requirements (for yolo network and for our scripts)
     ```bash
     cd ~/Deteccion_conos
-    pip install -r <requirements_file_name>.txt
+    pip install -r {requirements_file_name}.txt #yolo_requirements.txt requirements.txt
     ```
 - [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/g/personal/r_jimenezm_2017_alumnos_urjc_es/Eg8abm1kP9RIsfNfTONUWqUBobIr16Q0yh7uOX4bxaoDfw) in: `"yolov5/weights"`
 
-- ZED Camera Installation
-    1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...)
-        https://www.stereolabs.com/developers/release/
+- ZED Camera Installation.
+    1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...). If it doesn't find the matching CUDA version of the SDK, it will install it. When detected, it will continue with the installation.
+        - https://www.stereolabs.com/developers/release/
+        - [ZED SDK for JetPack 5.1.1 (L4T 35.3)](https://download.stereolabs.com/zedsdk/4.0/l4t35.3/jetsons) o [ZED SDK for Ubuntu 22](https://download.stereolabs.com/zedsdk/4.0/cu118/ubuntu22)
     2. Add permits:
         ```bash
         sudo chmod 777 {FILENAME}
