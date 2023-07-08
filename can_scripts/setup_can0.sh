@@ -19,6 +19,8 @@ sudo ip link set down can0 # Turn off in case it's on. Will return error the fir
 sudo ip link set can0 type can bitrate 1000000 # 1Mbps
 sudo ip link set can0 up
 # SEND MESSAGE 0x01234567 with ID = 0xABC
+cansend can0 123#01234567
+cansend can0 123#0123456789
 cansend can0 601#2F60600001
 # LISTEN FOR MESSAGES
 # echo "Message 0x01234567 with ID 123 sent. Now listening for messages..."

@@ -157,7 +157,8 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             image = cv2.resize(image, (640*2,640), interpolation=cv2.INTER_AREA)
             image = np.array(image)[:,0:640,:]
             
-            image = cv2.flip(image, flipCode=1) # For testing purposes
+            if (FLIP_IMAGE):
+                image = cv2.flip(image, flipCode=1) # For testing purposes
             
             cam_queue.put(image)
             # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
@@ -297,7 +298,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                                     cones,
                                     sim_client2 = sim_client2,
                                     simulator_car_controls = simulator_car_controls
-                                    )
+                                    )                                                                                           
             else:
                 agent.get_action(cones)
 
