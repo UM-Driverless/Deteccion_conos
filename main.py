@@ -1,7 +1,7 @@
-
-# MAIN script to run all the others. Shall contain the main classes, top level functions etc.
-
 """
+MAIN script to run all the others. Shall contain the main classes, top level functions etc.
+
+
 # HOW TO USE
 - Configuration variables in globals.py
 - If CAMERA_MODE = 4, start the simulator first, running fsds-v2.2.0-linux/FSDS.sh (This program can be located anywhere)
@@ -49,6 +49,7 @@ In ruben laptop:
     CUDA11.7, nvidia-driver-515 (propietary), pytorch 2.0.0 (The version is automatically set. I didn't choose it)
 
 """
+
 if __name__ == '__main__': # multiprocessing creates child processes that import this file, with __name__ = '__mp_main__'
     # IMPORTS
     import os
