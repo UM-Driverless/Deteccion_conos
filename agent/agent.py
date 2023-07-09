@@ -77,7 +77,7 @@ class Agent():
         Update agent_target, calculated from the cones and car_state.
         '''
         
-        # STEER
+        # SORT CONES FROM CLOSEST TO FURTHEST
         def take_x(cone): return cone['coords']['x']
         
         blues = [cone for cone in cones if (cone['label'] == 'blue_cone')]
@@ -97,7 +97,7 @@ class Agent():
 
         brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
 
-        # SPEED
+        # SPEED CONTROL - agent_target
         if (car_state['speed'] < 5) and (not brake_condition): #si va lento y no ve conos naranjas
             agent_target['acc'] = 0.5
         elif brake_condition: # da igual la velocidad, si ve conos naranjas
@@ -106,7 +106,7 @@ class Agent():
         else: # si va rapido dejamos de acelerar
             agent_target['acc'] = 0.0
         
-        # STEER
+        # STEER CONTROL - agent_target
         if (len(blues) > 0) and (len(yellows) > 0):
             # I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
