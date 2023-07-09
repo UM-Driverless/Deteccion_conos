@@ -114,7 +114,7 @@ class ConeDetector(ConeDetectorInterface):
         f = 2.8e-3 #m # does not affect
         
         # MAIN CONFIGURATION DATA
-        FOV_Rad = CAMERA_FOV_DEG * math.pi / 180
+        FOV_Rad = CAMERA_VERTICAL_FOV_DEG * math.pi / 180
         horizon_px_from_top = image_size_px * CAM_HORIZON_POS # horizon at 50% from top. HUGE EFFECT.
         
         pix_to_rad = FOV_Rad / image_size_px

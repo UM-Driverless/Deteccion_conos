@@ -1,6 +1,6 @@
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 1 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR
+CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR, 5-> Simulador(control manual)
 # Choose webcam
 CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
 
@@ -8,14 +8,17 @@ VISUALIZE = 1
 VISUALIZER_CENITAL_MAP_SIZE_PERC = 0.5
 
 # CAM CONSTANTS
-CAMERA_FOV_DEG = 120
-CAM_HEIGHT = 0.95 # m
-CAM_HORIZON_POS = 0.5 # % of image from top
+CAMERA_VERTICAL_FOV_DEG = 70 # 120 the horizontal FOV
+CAM_HEIGHT = 0.75 # m
+CAM_HORIZON_POS = 0.5 # per 1 of image from top
+
+# MISSION SELECTION CONSTANTS
+MISSION_SELECTED = 1 # 0 -> Acceleration, 1 -> Skidpad, 2 -> Autocross, 3 -> Trackdrive, 4 -> EBS Test, ... (Using the example of the begginers guide, for now only 0 and 1)
 
 
 # For video file
-VIDEO_FILE_NAME = 'test_media/video.mp4' # Only used if CAMERA_MODE == 1
-IMAGE_FILE_NAME = 'test_media/image1.png'
+VIDEO_FILE_NAME = 'test_media/videosim.mp4' # Only used if CAMERA_MODE == 1
+IMAGE_FILE_NAME = 'test_media/cones_image.png'
 # IMAGE_FILE_NAME = 'test_media/image3.webp'
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 # WEIGHTS_PATH = 'yolov5/weights/yolov5_models/280.engine'
@@ -25,6 +28,7 @@ WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
 
 CONFIDENCE_THRESHOLD = 0.5 # 0.5
+FLIP_IMAGE = 0
 
 # CAN
 CAN_SEND_MSG_TIMEOUT = 0.005

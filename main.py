@@ -69,11 +69,17 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAN_MODE == 2):
         from connection_utils.can_xavier import CanXavier
 
+
+    ## Agents imported TODO select just one per mission, main class Agent will no longer be needed as each especialized agent inherits from it
+    # TODO remember to make clear which mission is selected
     from agent.agent import Agent
+    from agent.agent_acceleration_mission import Acceleration_Mission
+    from agent.agent_skidpad_mission import Skidpad_Mission
+
+
     from cone_detection.yolo_detector import ConeDetector
     from visualization_utils.visualizer_yolo_det import Visualizer
     from visualization_utils.logger import Logger
-
     import cv2 # Webcam
     
     cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
@@ -103,6 +109,21 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         # TO CONTROL TODO CAMERA_MODE 5 MOVES AUTONOMOUS, 4 JUST SIMULATOR IMAGE
         sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
         simulator_car_controls = fsds.CarControls()
+
+    # SIMULATOR MANUAL -> CAR WONT MOVE ON ITS OWN
+    if (CAMERA_MODE == 5):
+        fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
+        sys.path.insert(0, fsds_lib_path)
+        print(f'FSDS simulator path: {fsds_lib_path}')
+        import fsds # TODO why not recognized when debugging
+        
+        # connect to the simulator 
+        sim_client1 = fsds.FSDSClient() # To get the image
+        sim_client2 = fsds.FSDSClient() # To control the car
+
+        # Check network connection, exit if not connected
+        sim_client1.confirmConnection()
+        sim_client2.confirmConnection()
             
     # THREAD FUNCTIONS
     from thread_functions import *
@@ -158,7 +179,8 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             image = cv2.resize(image, (640*2,640), interpolation=cv2.INTER_AREA)
             image = np.array(image)[:,0:640,:]
             
-            image = cv2.flip(image, flipCode=1) # For testing purposes
+            if (FLIP_IMAGE):
+                image = cv2.flip(image, flipCode=1) # For testing purposes
             
             cam_queue.put(image)
             # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
@@ -231,8 +253,14 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         can_send = CanXavier()
         can_send.send_message()
 
-    ## Agent
-    agent = Agent()
+    ## Agent selection TODO may as well import the necessary classes just when selected
+    if(MISSION_SELECTED == 0): # Acceleration
+        agent = Acceleration_Mission()
+    elif(MISSION_SELECTED == 1): # Skidpad
+        agent = Skidpad_Mission()
+    else: # The default Agent is the class of which other agents inherit from
+        agent = Agent()
+
     agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
     agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
 
@@ -242,6 +270,8 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAMERA_MODE == 2): cam_worker = multiprocessing.Process(target=read_image_webcam, args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 3): cam_worker = multiprocessing.Process(target=read_image_zed,    args=(cam_queue,), daemon=False)
     elif (CAMERA_MODE == 4): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,sim_client1,), daemon=False)
+    elif (CAMERA_MODE == 5): cam_worker = multiprocessing.Process(target=read_image_simulator, args=(cam_queue,sim_client1,), daemon=False)
+
     cam_worker.start()
 
     # READ TIMES
@@ -298,7 +328,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                                     cones,
                                     sim_client2 = sim_client2,
                                     simulator_car_controls = simulator_car_controls
-                                    )
+                                    )                                                                                           
             else:
                 agent.get_action(cones)
 
