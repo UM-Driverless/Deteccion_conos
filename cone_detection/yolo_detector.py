@@ -50,60 +50,6 @@ class ConeDetector(ConeDetectorInterface):
         # x_coords = [(row['xmax']+row['xmin'])/2 for _, row in results.pandas().xyxy[0].iterrows()]
         #ymax_coords = [row['ymax'] for _, row in results.pandas().xyxy[0].iterrows()]
         
-        '''
-        # Intento de vista cenital con warp, no sale bien
-        # cone_coords = np.column_stack((xmax_coords, ymax_coords)).astype(np.float32)
-        # # cone_coords = np.array([xmax_coords, ymax_coords], dtype=np.float32)
-        
-        # area_of_interest = np.array([[300, 200], [340, 200], [640, 640], [0, 640]], dtype=np.float32)
-        # area_of_projection = np.array([[0, 0], [640, 0], [400, 640], [240, 640]], dtype=np.float32)
-        # H, _ = cv2.findHomography(area_of_interest, area_of_projection)
-        # # Reshape the cone_coords array to be a (num_cones, 1, 2) array
-        # cone_coords_3d = cone_coords.reshape(-1, 1, 2)
-
-        # # Apply the homography matrix to the cone coordinates
-        # cone_coords_transformed_3d = cv2.perspectiveTransform(cone_coords_3d, H)
-
-        # # Reshape the transformed coordinates to a (num_cones, 2) array
-        # cone_coords_transformed = cone_coords_transformed_3d.reshape(-1, 2) # -1 means unknown, let numpy figure it out
-        
-        # # Extract the xmax and ymax coordinates from the transformed coordinates
-        # xmax_coords = cone_coords_transformed[:, 0]
-        # ymax_coords = cone_coords_transformed[:, 1]
-        '''
-        
-        '''
-        # INTENTO DE TRIANGULACIÓN. LO DEJO COMO REFERENCIA HASTA QUE TENGAMOS ALGO QUE FUNCIONE BIEN
-        # Define intrinsic camera parameters
-        K = np.array([[500, 0, 320], [0, 500, 320], [0, 0, 1]])
-
-        # Define extrinsic camera parameters
-        R = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])  # Identity rotation matrix
-        t = np.array([0., 0., 1.0])  # Camera position in world coordinates
-
-        # Define image coordinates of the cones
-        img_pts = np.array([[x_coords[i], ymax_coords[i]] for i in range(len(x_coords))])
-
-        # Define a dummy set of image coordinates for the second camera
-        img_pts_2 = img_pts+0.1 # por poner algo de diferencia
-        R_2 = np.array([[0, 0, -1], [0, 1, 0], [0, 1, 0]])  # Identity rotation matrix
-        t_2 = np.array([0., 0., 1.])  # Camera position in world coordinates
-        
-        # Compute the projection matrices
-        P = np.dot(K, np.hstack((R, t.reshape(3, 1))))
-        P_2 = np.dot(K, np.hstack((R_2, t_2.reshape(3, 1))))
-        
-        # Convert image coordinates to homogeneous coordinates
-        img_pts_h = np.hstack((img_pts, np.ones((img_pts.shape[0], 1))))
-        img_pts_2_h = np.hstack((img_pts_2, np.ones((img_pts_2.shape[0], 1))))
-        
-        # Triangulate the 3D coordinates of the cones
-        X_h = cv2.triangulatePoints(P, P_2, img_pts.T, img_pts_2.T).T
-        X = X_h[:, :3] / X_h[:, 3:]
-
-        # Convert to real-world coordinates
-        X_world = np.dot(R.T, X.T - t.reshape(3, 1)).T
-        '''
         
         # To calibrate camera:
             # Field of view (angle)

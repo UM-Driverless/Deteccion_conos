@@ -16,19 +16,19 @@ class Visualize:
                       order_warp_oran_left_center, order_warp_oran_rigth_center, image_shape):
 
         # Creo la imagen de coordenadas y pinto los conos
-        coord_img = np.zeros((image_shape[1], image_shape[1], image_shape[2]), dtype=np.uint8)
+        cenital_img = np.zeros((image_shape[1], image_shape[1], image_shape[2]), dtype=np.uint8)
 
         # Sacar centro de la imagen
-        img_center = int(coord_img.shape[0] / 2)
+        img_center = int(cenital_img.shape[0] / 2)
 
         # Pintar posición de los conos en vista de aguila
-        coord_img = self.draw_coord([(ref_point, 100)], coord_img, (0, 255, 0))
-        coord_img = self.draw_coord([(img_center, 500)], coord_img, (255, 255, 255))
-        coord_img = self.draw_coord(warp_blue_center, coord_img, self.BLUE_COLOR)
-        coord_img = self.draw_coord(warp_yell_center, coord_img, self.YELLOW_COLOR)
-        coord_img = self.draw_coord(order_warp_oran_rigth_center, coord_img, self.ORANGE_COLOR)
-        coord_img = self.draw_coord(order_warp_oran_left_center, coord_img, self.DARK_ORANGE_COLOR)
-        cv2.imshow("coord image", coord_img)
+        cenital_img = self.draw_coord([(ref_point, 100)], cenital_img, (0, 255, 0))
+        cenital_img = self.draw_coord([(img_center, 500)], cenital_img, (255, 255, 255))
+        cenital_img = self.draw_coord(warp_blue_center, cenital_img, self.BLUE_COLOR)
+        cenital_img = self.draw_coord(warp_yell_center, cenital_img, self.YELLOW_COLOR)
+        cenital_img = self.draw_coord(order_warp_oran_rigth_center, cenital_img, self.ORANGE_COLOR)
+        cenital_img = self.draw_coord(order_warp_oran_left_center, cenital_img, self.DARK_ORANGE_COLOR)
+        cv2.imshow("coord image", cenital_img)
 
     def draw_joined_cones(self, order_warp_blue_center, order_warp_yell_center, order_warp_oran_left_center,
                                  order_warp_oran_rigth_center, image_shape):
@@ -53,11 +53,11 @@ class Visualize:
         # Mostrar detecciones
         cv2.imshow("detect", image)
 
-    def draw_coord(self, warp_center, coord_img, color):
+    def draw_coord(self, warp_center, cenital_img, color):
         for coord in warp_center:
             if coord[0] >= 0 and coord[1] >= 0:
-                coord_img = cv2.circle(coord_img, (coord[0], coord[1]), radius=2, color=color, thickness=3)
-        return coord_img
+                cenital_img = cv2.circle(cenital_img, (coord[0], coord[1]), radius=2, color=color, thickness=3)
+        return cenital_img
 
     def draw_plot(self, blue_center, yell_center, oran_left_center, oran_rigth_center, xmin, xmax, ymin, ymax):
         # Fuerzo el uso de backend TkAgg por que al instalar la API de detección de TF usa agg

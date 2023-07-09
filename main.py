@@ -322,7 +322,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 car_state = can_queue.get()
             
             # Get actions from agent
-
             if (CAMERA_MODE == 4):
                 agent.get_action_sim(
                                     cones,

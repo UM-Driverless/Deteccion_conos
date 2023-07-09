@@ -77,10 +77,12 @@ class Agent():
         Update agent_target, calculated from the cones and car_state.
         '''
         
-                # STEER
+        # STEER
         def take_x(cone): return cone['coords']['x']
+        
         blues = [cone for cone in cones if (cone['label'] == 'blue_cone')]
         blues.sort(key=take_x)
+        
         yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
         yellows.sort(key=take_x)
 
@@ -90,9 +92,8 @@ class Agent():
         orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
         orange.sort(key=take_x)
 
-
-        if (len(large_oranges) > 2) and (large_oranges[0]['coords']['x']) < 1:
-              agent_target['steer'] = 1        
+        if (len(large_oranges) > 2) and (large_oranges[0]['coords']['x'] < 1):
+              agent_target['steer'] = 1
 
         brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
 
@@ -104,12 +105,10 @@ class Agent():
             agent_target['brake'] = 1.0
         else: # si va rapido dejamos de acelerar
             agent_target['acc'] = 0.0
-           
         
-        #STEER
-
+        # STEER
         if (len(blues) > 0) and (len(yellows) > 0):
-            #I assume they're sorted from closer to further
+            # I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
             print(f'center:{center}')
             agent_target['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
