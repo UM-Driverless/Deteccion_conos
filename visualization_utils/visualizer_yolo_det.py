@@ -94,11 +94,10 @@ class Visualizer():
             f'    fps: {int(fps):.2f}',
             f'    Cones: {len(cones)}',
             f'AGENT TARGET:',
-            f'    acc: {agent_target["acc"]}',
-            f'    steer: {agent_target["steer"]}',
+            f'    acc: {agent_target["acc"]:.2f}',
+            f'    steer: {agent_target["steer"]:.5f}',
             f'    throttle: {agent_target["throttle"]}',
-            f'    brake: {agent_target["brake"]}',
-            f'    clutch: {agent_target["clutch"]}',
+            f'    brake: {agent_target["brake"]:.2f}',
         ]
         
         for i in range(11):
@@ -152,17 +151,14 @@ class Visualizer():
         steer = agent_target['steer']
         throttle = agent_target['throttle']
         brake = agent_target['brake']
-        clutch = agent_target['clutch']
         
         text_steer =    'steer:  {:+.3f}'.format(steer)
         text_throttle = 'throttle: {:.3f}'.format(throttle)
         text_brake =    'brake:   {:.3f}'.format(brake)
-        text_clutch =   'clutch:  {:.3f}'.format(clutch)
 
         ste_img = np.ones((5, 41, 3), dtype=np.uint8) * 255
         thr_img = np.ones((5, 41, 3), dtype=np.uint8) * 255
         brk_img = np.ones((5, 41, 3), dtype=np.uint8) * 255
-        clutch_img = np.ones((5, 41, 3), dtype=np.uint8) * 255
 
         ctr_img = np.zeros((36, 87, 3), dtype=np.uint8)
 
@@ -170,17 +166,14 @@ class Visualizer():
         throttle = np.int(np.clip(throttle, 0.0, 1.0) * 41)
         brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
         # brake = np.int(np.clip(brake, 0.0, 1.0) * 41)
-        clutch = np.int(np.clip(clutch, 0.0, 1.0) * 41)
 
         ste_img[:, steer:steer + 1, 1:3] = np.zeros((5, 1, 2), dtype=np.uint8)
         thr_img[:, :throttle, 1] = thr_img[:, :throttle, 1] * 0
         brk_img[:, :brake, 2] = brk_img[:, :brake, 2] * 0
-        clutch_img[:, :clutch, 0] = clutch_img[:, :clutch, 0] * 0
 
         ctr_img[3:8, 43:84, :] = ste_img
         ctr_img[12:17, 43:84, :] = thr_img
         ctr_img[20:25, 43:84, :] = brk_img
-        ctr_img[28:33, 43:84, :] = clutch_img
 
 
         ctr_img = cv2.resize(ctr_img, (200, 50))
@@ -192,7 +185,6 @@ class Visualizer():
         ctr_img = cv2.putText(ctr_img, text_steer, (1, 10), font, fontScale, color, thickness, cv2.LINE_AA)
         ctr_img = cv2.putText(ctr_img, text_throttle, (1, 22), font, fontScale, color, thickness, cv2.LINE_AA)
         ctr_img = cv2.putText(ctr_img, text_brake, (1, 34), font, fontScale, color, thickness, cv2.LINE_AA)
-        ctr_img = cv2.putText(ctr_img, text_clutch, (1, 46), font, fontScale, color, thickness, cv2.LINE_AA)
 
         return ctr_img
 

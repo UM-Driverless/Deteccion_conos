@@ -1,5 +1,5 @@
 # CONSTANTS FOR SETTINGS
-CAN_MODE = 2 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
+CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
 CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR, 5 -> Simulator (manual control)
 # Choose webcam
 CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
@@ -53,7 +53,7 @@ agent_target = {
     "steer": 0., # -1.0 to 1.0
     "throttle": 0., # 0.0 to 1.0
     "brake": 0., # 0.0 to 1.0
-    "clutch": 0., # ? 0.8 I've seen
+    # "clutch": 0., # ? 0.8 I've seen
     # "upgear": 0., # 
     # "downgear": 0.,
     # "gear": 0. # Should be an integer
