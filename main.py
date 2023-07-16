@@ -16,6 +16,8 @@ MAIN script to run all the others. Shall contain the main classes, top level fun
     - Active bash folder is ~/Deteccion_conos/
     - Check requirements{*}.txt, ZED API and gcc compiler up to date (12.1.0), etc.
 
+- For CAN to work first run setup_can0.sh
+
 # REFERENCES
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 vulture . --min-confidence 100
