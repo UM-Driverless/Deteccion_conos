@@ -168,8 +168,3 @@ ASB_ID = {
 ARD_ID = {
 "ID": int("201", 16)
 }
-
-# TODO deleteme moved to globals.py
-CAN_SEND_MSG_TIMEOUT = 0.005
-CAN_ACTION_DIMENSION = 100.
-CAN_STEER_DIMENSION = 122880.
