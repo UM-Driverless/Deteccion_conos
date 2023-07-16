@@ -46,12 +46,12 @@ class Agent():
         return kp, ki, kd, throttle_kp, throttle_ki, throttle_kd, brake_kp, brake_ki, brake_kd
     """
 
-    def get_action_sim(self, cones, sim_client2, simulator_car_controls):
+    def act_sim(self, cones, sim_client2, simulator_car_controls):
         '''
-        Control the simulator
+        Control the simulator. Runs _get_target with more stuff. Higher level function
 
         1. Read speed from simulator
-        2. Calculate next move with get_agent_target()
+        2. Calculate next move with _get_target()
         3. Send the next move to the simulator
         '''
         # Read Simulator
@@ -59,7 +59,7 @@ class Agent():
         car_state['speed'] = sim_state.speed
         
         # Calculate agent_target
-        self.get_agent_target(car_state, cones)
+        self._get_target(cones)
         
         # Update Simulator
         simulator_car_controls.steering = agent_target['steer']
@@ -68,11 +68,13 @@ class Agent():
 
         sim_client2.setCarControls(simulator_car_controls)
 
-    def get_action(self, cones):
-        self.get_agent_target(car_state, cones)
-
-
-    def get_agent_target(self, car_state, cones):
+    def act(self, cones):
+        '''
+        
+        '''
+        self._get_target(cones)
+        
+    def _get_target(self, cones):
         '''
         Update agent_target, calculated from the cones and car_state.
         '''
@@ -86,37 +88,21 @@ class Agent():
         yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
         yellows.sort(key=take_x)
 
-        large_oranges = [cone for cone in cones if (cone['label'] == 'large_orange_cone')]
-        large_oranges.sort(key=take_x)
-
-        orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
-        orange.sort(key=take_x)
-
-        if (len(large_oranges) > 2) and (large_oranges[0]['coords']['x'] < 1):
-              agent_target['steer'] = 1
-
-        brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
-
         # SPEED CONTROL - agent_target
-        if (car_state['speed'] < 5) and (not brake_condition): #si va lento y no ve conos naranjas
-            agent_target['acc'] = 0.5
-        elif brake_condition: # da igual la velocidad, si ve conos naranjas
-            agent_target['acc'] = 0.0
-            agent_target['brake'] = 1.0
-        else: # si va rapido dejamos de acelerar
+        if (car_state['speed'] < 5):
+            agent_target['acc'] = 1.0
+        else:
             agent_target['acc'] = 0.0
         
-        # STEER CONTROL - agent_target
+        # STEER CONTROL
         if (len(blues) > 0) and (len(yellows) > 0):
             # I assume they're sorted from closer to further
-            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
-            print(f'center:{center}')
-            agent_target['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
+            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
+            # print(f'center:{center}')
+            agent_target['steer'] = (-center) * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
             agent_target['steer'] = 1 # -1 left, 1 right, 0 neutral
         elif len(yellows) > 0:
             agent_target['steer'] = -1 # -1 left, 1 right, 0 neutral
         else:
-            agent_target['steer'] = 0
-
-            
+            agent_target['steer'] = -1 # left to see some cones or go in circles

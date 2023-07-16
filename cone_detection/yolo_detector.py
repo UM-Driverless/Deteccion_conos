@@ -77,7 +77,7 @@ class ConeDetector(ConeDetectorInterface):
                 
                 # x is longitudinal, y is lateral
                 longit = distance_horiz * math.cos(angle_z)
-                lateral = distance_horiz * math.sin(angle_z)
+                lateral = -distance_horiz * math.sin(angle_z)
                 
                 cones.append({
                     'label': str(row['name'].split('class')[-1]),

@@ -1,21 +1,18 @@
 from agent.agent import Agent
-
 from globals.globals import * # Global variables and constants, as if they were here
+
+# TODO por que heredar varios agentes en vez de meter metodos en uno.
 
 class Skidpad_Mission(Agent):
     #TODO REWRITE ALL THE METHODS THAT ARE SPECIALIZED FOR THIS MISSION or else:
     def __init__(self):
         super().__init__()
-        
-    def get_action_sim(self, cones, sim_client2, simulator_car_controls):
-        super().get_action_sim(cones, sim_client2, simulator_car_controls)
+    
+    def act_sim(self, cones, sim_client2, simulator_car_controls):
+        super().act_sim(cones, sim_client2, simulator_car_controls)
 
-    def get_action(self, cones):
-        super().get_action(cones)
-
-    # SUPERCHARGED METHODS 
-
-    def get_agent_target(self, car_state, cones):
+    # SUPERCHARGED METHODS
+    def _get_target(self, cones):
         '''
         Update agent_target, calculated from the cones and car_state.
         '''
@@ -75,7 +72,7 @@ class Skidpad_Mission(Agent):
         if (len(blues) > 0) and (len(yellows) > 0):
             #I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
-            print(f'center:{center}')
+            # print(f'center:{center}')
             agent_target['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
             agent_target['steer'] = 1 # -1 left, 1 right, 0 neutral

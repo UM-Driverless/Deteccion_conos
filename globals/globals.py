@@ -1,19 +1,20 @@
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> KVaser, 2 -> Arduino
-CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR, 5-> Simulador(control manual)
+CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR, 5 -> Simulator (manual control)
 # Choose webcam
 CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
 
 VISUALIZE = 1
 VISUALIZER_CENITAL_MAP_SIZE_PERC = 0.5
 
+# MISSION SELECTION CONSTANTS
+MISSION_SELECTED = 0 # 0 -> Generic: Runs continuously, 1 -> Acceleration, 2 -> Skidpad, 3 -> Autocross, 4 -> Trackdrive, 5 -> EBS Test, ... (Using the example of the begginers guide)
+
 # CAM CONSTANTS
 CAMERA_VERTICAL_FOV_DEG = 70 # 120 the horizontal FOV
 CAM_HEIGHT = 0.75 # m
 CAM_HORIZON_POS = 0.5 # per 1 of image from top
-
-# MISSION SELECTION CONSTANTS
-MISSION_SELECTED = 1 # 0 -> Acceleration, 1 -> Skidpad, 2 -> Autocross, 3 -> Trackdrive, 4 -> EBS Test, ... (Using the example of the begginers guide, for now only 0 and 1)
+# Simulator camera (cam1) pos: (-.3,-.16,.8)
 
 
 # For video file

@@ -7,7 +7,9 @@ MAIN script to run all the others. Shall contain the main classes, top level fun
 - If CAMERA_MODE = 4, start the simulator first, running fsds-v2.2.0-linux/FSDS.sh (This program can be located anywhere)
     - Make sure there's a camera called 'cam'
     - Make sure the simulator folder is called 'Formula-Student-Driverless-Simulator'
-
+- You may need in the home directory:
+    - [Deteccion_conos](https://github.com/UM-Driverless/Deteccion_conos)
+    - [Formula-Student-Driverless-Simulator](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator)
 
 # REFERENCES
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
@@ -39,7 +41,6 @@ vulture . --min-confidence 100
 - Wanted to make visualize work in a thread and for any resolution, but now it works for any resolution, don't know why, and it's always about 3ms so it's not worth it for now.
 
 # STUFF
-#if __name__ == '__main__': # removed because this file should never be imported as a module.
 To stop: Ctrl+C in the terminal
 
 # INFO
@@ -47,6 +48,10 @@ In ruben laptop:
     torch.hub.load(): YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
     torch.hub.load(): YOLOv5 🚀 2023-4-1 Python-3.10.6 torch-1.11.0+cu102 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
     CUDA11.7, nvidia-driver-515 (propietary), pytorch 2.0.0 (The version is automatically set. I didn't choose it)
+- S_b: Body Coordinate system, origin in camera focal point:
+    - X: Forwards
+    - Y: Left
+    - Z: Up
 
 """
 
@@ -69,14 +74,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     elif (CAN_MODE == 2):
         from connection_utils.can_xavier import CanXavier
 
-
-    ## Agents imported TODO select just one per mission, main class Agent will no longer be needed as each especialized agent inherits from it
-    # TODO remember to make clear which mission is selected
-    from agent.agent import Agent
-    from agent.agent_acceleration_mission import Acceleration_Mission
-    from agent.agent_skidpad_mission import Skidpad_Mission
-
-
     from cone_detection.yolo_detector import ConeDetector
     from visualization_utils.visualizer_yolo_det import Visualizer
     from visualization_utils.logger import Logger
@@ -93,12 +90,13 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
 
     # SIMULATOR
     if (CAMERA_MODE == 4):
-        fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
+        # With https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator cloned in the home directory:
+        fsds_lib_path = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python")
         sys.path.insert(0, fsds_lib_path)
         print(f'FSDS simulator path: {fsds_lib_path}')
         import fsds # TODO why not recognized when debugging
         
-        # connect to the simulator 
+        # connect to the simulator
         sim_client1 = fsds.FSDSClient() # To get the image
         sim_client2 = fsds.FSDSClient() # To control the car
 
@@ -106,24 +104,28 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         sim_client1.confirmConnection()
         sim_client2.confirmConnection()
         
-        # TO CONTROL TODO CAMERA_MODE 5 MOVES AUTONOMOUS, 4 JUST SIMULATOR IMAGE
+        # Control the Car
         sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
         simulator_car_controls = fsds.CarControls()
 
     # SIMULATOR MANUAL -> CAR WONT MOVE ON ITS OWN
     if (CAMERA_MODE == 5):
-        fsds_lib_path = os.path.join(os.getcwd(),"Formula-Student-Driverless-Simulator","python")
+        # With https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator cloned in the home directory:
+        fsds_lib_path = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python")
         sys.path.insert(0, fsds_lib_path)
         print(f'FSDS simulator path: {fsds_lib_path}')
         import fsds # TODO why not recognized when debugging
         
-        # connect to the simulator 
+        # connect to the simulator
         sim_client1 = fsds.FSDSClient() # To get the image
         sim_client2 = fsds.FSDSClient() # To control the car
 
         # Check network connection, exit if not connected
         sim_client1.confirmConnection()
         sim_client2.confirmConnection()
+        
+        # No control. Give to keyboard
+        sim_client2.enableApiControl(False)
             
     # THREAD FUNCTIONS
     from thread_functions import *
@@ -253,13 +255,18 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         can_send = CanXavier()
         can_send.send_message()
 
-    ## Agent selection TODO may as well import the necessary classes just when selected
-    if(MISSION_SELECTED == 0): # Acceleration
+    ## Agent selection
+    if (MISSION_SELECTED == 0): # Generic
+        from agent.agent import Agent
+        agent = Agent()
+    elif (MISSION_SELECTED == 1): # Acceleration
+        from agent.agent_acceleration_mission import Acceleration_Mission
         agent = Acceleration_Mission()
-    elif(MISSION_SELECTED == 1): # Skidpad
+    elif (MISSION_SELECTED == 2): # Skidpad
+        from agent.agent_skidpad_mission import Skidpad_Mission
         agent = Skidpad_Mission()
     else: # The default Agent is the class of which other agents inherit from
-        agent = Agent()
+        raise Exception(f'ERROR: WRONG MISSION_SELECTED VALUE. Got {MISSION_SELECTED} but expected int from 0 to 2')
 
     agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
     agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
@@ -291,11 +298,11 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     # Main loop ------------------------
     try:
         print(f'Starting main loop...')
-        while True:  
+        while True:
             recorded_times[0] = time.time()
 
             image = cam_queue.get(timeout=4)
-            cv2.imshow('im',image)
+            # cv2.imshow('im',image)
             cv2.waitKey(1)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             # Resize to IMAGE_RESOLUTION no matter how we got the image
@@ -323,13 +330,13 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             # Get actions from agent
             if (CAMERA_MODE == 4):
-                agent.get_action_sim(
+                agent.act_sim(
                                     cones,
                                     sim_client2 = sim_client2,
                                     simulator_car_controls = simulator_car_controls
                                     )                                                                                           
             else:
-                agent.get_action(cones)
+                agent.act(cones)
 
             recorded_times[3] = time.time()
 
@@ -375,7 +382,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             ## Plot the times
             fig = plt.figure(figsize=(12, 4))
-            plt.bar(['cam.read()','detect_cones()','agent.get_action()','visualize'],average_time_taken)
+            plt.bar(['cam.read()','detect_cones()','agent.act()','visualize'],average_time_taken)
             plt.ylabel("Average time taken [s]")
             plt.figtext(.8,.8,f'{fps:.2f}Hz')
             plt.title("Execution time per section of main loop")
