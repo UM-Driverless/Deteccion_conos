@@ -34,10 +34,6 @@ class Acceleration_Mission(Agent):
         orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
         orange.sort(key=take_x)
 
-
-        # if (len(large_oranges) > 2) and (large_oranges[0]['coords']['x']) < 1:
-        #       agent_target['steer'] = 1
-
         brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
 
         # SPEED

@@ -28,11 +28,7 @@ class Skidpad_Mission(Agent):
         large_oranges.sort(key=take_x)
 
         orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
-        orange.sort(key=take_x)
-
-
-        # if (len(large_oranges) > 2) and (large_oranges[0]['coords']['x']) < 1:
-        #       agent_target['steer'] = 1        
+        orange.sort(key=take_x)   
 
         brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1) and (len(blues) == 0 and len(yellows) == 0)
         intersection_trigger = (len(large_oranges) == 4) and (large_oranges[0]['coords']['x'] < 1.2)

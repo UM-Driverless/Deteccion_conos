@@ -1,7 +1,7 @@
 from globals.globals import * # Global variables and constants, as if they were here
-import can # CanXavier
+import can # python-can (Jetson)
 
-class CanXavier():
+class CanJetson():
     """
     Class that manages the CAN communications with the Nvidia Jetson Xavier.
     
@@ -18,7 +18,7 @@ class CanXavier():
         # De momento usamos BufferedReader, que es una implementación por defecto de la librería, con un buffer de mensajes. Si necesitamos que sea async podemos
         # usar AsyncBufferedReader.
         self.buffer = can.BufferedReader()
-        #self.notifier = can.Notifier(self.bus, [self.buffer])
+        # self.notifier = can.Notifier(self.bus, [self.buffer])
         # self.logger.write_can_log("CAN listener connected") # TODO LOGGER IN FUTURE
         
         
@@ -36,13 +36,13 @@ class CanXavier():
         try:
             self.bus.send(frame, timeout=0.005)
         except can.CanError as e:
-            print("ERROR: Cannot send CAN message using Xavier")
+            print(f"ERROR: Can't send CAN message (python-can, Jetson)\n {e}")
         
         # print(f'FRAME SENT: {frame}')
     def send_message(self, id, data):
         """
         
-        self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_n)
+        Example: self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_n)
         """
         msg = can.Message(arbitration_id=id, data=data)
         

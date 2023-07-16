@@ -11,14 +11,14 @@ MAIN script to run all the others. Shall contain the main classes, top level fun
     - [Deteccion_conos](https://github.com/UM-Driverless/Deteccion_conos)
     - [Formula-Student-Driverless-Simulator](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator)
 
+- CHECK THIS:
+    - Weights in yolov5/weights/yolov5_models
+    - Active bash folder is ~/Deteccion_conos/
+    - Check requirements{*}.txt, ZED API and gcc compiler up to date (12.1.0), etc.
+
 # REFERENCES
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 vulture . --min-confidence 100
-
-# CHECKS
-- Weights in yolov5/weights/yolov5_models
-- Active bash folder is ~/Deteccion_conos/
-- Check requirements{*}.txt, ZED API and gcc compiler up to date (12.1.0), etc.
 
 # TODO
 - Solve TORNADO.PLATFORM.AUTO ERROR, WHEN USING SIMULATOR
@@ -72,7 +72,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     if (CAN_MODE == 1):
         from connection_utils.can_kvaser import CanKvaser
     elif (CAN_MODE == 2):
-        from connection_utils.can_xavier import CanXavier
+        from connection_utils.can_xavier import CanJetson
 
     from cone_detection.yolo_detector import ConeDetector
     from visualization_utils.visualizer_yolo_det import Visualizer
@@ -249,11 +249,12 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         can_send_worker = multiprocessing.Process(target=can_send_thread, args=(can_queue, can_receive,), daemon=False)
         can_send_worker.start()
         
-        print('CAN connection initialized')
+        print('CAN (Kvaser) initialized')
     elif (CAN_MODE == 2):
-        # CAN with Xavier
-        can_send = CanXavier()
+        # CAN with Jetson
+        can_send = CanJetson()
         can_send.send_message()
+        print('CAN (python-can, Jetson) initialized')
 
     ## Agent selection
     if (MISSION_SELECTED == 0): # Generic
@@ -326,7 +327,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             # Update car values from CAN
             if (CAN_MODE == 1):
-                car_state = can_queue.get()
+                car_state = can_queue.get() # TODO there are much more CAN things to do this.
             
             # Get actions from agent
             if (CAMERA_MODE == 4):

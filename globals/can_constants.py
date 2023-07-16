@@ -91,6 +91,8 @@ TRAJ_ID = {
 "TRAJ_STATE": int("323", 16),
 }
 
+## STEERING
+
 ## IDs STEERING MESSAGES
 STEER_ID = {
 "STEER_ID": int("601", 16),  # 0x601
