@@ -6,6 +6,7 @@ from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessing
 #from simple_pid import PID
 
 from globals.globals import * # Global variables and constants, as if they were here
+import connection_utils.communication_controllers.can_utils as can_utils
 
 # TODO SIMPLE AGENT THAT INHERITS FROM GENERAL
 
@@ -14,8 +15,12 @@ class Agent():
     Main Agent class, with all the common actions between agents.
     Each different test will inherit from this class and implement the specific actions for the test.
     '''
+    # can = can_utils.CAN()
+    
     def __init__(self):
         self.cone_processing = ConeProcessing()
+        # self.can.init_can()
+        # self.can._init_steering()
 
     """
     def valTrackbarsPID(self):
@@ -73,6 +78,7 @@ class Agent():
         
         '''
         self._get_target(cones)
+        # self._get_target_real(cones)
         
     def _get_target(self, cones):
         '''
@@ -106,3 +112,44 @@ class Agent():
             agent_target['steer'] = -1 # -1 left, 1 right, 0 neutral
         else:
             agent_target['steer'] = -1 # left to see some cones or go in circles
+
+
+    #Pruebas can
+    def _get_target_real(self, cones):
+   
+        # STEER
+        def take_x(cone): return cone['coords']['x']
+        blues = [cone for cone in cones if (cone['label'] == 'blue_cone')]
+        blues.sort(key=take_x)
+        yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
+        yellows.sort(key=take_x)
+
+        large_oranges = [cone for cone in cones if (cone['label'] == 'large_orange_cone')]
+        large_oranges.sort(key=take_x)
+
+        orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
+        orange.sort(key=take_x)
+
+        brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
+
+        # SPEED
+        if (car_state['speed'] < 5) and (not brake_condition): #si va lento y no ve conos naranjas
+            # send_action_msg(self, throttle, brake, steer, clutch, upgear, downgear)
+            self.can.send_action_msg(0.5, 0, 0.0, 0, 0, 0)
+        elif brake_condition: # da igual la velocidad, si ve conos naranjas
+            self.can.send_action_msg(0, 1, 0.0, 0, 0, 0)
+        else: # If it's fast we stop accelerating
+            self.can.send_action_msg(0, 0, 0.0, 0, 0, 0)
+        
+        # STEER
+        if (len(blues) > 0) and (len(yellows) > 0):
+            #I assume they're sorted from closer to further
+            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
+            # print(f'center:{center}')
+            self.can.send_action_msg(0, 0, center * 0.5, 0, 0, 0)
+        elif len(blues) > 0:
+            self.can.send_action_msg(0, 0, 1, 0, 0, 0)
+        elif len(yellows) > 0:
+            self.can.send_action_msg(0, 0, -1, 0, 0, 0)
+        else:
+            self.can.send_action_msg(0, 0, 0.0, 0, 0, 0)

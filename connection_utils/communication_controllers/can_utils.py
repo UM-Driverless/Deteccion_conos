@@ -29,6 +29,14 @@ class CAN(CANInterface):
         # TODO: [Sergio] Mover inicialización de la dirección a otra funcción
         self._init_steering()
 
+    def send_status_msg(self):
+        """
+        Send the status of the system through CAN message.
+
+        Params to be defined.
+        """
+    def send_sync_msg(self):
+        ''''''
     def _init_steering(self):
         data_steer_msg_n = [can_constants.STEER_INIT_ID['MSG_30'], can_constants.STEER_INIT_ID['MSG_31'],
                             can_constants.STEER_INIT_ID['MSG_32'], can_constants.STEER_INIT_ID['MSG_33'],
@@ -161,7 +169,7 @@ class CAN(CANInterface):
 
     def send_message(self, idcan, datalength, data):
         #############################################################
-        #    Sen CAN message
+        #    Send CAN message
         #############################################################
         # DJU 17.02.2022         msg = can.Message(arbitration_id=can_constants.TRAJ_ID['TRAJ_ACT'], data=data, extended_id=False)
         # print(data)
