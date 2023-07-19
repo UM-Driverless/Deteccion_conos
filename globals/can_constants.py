@@ -27,19 +27,22 @@ CAN_ID = {
         "STATE": int("323", 16),
     },
     "STEER": {
-        "ID": int("601", 16),  # 0x601
+        "ID": int("601", 16),  # 0x601 TODO CHANGE TO "ID_STEERING_PCB"
         # MSG F: Toggle New Position Bit
-        "MSG_00": int("2B", 16),  # 0x2B Envíar 2 bytes a la controladora
-        "MSG_01": int("40", 16),  # 0x40 Indice low
-        "MSG_02": int("60", 16),  # 0x60 Indice High
-        "MSG_03": int("00", 16),  # 0x00 Subindice
-        "MSG_04": int("0F", 16),  # 0x0F Datos 0
-        "MSG_05": int("00", 16),  # 0x00 Datos 1
+        "MSG_F": [int("2B", 16), int("40", 16), int("60", 16), int("00", 16), int("0F", 16), int("00", 16)]
+        # "MSG_00": int("2B", 16),  # 0x2B Envíar 2 bytes a la controladora
+        # "MSG_01": int("40", 16),  # 0x40 Indice low
+        # "MSG_02": int("60", 16),  # 0x60 Indice High
+        # "MSG_03": int("00", 16),  # 0x00 Subindice
+        # "MSG_04": int("0F", 16),  # 0x0F Datos 0
+        # "MSG_05": int("00", 16),  # 0x00 Datos 1
+        
         # MSG D: Posicion objetivo
         "MSG_10": int("23", 16),  # 0x23 Envíar 4 bytes a la controladora
         "MSG_11": int("7A", 16),  # 0x7A Indice low
         "MSG_12": int("60", 16),  # 0x60 Indice High
         "MSG_13": int("00", 16),  # 0x00 Subindice
+        
         # MSG E: Orden de posicionamiento
         "MSG_20": int("2B", 16),  # 0x2B Envíar 2 bytes a la controladora
         "MSG_21": int("40", 16),  # 0x40 Indice low
@@ -58,7 +61,7 @@ CAN_ID = {
         "SIGNALS": int("361", 16),
         "STATE": int("362", 16),
     },
-    "ARDUINO": int("201", 16)  
+    "ARDUINO": int("201", 16)
 }
 
 
@@ -166,8 +169,3 @@ ASB_ID = {
 ARD_ID = {
 "ID": int("201", 16)
 }
-
-# TODO deleteme moved to globals.py
-# CAN_SEND_MSG_TIMEOUT = 0.005
-# CAN_ACTION_DIMENSION = 100.
-# CAN_STEER_DIMENSION = 122880.

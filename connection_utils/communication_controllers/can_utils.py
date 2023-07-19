@@ -4,10 +4,9 @@ import struct
 import time
 import os
 
-from connection_utils.communication_controllers.can_interface import CANInterface
 from globals import can_constants, globals
 
-class CAN(CANInterface):
+class CAN():
     def __init__(self, logger=None):
         super().__init__()
         self.sleep_between_msg = 0.000
