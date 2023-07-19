@@ -91,8 +91,6 @@ TRAJ_ID = {
 "TRAJ_STATE": int("323", 16),
 }
 
-## STEERING
-
 ## IDs STEERING MESSAGES
 STEER_ID = {
 "STEER_ID": int("601", 16),  # 0x601
@@ -141,7 +139,7 @@ STEER_INIT_ID = {
 "MSG_23": int("00", 16),  # 0x00 Subindice
 "MSG_24": int("0F", 16),  # 0x0F Datos 0
 "MSG_25": int("00", 16),  # 0x00 Datos 1
-# MSG Ñ: Deshabilitar
+# MSG N: Deshabilitar
 "MSG_30": int("2B", 16),  # 0x2B Envíar 2 bytes a la controladora
 "MSG_31": int("40", 16),  # 0x40 Indice low
 "MSG_32": int("60", 16),  # 0x60 Indice High
@@ -168,3 +166,8 @@ ASB_ID = {
 ARD_ID = {
 "ID": int("201", 16)
 }
+
+# TODO deleteme moved to globals.py
+# CAN_SEND_MSG_TIMEOUT = 0.005
+# CAN_ACTION_DIMENSION = 100.
+# CAN_STEER_DIMENSION = 122880.

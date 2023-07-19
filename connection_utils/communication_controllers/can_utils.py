@@ -2,9 +2,10 @@ import can
 import math
 import struct
 import time
+import os
 
 from connection_utils.communication_controllers.can_interface import CANInterface
-from globals import can_constants
+from globals import can_constants, globals
 
 class CAN(CANInterface):
     def __init__(self, logger=None):
@@ -12,22 +13,25 @@ class CAN(CANInterface):
         self.sleep_between_msg = 0.000
         self.logger = logger
         self.init_can()
+        self._init_steering()
 
     def init_can(self):
         """
         Initialize CAN.
         """
-        self.bus = can.interface.Bus(bustype='kvaser', channel=00, bitrate=1000000)  # bustype = 'can'
-        self.logger.write_can_log(self.bus.channel_info)
+        self.bus = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)  # bustype = 'kvaser'
+        # self.logger.write_can_log(self.bus.channel_info)
+        os.system("echo 0 | sudo -S ip link set down can0")
+        os.system("echo 0 | sudo -S ip link set can0 up")
 
         ## Implementamos la clase abstracta Listener (https://python-can.readthedocs.io/en/master/listeners.html)
         # De momento usamos BufferedReader, que es una implementación por defecto de la librería, con un buffer de mensajes. Si necesitamos que sea async podemos
         # usar AsyncBufferedReader.
         self.buffer = can.BufferedReader()
         self.notifier = can.Notifier(self.bus, [self.buffer])
-        self.logger.write_can_log("CAN listener connected")
+        # self.logger.write_can_log("CAN listener connected")
         # TODO: [Sergio] Mover inicialización de la dirección a otra funcción
-        self._init_steering()
+        # self._init_steering()
 
     def send_status_msg(self):
         """
@@ -174,18 +178,18 @@ class CAN(CANInterface):
         # DJU 17.02.2022         msg = can.Message(arbitration_id=can_constants.TRAJ_ID['TRAJ_ACT'], data=data, extended_id=False)
         # print(data)
         msg = can.Message(arbitration_id=idcan, data=data)
-        self.logger.write_can_log("MSG: " + str(msg))
+        # self.logger.write_can_log("MSG: " + str(msg))
 
         # self.logger.write_can_log("MSG: " + msg.__str__())
 
         try:
-            self.bus.send(msg, timeout=can_constants.CAN_SEND_MSG_TIMEOUT)
+            self.bus.send(msg, timeout=globals.CAN_SEND_MSG_TIMEOUT)
         except can.CanError as e:
-            print('Error al mandare msg CAN')
+            print('Error al mandar el msg CAN')
             error = e
             if hasattr(e, 'message'):
                 error = e.message
-            self.logger.write_can_log("Sending ERROR: " + str(error))
+            # self.logger.write_can_log("Sending ERROR: " + str(error))
 
     def decode_message(self, msg):
         message = msg.data.hex()  # Extrae los datos del mensaje CAN y los convierte a hexadecimal
@@ -211,9 +215,9 @@ class CAN(CANInterface):
         if msg_id in can_constants.ASB_ID.values():
             pass
         if msg_id in can_constants.ARD_ID.values():
-            print('Message from arduino readed')
+            print('Message from arduino read')
             if msg_id == can_constants.ARD_ID['ID']:
-                print('ID from arduino readed')
+                print('ID from arduino read')
 
     def get_sen_imu(self, wheel, data):
         acceleration_X = data[0]

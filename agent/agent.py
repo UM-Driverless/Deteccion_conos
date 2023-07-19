@@ -15,12 +15,12 @@ class Agent():
     Main Agent class, with all the common actions between agents.
     Each different test will inherit from this class and implement the specific actions for the test.
     '''
-    # can = can_utils.CAN()
+    can = can_utils.CAN()
     
     def __init__(self):
         self.cone_processing = ConeProcessing()
-        # self.can.init_can()
-        # self.can._init_steering()
+        self.can.init_can()
+        self.can._init_steering()
 
     """
     def valTrackbarsPID(self):
