@@ -15,12 +15,12 @@ class Agent():
     Main Agent class, with all the common actions between agents.
     Each different test will inherit from this class and implement the specific actions for the test.
     '''
-    #can = can_utils.CAN()
+
+    if (CAN_MODE != 0):
+        can = can_utils.CAN()
     
     def __init__(self):
         self.cone_processing = ConeProcessing()
-        #self.can.init_can()
-        #self.can._init_steering()
 
     """
     def valTrackbarsPID(self):
@@ -67,7 +67,7 @@ class Agent():
         self._get_target(cones)
         
         # Update Simulator
-        simulator_car_controls.steering = agent_target['steer']
+        simulator_car_controls.steering = -agent_target['steer'] # Positive z rotation is left, simulator + is right
         simulator_car_controls.throttle = agent_target['acc']
         simulator_car_controls.brake = agent_target['brake']
 
@@ -99,8 +99,7 @@ class Agent():
             agent_target['acc'] = 1.0
         else:
             agent_target['acc'] = 0.0
-
-
+        
         # STEER CONTROL
         """
         if (len(blues) > 1) and (len(yellows) > 1):
@@ -114,18 +113,19 @@ class Agent():
         """
         if (len(blues) > 0) and (len(yellows) > 0):
             # I assume they're sorted from closer to further
-            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2  # positive means left
+            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
             # print(f'center:{center}')
-            agent_target['steer'] = (-center) * 0.5  # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
+            agent_target['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
-            agent_target['steer'] = 1  # -1 left, 1 right, 0 neutral
+            agent_target['steer'] = 1 # -1 left, 1 right, 0 neutral
         elif len(yellows) > 0:
-            agent_target['steer'] = -1  # -1 left, 1 right, 0 neutral
+            agent_target['steer'] = -1 # -1 left, 1 right, 0 neutral
         else:
-            agent_target['steer'] = -1  # left to see some cones or go in circles
+            agent_target['steer'] = -1 # left to see some cones or go in circles
 
 
-    #Pruebas can
+    # Can tests
+    '''
     def _get_target_real(self, cones):
    
         # STEER
@@ -145,7 +145,7 @@ class Agent():
 
         # SPEED
         if (car_state['speed'] < 5) and (not brake_condition): #si va lento y no ve conos naranjas
-            # send_action_msg(self, throttle, brake, steer, clutch, upgear, downgear)
+            # send_action_msg(self, throttle, brake, steer)
             self.can.send_action_msg(0.5, 0, 0.0, 0, 0, 0)
         elif brake_condition: # da igual la velocidad, si ve conos naranjas
             self.can.send_action_msg(0, 1, 0.0, 0, 0, 0)
@@ -164,3 +164,4 @@ class Agent():
             self.can.send_action_msg(0, 0, -1, 0, 0, 0)
         else:
             self.can.send_action_msg(0, 0, 0.0, 0, 0, 0)
+    '''

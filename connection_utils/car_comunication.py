@@ -1,12 +1,10 @@
 """
 Control the flow of information from the sensor (Camera and CAN data) to the main python program.
 """
-
-from connection_utils.comunication_base import ComunicationInterface
 from connection_utils.communication_controllers import can_utils
 import numpy as np
 
-class ConnectionManager(ComunicationInterface):
+class ConnectionManager():
     """
     TODO clear description
     """
@@ -20,7 +18,7 @@ class ConnectionManager(ComunicationInterface):
         Return data coming from car or simulator sensors like camera, speed, gps, throttle, steer, brake, status msg
         :param params: a definir
         :param verbose: (int) If 0 no debug information is printed. If 1, print some debug info. If 2 print all debug info.
-        :return: image, speed, throttle, steer, brake, clutch, gear ... (Ampliable a lo que necesitemos)
+        :return: image, speed, throttle, steer, brake ... (Ampliable a lo que necesitemos)
         """
         can_msg = self.can.get_sensors_data()
 
@@ -29,16 +27,13 @@ class ConnectionManager(ComunicationInterface):
         throttle = 0.
         steer = 0.
         brake = 0.
-        clutch = 0.
-        gear = 0.
-        rpm = 0.
-        # [speed, throttle, steer, brake, gear ...]
-        #return np.array(image), speed, throttle, steer, brake, clutch, gear, rpm
-        return speed, throttle, steer, brake, clutch, gear, rpm
+        # [speed, throttle, steer, brake ...]
+        #return np.array(image), speed, throttle, steer, brake
+        return speed, throttle, steer, brake
 
-    def send_actions(self, throttle, steer, brake, clutch, upgear, downgear):
+    def send_actions(self, throttle, steer, brake):
         """
         Send the actions to performs to the car actuators or to simulator.
         """
-        # print('Send throttle: ', throttle, ' clutch: ', clutch, ' brake: ', brake, ' steer: ', steer,  ' upgear: ', upgear, ' downgear: ', downgear)
-        self.can.send_action_msg(throttle, brake, steer, clutch, upgear, downgear)
+        # print('Send throttle: ', throttle, ' brake: ', brake, ' steer: ', steer)
+        self.can.send_action_msg(throttle, brake, steer)

@@ -42,7 +42,7 @@ class CanJetson():
     def send_message(self, id, data):
         """
         
-        Example: self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_n)
+        Example: self.send_message(can_constants.STEER_ID['STEER_ID'], 6, CAN['STEER']['MSG_N'])
         """
         msg = can.Message(arbitration_id=id, data=data)
         
