@@ -102,7 +102,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     # SIMULATOR
     if (CAMERA_MODE == 4):
         # With https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator cloned in the home directory:
-        fsds_lib_path = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python")
+        fsds_lib_path = os.path.join(os.path.expanduser("~/Documents"), "Formula-Student-Driverless-Simulator", "python")
         sys.path.insert(0, fsds_lib_path)
         print(f'FSDS simulator path: {fsds_lib_path}')
         import fsds # TODO why not recognized when debugging
@@ -298,7 +298,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     recorded_times = np.array([0.]*(TIMES_TO_MEASURE+2)) # Timetags at different points in code
     integrated_time_taken = np.array([0.]*TIMES_TO_MEASURE)
     average_time_taken = np.array([0.]*TIMES_TO_MEASURE)
-    fps = -1.
     integrated_fps = 0.
     loop_counter = 0
 

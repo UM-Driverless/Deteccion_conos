@@ -1,7 +1,7 @@
 from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessingNoWrapped
 #import cv2
 #import simple_pid
-#import numpy as np
+import numpy as np
 #from visualization_utils.logger import Logger
 #from simple_pid import PID
 
@@ -15,12 +15,12 @@ class Agent():
     Main Agent class, with all the common actions between agents.
     Each different test will inherit from this class and implement the specific actions for the test.
     '''
-    can = can_utils.CAN()
+    #can = can_utils.CAN()
     
     def __init__(self):
         self.cone_processing = ConeProcessing()
-        self.can.init_can()
-        self.can._init_steering()
+        #self.can.init_can()
+        #self.can._init_steering()
 
     """
     def valTrackbarsPID(self):
@@ -99,19 +99,30 @@ class Agent():
             agent_target['acc'] = 1.0
         else:
             agent_target['acc'] = 0.0
-        
+
+
         # STEER CONTROL
+        """
+        if (len(blues) > 1) and (len(yellows) > 1):
+            middleCone0 = [(blues[0]['coords']['x']+yellows[0]['coords']['x'])/2,(blues[0]['coords']['y']+yellows[0]['coords']['y'])/2]
+            middleCone1 = [(blues[1]['coords']['x']+yellows[1]['coords']['x'])/2,(blues[1]['coords']['y']+yellows[1]['coords']['y'])/2]
+            extra=(middleCone0[0]*(8.5))/(car_state['speed']+0.01) #8.5 = AVERAGE FPS
+            A = np.array([[0,0,1],[middleCone0[0]**2,middleCone0[0],1],[middleCone1[0]**2,middleCone1[0],1]])
+            B = np.array([0,middleCone0[1],middleCone1[1]])
+            X = np.linalg.solve(A,B)
+            agent_target['steer']=(X[0]*(extra**2)+X[1]*extra+X[2])*-((car_state['speed'])/(8.5*2.3))
+        """
         if (len(blues) > 0) and (len(yellows) > 0):
             # I assume they're sorted from closer to further
-            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
+            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2  # positive means left
             # print(f'center:{center}')
-            agent_target['steer'] = (-center) * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
+            agent_target['steer'] = (-center) * 0.5  # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
-            agent_target['steer'] = 1 # -1 left, 1 right, 0 neutral
+            agent_target['steer'] = 1  # -1 left, 1 right, 0 neutral
         elif len(yellows) > 0:
-            agent_target['steer'] = -1 # -1 left, 1 right, 0 neutral
+            agent_target['steer'] = -1  # -1 left, 1 right, 0 neutral
         else:
-            agent_target['steer'] = -1 # left to see some cones or go in circles
+            agent_target['steer'] = -1  # left to see some cones or go in circles
 
 
     #Pruebas can
