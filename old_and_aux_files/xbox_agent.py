@@ -12,12 +12,9 @@ class AgentXboxController():
         super().__init__(logger=logger)
 
         self.gear = 0
-        self.max_gear = 4
-        self.min_gear = 0
         self.throttle = 0.
         self.brake = 1.
         self.steer = 0.
-        self.clutch = 1.
 
         self.init_constants()
         self.init_pygame()

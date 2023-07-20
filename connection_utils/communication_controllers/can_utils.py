@@ -4,7 +4,9 @@ import struct
 import time
 import os
 
-from globals import can_constants, globals
+from globals.globals import * # Global variables and constants, as if they were here
+
+# TODO LOGGER
 
 class CAN():
     def __init__(self, logger=None):
@@ -41,28 +43,16 @@ class CAN():
     def send_sync_msg(self):
         ''''''
     def _init_steering(self):
-        data_steer_msg_n = [can_constants.STEER_INIT_ID['MSG_30'], can_constants.STEER_INIT_ID['MSG_31'],
-                            can_constants.STEER_INIT_ID['MSG_32'], can_constants.STEER_INIT_ID['MSG_33'],
-                            can_constants.STEER_INIT_ID['MSG_34'], can_constants.STEER_INIT_ID['MSG_35']
-                            ]
-        # self.logger.write_can_log("Init steering message -> " + str(data_steer_msg_n))
-        self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_n)
+        # self.logger.write_can_log("Init steering message -> " + str(CAN['STEER']['MSG_N']))
+        self.send_message(CAN['STEER']['ID'], 6, CAN['STEER']['MSG_N'])
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
 
-        data_steer_msg_a = [can_constants.STEER_INIT_ID['MSG_00'], can_constants.STEER_INIT_ID['MSG_01'],
-                            can_constants.STEER_INIT_ID['MSG_02'], can_constants.STEER_INIT_ID['MSG_03'],
-                            can_constants.STEER_INIT_ID['MSG_04']
-                            ]
-        # self.logger.write_can_log("Init steering message -> " + str(data_steer_msg_a))
-        self.send_message(can_constants.STEER_ID['STEER_ID'], 5, data_steer_msg_a)
+        # self.logger.write_can_log("Init steering message -> " + str(CAN['STEER']['MSG_A']))
+        self.send_message(CAN['STEER']['ID'], 5, CAN['STEER']['MSG_A'])
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
 
-        data_steer_msg_c = [can_constants.STEER_INIT_ID['MSG_20'], can_constants.STEER_INIT_ID['MSG_21'],
-                            can_constants.STEER_INIT_ID['MSG_22'], can_constants.STEER_INIT_ID['MSG_23'],
-                            can_constants.STEER_INIT_ID['MSG_24'], can_constants.STEER_INIT_ID['MSG_25']
-                            ]
         # self.logger.write_can_log("Init steering message -> " + str(data_steer_msg_c))
-        self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_c)
+        self.send_message(CAN['STEER']['ID'], 6, CAN['STEER']['MSG_C'])
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
 
     def get_sensors_data(self):
@@ -87,52 +77,33 @@ class CAN():
 
         return 0
 
-    def send_action_msg(self, throttle, brake, steer, clutch, upgear, downgear):
-        # TODO: el cuarto valor son las marchas, es mejor mandar la señal  upgear, downgear o la marcha en si.
+    def send_action_msg(self, throttle, brake, steer): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
         """
         Send the actions through CAN message.
 
         :param throttle: (float in [0., 1.]) Normalized throttle value.
         :param brake: (float in [0., 1.]) Normalized brake value.
-        :param steer: (float in [-1., 1.]) Normalized steer.
-        :param clutch: (float in [0., 1.]) Normalized clutch value.
-        :param upgear: (bool) True means up a gear, False do nothing.
-        :param downgear: (bool) True means down a gear, False do nothing.
         """
         # Para pasar rango de datos de -1:1 a 0:100
-        throttle = math.trunc(throttle * can_constants.CAN_ACTION_DIMENSION)
-        brake = math.trunc(brake * can_constants.CAN_ACTION_DIMENSION)
-        # steer = math.trunc(((steer * can_constants.CAN_ACTION_DIMENSION) + can_constants.CAN_ACTION_DIMENSION)/2)
-        steer = -math.trunc(int(steer * can_constants.CAN_STEER_DIMENSION))
-        clutch = math.trunc(clutch * can_constants.CAN_ACTION_DIMENSION)
-        upgear = math.trunc(upgear * can_constants.CAN_ACTION_DIMENSION)
-        downgear = math.trunc(downgear * can_constants.CAN_ACTION_DIMENSION)
-        # print('Send actions: ', throttle, clutch, brake, steer, upgear, downgear)
+        throttle = math.trunc(throttle * CAN_ACTION_DIMENSION)
+        brake = math.trunc(brake * CAN_ACTION_DIMENSION)
+        # steer = math.trunc(((steer * CAN_ACTION_DIMENSION) + CAN_ACTION_DIMENSION)/2)
+        steer = -math.trunc(int(steer * CAN_STEER_DIMENSION))
+        # print('Send actions: ', throttle, brake, steer)
         # enviar datos actuadores
-        data = [throttle, clutch, brake, 0, upgear, downgear, 0, 0]
+        data = [throttle, brake, 0, 0, 0]
         # self.logger.write_can_log("Send actions message -> " + str(data))
-        self.send_message(id = can_constants.TRAJ_ID['TRAJ_ACT'], datalength=8, data=data)
+        self.send_message(id = CAN['TRAJ']['ACT'], datalength=8, data=data)
         time.sleep(self.sleep_between_msg)
 
         # enviar datos steering
         # habilita la direccion
-        data_steer_msg_f = [can_constants.STEER_ID['MSG_00'], can_constants.STEER_ID['MSG_01'],
-                            can_constants.STEER_ID['MSG_02'], can_constants.STEER_ID['MSG_03'],
-                            can_constants.STEER_ID['MSG_04'], can_constants.STEER_ID['MSG_05']]
-        # self.logger.write_can_log("Send actions message -> " + str(data_steer_msg_f))
-        self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_f)
+        # self.logger.write_can_log("Send actions message -> " + str(CAN['STEER']['MSG_A']))
+        self.send_message(CAN['STEER']['ID'], 6, CAN['STEER']['MSG_A'])
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
 
         # envia los datos
-        ba = bytearray(struct.pack("i", steer))
-        # steer_values = ["0x%02x" % b for b in ba]
-        steer_values = [b for b in ba]
-        # print('steer_values: ', steer_values)
-        data_steer_msg_d = [can_constants.STEER_ID['MSG_10'], can_constants.STEER_ID['MSG_11'],
-                            can_constants.STEER_ID['MSG_12'], can_constants.STEER_ID['MSG_13'], steer_values[0],
-                            steer_values[1], steer_values[2], steer_values[3]]
-        # self.logger.write_can_log("Send actions message -> " + str(data_steer_msg_d))
-        self.send_message(can_constants.STEER_ID['STEER_ID'], 8, data_steer_msg_d)
+        self.send_message(CAN['STEER']['ID'], 8, CAN['STEER']['MSG_B'])
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
         '''
         slSteer = long (
@@ -144,45 +115,15 @@ class CAN():
         '''
 
         # ejecuta el movimiento
-        data_steer_msg_e = [can_constants.STEER_ID['MSG_20'], can_constants.STEER_ID['MSG_21'],
-                            can_constants.STEER_ID['MSG_22'], can_constants.STEER_ID['MSG_23'],
-                            can_constants.STEER_ID['MSG_24'], can_constants.STEER_ID['MSG_25']]  # valores absolutos
         # self.logger.write_can_log("Send actions message -> " + str(data_steer_msg_e))
-        self.send_message(can_constants.STEER_ID['STEER_ID'], 6, data_steer_msg_e)
-        time.sleep(
-            self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes. Esta espera no debería hacer falta.
+        self.send_message(CAN['STEER']['ID'], 6, CAN['STEER']['MSG_C'])
+        time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes. Esta espera no debería hacer falta.
 
-    '''
-    def send_status_msg(self):
-        """
-        Send the status of the system through CAN message.
-
-        Params to be defined.
-        """
-        pass
-
-    def send_sync_msg(self):
-        """
-        Send the synchronization values through CAN message.
-
-        Params to be defined.
-        """
-        pass
-    '''
-
-    def send_message(self, idcan, datalength, data):
-        #############################################################
-        #    Send CAN message
-        #############################################################
-        # DJU 17.02.2022         msg = can.Message(arbitration_id=can_constants.TRAJ_ID['TRAJ_ACT'], data=data, extended_id=False)
-        # print(data)
-        msg = can.Message(arbitration_id=idcan, data=data)
-        # self.logger.write_can_log("MSG: " + str(msg))
-
-        # self.logger.write_can_log("MSG: " + msg.__str__())
+    def send_message(self, id, datalength, data):
+        msg = can.Message(arbitration_id=id, data=data, is_extended_id=False) # 11 bits of ID, instead of 29
 
         try:
-            self.bus.send(msg, timeout=globals.CAN_SEND_MSG_TIMEOUT)
+            self.bus.send(msg, timeout=globals.CAN_SEND_TIMEOUT)
         except can.CanError as e:
             print('Error al mandar el msg CAN')
             error = e
@@ -199,23 +140,23 @@ class CAN():
         return msg_id, message
 
     def route_msg(self, msg_id):
-        print('route msg: ', msg_id, can_constants.ARD_ID)
-        if msg_id in can_constants.SEN_ID.values():
-            if msg_id == can_constants.SEN_ID['IMU_SENFL']:
+        print('route msg: ', msg_id, CAN['ARD_ID'])
+        if msg_id in SEN_ID.values():
+            if msg_id == CAN['SENFL']['IMU']:
                 pass
-            if msg_id == can_constants.SEN_ID['SIG_SENFL']:
+            if msg_id == CAN['SENFL']['SIG']:
                 pass
-            if msg_id == can_constants.SEN_ID['STATE_SENFL']:
+            if msg_id == CAN['SENFL']['STATE']:
                 pass
-        if msg_id in can_constants.TRAJ_ID.values():
+        if msg_id in TRAJ_ID.values():
             pass
-        if msg_id in can_constants.ASSIS_ID.values():
+        if msg_id in ASSIS_ID.values():
             pass
-        if msg_id in can_constants.ASB_ID.values():
+        if msg_id in ASB_ID.values():
             pass
-        if msg_id in can_constants.ARD_ID.values():
+        if msg_id in ARD_ID.values():
             print('Message from arduino read')
-            if msg_id == can_constants.ARD_ID['ID']:
+            if msg_id == ARD_ID['ID']:
                 print('ID from arduino read')
 
     def get_sen_imu(self, wheel, data):

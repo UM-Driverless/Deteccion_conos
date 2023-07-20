@@ -2,14 +2,13 @@
 Plugin to establish connection and exchange text messages between two platforms. Producing
 this communication on the same machine.
 '''
-from connection_utils.comunication_base import ComunicationInterface
 import socket
 import cv2
 from PIL import Image
 import numpy as np
 
 
-class ConnectionManager(ComunicationInterface):
+class ConnectionManager():
     def __init__(self, ip=None, port=12345, logger=None):
 
         self.logger = logger
@@ -25,7 +24,7 @@ class ConnectionManager(ComunicationInterface):
         self.imageWidth = None
 
         _ = self.get_data()
-        self.send_actions(throttle=0., brake=1., steer=0., clutch=1.0, upgear=0., downgear=0.)
+        self.send_actions(throttle=0., brake=1., steer=0.)
 
     def _bind2server(self, HOST=None, PORT=12345):
         '''
@@ -87,14 +86,12 @@ class ConnectionManager(ComunicationInterface):
         if numberOfCameras < 2:
             image = image[0]
 
-        gear = self.car_data_sim.gear
         rpm = self.car_data_sim.rpm
         self.car_data_sim.speed = speed
-        return np.array(image), speed, throttle, steer, brake, gear, rpm
+        return np.array(image), speed, throttle, steer, brake, rpm
 
-    def send_actions(self, throttle, steer, brake, clutch, upgear, downgear):
-        throttle = self.car_data_sim._clutch_response_simulation(clutch, throttle)
-        self.car_data_sim.update_car_state(throttle, steer, brake, clutch, upgear, downgear)
+    def send_actions(self, throttle, steer, brake):
+        self.car_data_sim.update_car_state(throttle, steer, brake)
         msg = f'{throttle} {brake} {steer}'
         self.mySocket.sendall(msg.encode())  # <- Sends the agent's actions
 
@@ -108,19 +105,9 @@ class carr_data_simulation:
         self.rpm = 1000
         self.speed = 0.
 
-    def update_car_state(self, throttle, steer, brake, clutch, upgear, downgear):
+    def update_car_state(self, throttle, steer, brake):
         self.gear += int(upgear) - int(downgear)
         self.rpm = self.calc_rpm(self.gear, self.speed)
-
-    def _clutch_response_simulation(self, clutch, throttle):
-        # Simula la relacion entre aceleracion y embrague de forma que se produzca una acceleracion proporcional a la activacion del embrague
-        # Simulamos con una función lineal y = mx donde el embrague va a controlar la pendiente.
-        m = np.clip(1.5 - clutch, 0., 1.0)
-        if m > 0.1:
-            throttle = m * throttle
-        else:
-            throttle = 0.
-        return throttle
 
     def calc_rpm(self, gear, speed):
         if speed <= 4.:
