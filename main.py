@@ -23,6 +23,7 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 vulture . --min-confidence 100
 
 # TODO
+- CAN in threads, steering with PDO instead of SDO (faster)
 - Solve TORNADO.PLATFORM.AUTO ERROR, WHEN USING SIMULATOR
 - MAKE ZED WORK AGAIN
 - RESTORE GENERIC AGENT CLASS FOR NO SPECIFIC TEST. THEN THE TESTS INHERIT FROM IT. COMMENTED.
@@ -298,7 +299,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     recorded_times = np.array([0.]*(TIMES_TO_MEASURE+2)) # Timetags at different points in code
     integrated_time_taken = np.array([0.]*TIMES_TO_MEASURE)
     average_time_taken = np.array([0.]*TIMES_TO_MEASURE)
-    fps = -1.
     integrated_fps = 0.
     loop_counter = 0
 
@@ -342,11 +342,10 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             # Get actions from agent
             if (CAMERA_MODE == 4):
-                agent.act_sim(
-                                    cones,
-                                    sim_client2 = sim_client2,
-                                    simulator_car_controls = simulator_car_controls
-                                    )                                                                                           
+                agent.act_sim(cones,
+                              sim_client2 = sim_client2,
+                              simulator_car_controls = simulator_car_controls
+                              )
             else:
                 agent.act(cones)
 
@@ -363,21 +362,19 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 in_speed = 0
                 in_rpm = 0
 
-                visualizer.visualize(agent_target,
+                visualizer.visualize(agent_act,
                                     car_state,
                                     image,
                                     cones,
-                                    fps,
                                     save_frames=False)
             
             recorded_times[4] = time.time()
 
             # END OF LOOP
             loop_counter += 1
-            fps = 1/(recorded_times[TIMES_TO_MEASURE] - recorded_times[0])
-            integrated_fps += fps
+            car_state['fps'] = 1/(recorded_times[TIMES_TO_MEASURE] - recorded_times[0])
+            integrated_fps += car_state['fps']
             integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
-            
     finally:
         # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
 
@@ -385,9 +382,9 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         # cam.release()
         if loop_counter != 0:
             average_time_taken = integrated_time_taken/loop_counter
-            fps = integrated_fps/loop_counter
+            car_state['fps'] = integrated_fps/loop_counter
             print(f'\n\n\n------------ RESULTS ------------\n',end='')
-            print(f'FPS: {fps}')
+            print(f'FPS: {car_state["fps"]}')
             print(f'LOOPS: {loop_counter}')
             print(f'AVERAGE TIMES: {average_time_taken}')
             print(f'---------------------------------\n',end='')
@@ -396,12 +393,12 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             fig = plt.figure(figsize=(12, 4))
             plt.bar(['cam.read()','detect_cones()','agent.act()','visualize'],average_time_taken)
             plt.ylabel("Average time taken [s]")
-            plt.figtext(.8,.8,f'{fps:.2f}Hz')
+            plt.figtext(.8,.8,f'{car_state["fps"]:.2f}Hz')
             plt.title("Execution time per section of main loop")
             plt.savefig("logs/times.png")
         else:
             average_time_taken = -1
-            fps = -1
+            car_state['fps'] = -1
             print("-------- ERROR, NO RESULTS --------")
         
 
@@ -409,7 +406,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         cam_worker.terminate()
         cv2.destroyAllWindows()
         
-        agent_target = {
+        agent_act = {
             "throttle": 0.,
             "brake": 0.,
             "steer": 0.,

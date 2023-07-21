@@ -9,31 +9,31 @@ class MessageProcessing():
         
         # LINK ID TO EACH PARSE METHOD FOR CAN MESSAGES. FOR NOW IN __INIT__ SO THE METHODS ARE ACCESSIBLE.
         self.CAN_ID_TO_METHODS = {
-            int("300", 16): self.parse_senfl_imu,
-            int("301", 16): self.parse_senfl_sig, # Various signals. Speed and wheel turns
-            int("302", 16): self.parse_senfl_state,
+            0x300: self.parse_senfl_imu,
+            0x301: self.parse_senfl_sig, # Various signals. Speed and wheel turns
+            0x302: self.parse_senfl_state,
             
-            int("303", 16): self.parse_senfr_imu,
-            int("304", 16): self.parse_senfr_sig,
-            int("305", 16): self.parse_senfr_state,
+            0x303: self.parse_senfr_imu,
+            0x304: self.parse_senfr_sig,
+            0x305: self.parse_senfr_state,
             
-            int("320", 16): self.parse_traj_act,
-            int("321", 16): self.parse_traj_gps,
-            int("322", 16): self.parse_traj_imu,
-            int("323", 16): self.parse_traj_state,
+            0x320: self.parse_traj_act,
+            0x321: self.parse_traj_gps,
+            0x322: self.parse_traj_imu,
+            0x323: self.parse_traj_state,
             
             # Steer ... TODO in the future
             
             # ASSIS
-            int("350", 16): self.parse_assis_c,
-            int("351", 16): self.parse_assis_r,
-            int("352", 16): self.parse_assis_l,
+            0x350: self.parse_assis_c,
+            0x351: self.parse_assis_r,
+            0x352: self.parse_assis_l,
             
-            int("360", 16): self.parse_asb_analog,
-            int("361", 16): self.parse_asb_signals,
-            int("362", 16): self.parse_asb_state,
+            0x360: self.parse_asb_analog,
+            0x361: self.parse_asb_signals,
+            0x362: self.parse_asb_state,
             
-            int("201", 16): self.parse_arduino,
+            0x201: self.parse_arduino,
         }
         
         
