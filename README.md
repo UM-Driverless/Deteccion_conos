@@ -50,6 +50,7 @@ We won't use Conda since it's not necessary, and the several python versions hav
         ```
 - To check all cuda versions installed `dpkg -l | grep -i cuda`
 - You can the cuda version compatible with the graphics driver using `nvidia-smi` or the built-in app in xavier o orin modules.
+- To check the cuda version of the installed compiler, use `/usr/local/cuda/bin/nvcc --version`
 - Now pytorch should use the same CUDA version as the ZED camera. Check this: https://www.stereolabs.com/docs/pytorch/
 - You should be able to run:
     ```bash
