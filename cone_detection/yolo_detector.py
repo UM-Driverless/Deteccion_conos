@@ -56,21 +56,25 @@ class ConeDetector(ConeDetectorInterface):
             # Horizon position in camera view
             # Camera height
         
-        image_size_px = 640
+        image_height_px = 640
         f = 2.8e-3 #m # does not affect
         
         # MAIN CONFIGURATION DATA
-        FOV_Rad = CAMERA_VERTICAL_FOV_DEG * math.pi / 180
-        horizon_px_from_top = image_size_px * CAM_HORIZON_POS # horizon at 50% from top. HUGE EFFECT.
+        XZ_FOV_Rad = CAMERA_VERTICAL_FOV_DEG * math.pi / 180
         
-        pix_to_rad = FOV_Rad / image_size_px
-        pixel_size = f * math.tan(FOV_Rad/2) * 2 / image_size_px# m
+        if (CAMERA_MODE == 3):
+            horizon_px_from_top = image_height_px * (CAM_HORIZON_POS + f * math.tan(car_state['orientation_y_rad'])) # horizon at 50% from top. HUGE EFFECT.
+        else:
+            horizon_px_from_top = image_height_px * CAM_HORIZON_POS # horizon at 50% from top. HUGE EFFECT.
+        
+        vertical_pix_to_rad = XZ_FOV_Rad / image_height_px
+        pixel_size = f * math.tan(XZ_FOV_Rad/2) * 2 / image_height_px# m
         for i, row in results.pandas().xyxy[0].iterrows():
             # Filter how many cones we want to use, according to the confidence value (0 to 1)
-            if row['confidence'] > CONFIDENCE_THRESHOLD:                
+            if row['confidence'] > CONFIDENCE_THRESHOLD:
                 # Distance using cone base height in camera
-                projected_height_from_top = f * math.tan((row['ymax'] - horizon_px_from_top) * pix_to_rad)
-                projected_lateral = ((row['xmax']+row['xmin'])/2 - image_size_px/2) * pixel_size # m
+                projected_height_from_top = f * math.tan((row['ymax'] - horizon_px_from_top) * vertical_pix_to_rad)
+                projected_lateral = ((row['xmax']+row['xmin'])/2 - image_height_px/2) * pixel_size # m
                 distance_horiz = f * CAM_HEIGHT / projected_height_from_top
                 
                 angle_z = math.atan(projected_lateral / f)

@@ -47,9 +47,9 @@ vulture . --min-confidence 100
 To stop: Ctrl+C in the terminal
 
 # INFO
-In ruben laptop:
-    torch.hub.load(): YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
-    torch.hub.load(): YOLOv5 🚀 2023-4-1 Python-3.10.6 torch-1.11.0+cu102 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+- In ruben laptop:
+    - torch.hub.load(): YOLOv5 🚀 2023-1-31 Python-3.10.8 torch-1.13.0+cu117 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB)
+    - ( torch.hub.load(): YOLOv5 🚀 2023-4-1 Python-3.10.6 torch-1.11.0+cu102 CUDA:0 (NVIDIA GeForce GTX 1650, 3904MiB) )
 - ORIN VERSIONS:
     - Jetpack 5.1.1 (installs CUDA11.4), pytorch 2.0.0+nv23.05 (for arm64 with cuda), torchvision version 0.15.1 with cuda, for that run this code:
         ```bash
@@ -73,6 +73,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     print(f'Current working directory: {os.getcwd()}') # The terminal should be in this directory
     
     import time
+    import math
     import numpy as np
     import multiprocessing
     import matplotlib.pyplot as plt # For representation of time consumed
@@ -161,7 +162,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         
         import cv2
     
-        print(f'Starting read_image_webcam thread...')
+        print(f'Starting read_image_zed (opencv) thread...')
 
         cam = cv2.VideoCapture(CAM_INDEX)
         
@@ -174,6 +175,25 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         
         if (cam.isOpened() == False): 
             print("Error opening webcam")
+        
+        ######## ZED SENSORS
+        # import pyzed.sl as sl
+        # zed = sl.Camera()
+        # sensors = sl.SensorsData()
+        # zed_params = sl.InitParameters()
+        # zed_params.coordinate_units = sl.UNIT.METER
+        # zed_params.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Z_UP_X_FWD
+        
+        
+        
+        # OPEN THE CAMERA
+        # status = zed.open(zed_params)
+        # while status != sl.ERROR_CODE.SUCCESS:
+        #     print(f'ZED ERROR: {status}')
+        #     status = zed.open(zed_params)
+        # print('SUCESS, ZED opened')
+        
+        
         
         while True:
             # recorded_times_0 = time.time()
@@ -189,7 +209,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             # cv2.imshow('image',image)
             # cv2.waitKey(1)
-                        
+            
             image = cv2.resize(image, (640*2,640), interpolation=cv2.INTER_AREA)
             image = np.array(image)[:,0:640,:]
             
@@ -198,14 +218,32 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             cam_queue.put(image)
             # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
+            
+            ########## ZED SENSORS
+            # zed.get_sensors_data(sensors,sl.TIME_REFERENCE.IMAGE)
+            # quaternions = sensors.get_imu_data().get_pose().get_orientation().get()
+            # car_state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
+        
         
         
         '''
         import pyzed.sl as sl
         
-        print(f'Starting read_image_zed thread...')
-        
+        print(f'Starting read_image_zed thread...', end='')
         zed = sl.Camera()
+        print(f' (ZED SDK version: {zed.get_sdk_version()})')
+        
+        # Init parameters: https://www.stereolabs.com/docs/api/structsl_1_1InitParameters.html
+        zed_params = sl.InitParameters()
+        sensors = sl.SensorsData() # TODO MOVE TO THREAD FOR HIGHER FREQUENCY? LINKED TO IMAGE SEEMS OK.
+        # zed_params.camera_fps = 100 # Not necessary. By default does max fps
+        
+        # OPEN THE CAMERA
+        status = zed.open(zed_params)
+        while status != sl.ERROR_CODE.SUCCESS:
+            print(f'ZED ERROR: {status}')
+            status = zed.open(zed_params)
+        print('SUCESS, ZED opened')
         
         # Camera settings
         zed.set_camera_settings(sl.VIDEO_SETTINGS.GAIN, 100) # We don't want blurry photos, we don't care about noise. The exposure time will still be adjusted automatically to compensate lighting conditions
@@ -213,25 +251,18 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         # cam.set_camera_settings(sl.VIDEO_SETTINGS.SHARPNESS, 0) # Doesn't seem to make much difference. 0 to 8
         #cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, -1) # We have fixed gain, so this is automatic. % of camera framerate (period)
         
-        # Init parameters: https://www.stereolabs.com/docs/api/structsl_1_1InitParameters.html
-        zed_params = sl.InitParameters()
-        # zed_params.camera_fps = 100 # Not necessary. By default does max fps
-        
         # RESOLUTION: HD1080 (3840x1080), HD720 (1280x720), VGA (VGA=1344x376)
         # yolov5 uses 640x640. VGA is much faster, up to 100Hz
-        zed_params.camera_resolution = sl.RESOLUTION.VGA
-        
+        zed_params.camera_resolution = sl.RESOLUTION.HD720
+        zed_params.coordinate_units = sl.UNIT.METER
+        zed_params.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Z_UP_X_FWD
+        print(f'ZED ORIENTATION VALUE: {sensors.get_imu_data().get_pose().get_orientation().get()}')
+        # car_state['orientation_y'] = sensors.get_imu_data().get_pose().get_orientation().get()
         #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
         
-        status = zed.open(zed_params)
-        
-        while status != sl.ERROR_CODE.SUCCESS:
-            print(f'ZED ERROR: {status}')
-            time.sleep(0.5)
-            status = zed.open(zed_params)
-        print('SUCESSSSSSS, zed opened')
         runtime = sl.RuntimeParameters()
-        runtime.enable_depth = False # Deactivates de depth map calculation. We don't need it.
+        runtime.enable_depth = False # Deactivates depth map calculation. We don't need it.
+        zed_params.depth_mode = sl.DEPTH_MODE.NONE
         
         # Create an RGBA sl.Mat object
         mat_img = sl.Mat()
@@ -248,7 +279,11 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                 
                 # recorded_times_1 = time.time()
                 # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
+                zed.get_sensors_data(sensors,sl.TIME_REFERENCE.IMAGE)
+                quaternions = sensors.get_imu_data().get_pose().get_orientation().get()
+                car_state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
         '''
+                
 
     ## Connections
     if (CAN_MODE == 1):

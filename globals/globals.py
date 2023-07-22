@@ -1,9 +1,10 @@
 # CONSTANTS FOR SETTINGS
-CAN_MODE = 1 # 0 -> CAN OFF, default values to test without CAN, 1 -> Jetson (Embedded, socketcan python-can), 2 -> KVaser
-CAMERA_MODE = 3 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR, 5 -> Simulator (manual control)
-# Choose webcam
-CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
+CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> Jetson (Embedded, socketcan python-can), 2 -> KVaser
+CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam (CAM_INDEX to choose), 3 -> ZED, 4 -> SIMULATOR autonomous, 5 -> Simulator manual control
 
+FLIP_IMAGE = 0
+
+CAM_INDEX = 1 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
 VISUALIZE = 1
 VISUALIZER_CENITAL_MAP_SIZE_PERC = 0.5
 
@@ -31,7 +32,6 @@ WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
 
 CONFIDENCE_THRESHOLD = 0.5 # 0.5
-FLIP_IMAGE = 0
 
 # Actual state values of the car, from sensors
 car_state = {
@@ -39,7 +39,7 @@ car_state = {
     'rpm': -1.,
     'speed_senfl': -1., # speed according to SEN front left sensor
     'fps': -1.0,
-    
+    'orientation_y_rad': 0., # By default consider 0.
 }
 
 # Target values obtained from agent.get_action()
