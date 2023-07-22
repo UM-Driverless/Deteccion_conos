@@ -30,10 +30,3 @@ class ConnectionManager():
         # [speed, throttle, steer, brake ...]
         #return np.array(image), speed, throttle, steer, brake
         return speed, throttle, steer, brake
-
-    def send_actions(self, throttle, steer, brake):
-        """
-        Send the actions to performs to the car actuators or to simulator.
-        """
-        # print('Send throttle: ', throttle, ' brake: ', brake, ' steer: ', steer)
-        self.can.send_action_msg(throttle, brake, steer)

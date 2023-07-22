@@ -46,22 +46,20 @@ class CAN():
         msg = can.Message(arbitration_id=id, data=data, is_extended_id=False) # 11 bits of ID, instead of 29
 
         try:
-            self.bus.send(msg, timeout=globals.CAN_SEND_TIMEOUT)
+            self.bus.send(msg, timeout=CAN_SEND_TIMEOUT)
         except can.CanError as e:
             print('Error al mandar el msg CAN: \n{e.message}')
+        else:
+            print(f'Message sent ({self.bus.channel_info}): {hex(id)[2:]}#{data}')
 
-    def send_action_msg(self, throttle, brake): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
+    def send_action_msg(self): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
         """
         Send the actions of agent_act through CAN
-
-        - throttle: (float in [0., 1.]) Normalized throttle value.
-        - brake: (float in [0., 1.]) Normalized brake value.
-        
         """
         
         self._steering_act()
-        throttle = int(throttle * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
-        brake = int(brake * CAN_ACTION_DIMENSION)
+        # self.send_message = int(agent_act['throttle'] * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
+        # self.send_message = int(agent_act['brake'] * CAN_ACTION_DIMENSION)
         
     def send_status_msg(self):
         """
@@ -78,21 +76,21 @@ class CAN():
         3. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
         4. ENABLE_POWER - cansend can0 601#2B40600F00
         '''
-        
+        print('')
         # 1. DISABLE_POWER - cansend can0 601#2B40600600
-        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['DISABLE_POWER'])
+        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['DISABLE_POWER'])
         time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
         # 2. PROFILE_POSITION - cansend can0 601#2F60600001
-        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['PROFILE_POSITION'])
+        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['PROFILE_POSITION'])
         time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
         # 3. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
-        # self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['SET_PARAMETERS'])
+        # self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['SET_PARAMETERS'])
         # time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
         # 4. ENABLE_POWER - cansend can0 601#2B40600F00
-        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['ENABLE_POWER'])
+        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['ENABLE_POWER'])
         time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
 
@@ -107,8 +105,9 @@ class CAN():
         3. TOGGLE_NEW_POS - cansend can0 601#284060000F00
         '''
         
-        target_pos = _float_to_hex_bytes(agent_act['steer'] * MAXON_TOTAL_INCREMENTS)
-        
+
+        target_pos = self._float_to_bytes(agent_act['steer'] * MAXON_TOTAL_INCREMENTS)
+        # print(f'target_pos: {target_pos}')
         self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['SET_TARGET_POS'] + target_pos)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
         self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['MOVE_RELATIVE_POS'])
@@ -221,14 +220,15 @@ class CAN():
 
         return [wheel, analog_1, analog_2, analog_3, digital, speed, revolutions]
 
-def _float_to_hex_bytes(f):
-    # Pack the 32-bit float as binary data
-    packed_data = struct.pack('f', f)
+    def _float_to_bytes(self, f):
+        '''
+        Takes a float f, separates it into bytes, and returns an array of ints with the bytes
 
-    # Unpack the binary data as individual bytes
-    bytes_list = struct.unpack('4B', packed_data)
+        '''
+        # Use the 'f' format specifier to pack the float as a 32-bit float
+        # Use '<' for little-endian byte order (change to '>' for big-endian)
+        binary_representation = struct.pack('<f', f)
 
-    # Convert each byte to a hexadecimal string
-    hex_strings = [format(byte, '02x') for byte in bytes_list]
+        int_array = [byte for byte in binary_representation]
 
-    return hex_strings
+        return int_array
