@@ -16,7 +16,7 @@ class Visualizer():
             'unknown_cone': (0,0,0)
         }
 
-    def visualize(self, agent_target, car_state, image, cones, fps, save_frames=False):
+    def visualize(self, agent_act, car_state, image, cones, save_frames=False):
         """
         Generates the visualization
         
@@ -25,7 +25,7 @@ class Visualizer():
         
         
         """
-        image = self.make_image(agent_target, car_state, image, cones, fps)
+        image = self.make_image(agent_act, car_state, image, cones)
         
         # Show and save image
         cv2.imshow("Detections", image)
@@ -34,12 +34,10 @@ class Visualizer():
         if save_frames:
             self.saved_frames.append(image)
 
-    def make_image(self, agent_target, car_state, image, cones, fps):
+    def make_image(self, agent_act, car_state, image, cones):
         '''Creates the new image with overlays of the detections.
         
         
-        
-        fps: boolean with the current frames per second
         '''
         
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -62,7 +60,7 @@ class Visualizer():
         image = self._print_cenital_map(image, cones)
 
         # Print the output values of the agent, trying to control the car
-        image = self._print_data(cones, agent_target, car_state, fps, image)
+        image = self._print_data(cones, agent_act, car_state, image)
 
         # dim = (np.array(image.shape) * 0.1).astype('int')
         # image[400:400 + dim[1], 10:10 + dim[1]] = cv2.resize(wrap_img, (dim[1], dim[1]))
@@ -71,7 +69,7 @@ class Visualizer():
         
         return image
 
-    def _print_data(self, cones, agent_target, car_state, fps, image):
+    def _print_data(self, cones, agent_act, car_state, image):
         # config
         font = cv2.FONT_HERSHEY_SIMPLEX
         fontScale = 0.5
@@ -91,13 +89,13 @@ class Visualizer():
             f'    Speed: {car_state["speed"]:.2f}',
             f'    RPM: {int(car_state["rpm"]):d}',
             f'NET DATA:',
-            f'    fps: {int(fps):.2f}',
+            f'    fps: {int(car_state["fps"]):.2f}',
             f'    Cones: {len(cones)}',
             f'AGENT TARGET:',
-            f'    acc: {agent_target["acc"]:.2f}',
-            f'    steer: {agent_target["steer"]:.5f}',
-            f'    throttle: {agent_target["throttle"]}',
-            f'    brake: {agent_target["brake"]:.2f}',
+            f'    acc: {agent_act["acc"]:.2f}',
+            f'    steer: {agent_act["steer"]:.5f}',
+            f'    throttle: {agent_act["throttle"]}',
+            f'    brake: {agent_act["brake"]:.2f}',
         ]
         
         for i in range(11):
@@ -106,7 +104,7 @@ class Visualizer():
         
         # Text from the agent. TODO it could be off. what then?
         # TODO FIGURE THIS OUT
-        # ctr_img = self._controls_img(agent_target)
+        # ctr_img = self._controls_img(agent_act)
         # image[340:390, 10:210] = ctr_img
         
         return image
@@ -147,10 +145,10 @@ class Visualizer():
             
         return image
 
-    def _controls_img(self, agent_target):
-        steer = agent_target['steer']
-        throttle = agent_target['throttle']
-        brake = agent_target['brake']
+    def _controls_img(self, agent_act):
+        steer = agent_act['steer']
+        throttle = agent_act['throttle']
+        brake = agent_act['brake']
         
         text_steer =    'steer:  {:+.3f}'.format(steer)
         text_throttle = 'throttle: {:.3f}'.format(throttle)

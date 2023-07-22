@@ -14,7 +14,7 @@ class Skidpad_Mission(Agent):
     # SUPERCHARGED METHODS
     def _get_target(self, cones):
         '''
-        Update agent_target, calculated from the cones and car_state.
+        Update agent_act, calculated from the cones and car_state.
         '''
         
         # STEER
@@ -38,29 +38,29 @@ class Skidpad_Mission(Agent):
         # Code to be executed when the car crosses the intersection
         def intersection_behaviour(laps):
             if(laps < 3): # The first two laps must be turning to the right
-                agent_target['steer'] = 0.75 # -1 left, 1 right, 0 neutral
-                agent_target['acc'] = 0.5
+                agent_act['steer'] = 0.75 # -1 left, 1 right, 0 neutral
+                agent_act['acc'] = 0.5
 
             elif(laps > 2 and laps < 5): # The last 2 laps must be to the left
-                agent_target['acc'] = 0.5
-                agent_target['steer'] = -0.75 # -1 left, 1 right, 0 neutral
+                agent_act['acc'] = 0.5
+                agent_act['steer'] = -0.75 # -1 left, 1 right, 0 neutral
                 
             else: # If it has accomplished all 4 turns then its time to exit
-                agent_target['steer'] = 0 # -1 left, 1 right, 0 neutral
-                agent_target['acc'] = 0.5
+                agent_act['steer'] = 0 # -1 left, 1 right, 0 neutral
+                agent_act['acc'] = 0.5
 
 
         # SPEED
         if (car_state['speed'] < 2) and (not brake_condition) and (not intersection_trigger): #si va lento y no ve conos naranjas
-            agent_target['acc'] = 0.5
+            agent_act['acc'] = 0.5
         elif (brake_condition and (not intersection_trigger)): # da igual la velocidad, si ve conos naranjas y no ve la interseccion
-            agent_target['acc'] = 0.0
-            agent_target['brake'] = 1.0
+            agent_act['acc'] = 0.0
+            agent_act['brake'] = 1.0
         elif (intersection_trigger): # si se encuentra en la interseccion
             intersection_behaviour(laps)
             laps += 1 # Add one to the counter
         else: # si va rapido dejamos de acelerar
-            agent_target['acc'] = 0.0
+            agent_act['acc'] = 0.0
            
         
         #STEER
@@ -69,10 +69,10 @@ class Skidpad_Mission(Agent):
             #I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
             # print(f'center:{center}')
-            agent_target['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
+            agent_act['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
-            agent_target['steer'] = 1 # -1 left, 1 right, 0 neutral
+            agent_act['steer'] = 1 # -1 left, 1 right, 0 neutral
         elif len(yellows) > 0:
-            agent_target['steer'] = -1 # -1 left, 1 right, 0 neutral
+            agent_act['steer'] = -1 # -1 left, 1 right, 0 neutral
         else:
-            agent_target['steer'] = 0
+            agent_act['steer'] = 0

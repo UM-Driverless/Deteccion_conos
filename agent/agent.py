@@ -1,27 +1,21 @@
 from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessingNoWrapped
 #import cv2
 #import simple_pid
-import numpy as np
+#import numpy as np
 #from visualization_utils.logger import Logger
 #from simple_pid import PID
 
 from globals.globals import * # Global variables and constants, as if they were here
-import connection_utils.communication_controllers.can_utils as can_utils
-
-# TODO SIMPLE AGENT THAT INHERITS FROM GENERAL
 
 class Agent():
     '''
-    Main Agent class, with all the common actions between agents.
-    Each different test will inherit from this class and implement the specific actions for the test.
+    Main Agent class, with basic features. All other agents inherit from this one, adding specific functions.
+    
     '''
-
-    if (CAN_MODE != 0):
-        can = can_utils.CAN()
     
     def __init__(self):
         self.cone_processing = ConeProcessing()
-
+            
     """
     def valTrackbarsPID(self):
         '''
@@ -59,17 +53,19 @@ class Agent():
         2. Calculate next move with _get_target()
         3. Send the next move to the simulator
         '''
+        sim_client2.enableApiControl(True) # Take control of the simulator, not mouse but 
+        
         # Read Simulator
         sim_state = sim_client2.getCarState()
         car_state['speed'] = sim_state.speed
         
-        # Calculate agent_target
+        # Calculate agent_act
         self._get_target(cones)
         
         # Update Simulator
-        simulator_car_controls.steering = -agent_target['steer'] # Positive z rotation is left, simulator + is right
-        simulator_car_controls.throttle = agent_target['acc']
-        simulator_car_controls.brake = agent_target['brake']
+        simulator_car_controls.steering = -agent_act['steer'] # Positive z rotation is left, simulator + is right
+        simulator_car_controls.throttle = agent_act['acc']
+        simulator_car_controls.brake = agent_act['brake']
 
         sim_client2.setCarControls(simulator_car_controls)
 
@@ -82,7 +78,7 @@ class Agent():
         
     def _get_target(self, cones):
         '''
-        Update agent_target, calculated from the cones and car_state.
+        Update agent_act, calculated from the cones and car_state.
         '''
         
         # SORT CONES FROM CLOSEST TO FURTHEST
@@ -94,74 +90,21 @@ class Agent():
         yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
         yellows.sort(key=take_x)
 
-        # SPEED CONTROL - agent_target
+        # SPEED CONTROL - agent_act ----- Take (target speed - current speed) -> PID
         if (car_state['speed'] < 5):
-            agent_target['acc'] = 1.0
+            agent_act['acc'] = 1.0
         else:
-            agent_target['acc'] = 0.0
+            agent_act['acc'] = 0.0
         
         # STEER CONTROL
-        """
-        if (len(blues) > 1) and (len(yellows) > 1):
-            middleCone0 = [(blues[0]['coords']['x']+yellows[0]['coords']['x'])/2,(blues[0]['coords']['y']+yellows[0]['coords']['y'])/2]
-            middleCone1 = [(blues[1]['coords']['x']+yellows[1]['coords']['x'])/2,(blues[1]['coords']['y']+yellows[1]['coords']['y'])/2]
-            extra=(middleCone0[0]*(8.5))/(car_state['speed']+0.01) #8.5 = AVERAGE FPS
-            A = np.array([[0,0,1],[middleCone0[0]**2,middleCone0[0],1],[middleCone1[0]**2,middleCone1[0],1]])
-            B = np.array([0,middleCone0[1],middleCone1[1]])
-            X = np.linalg.solve(A,B)
-            agent_target['steer']=(X[0]*(extra**2)+X[1]*extra+X[2])*-((car_state['speed'])/(8.5*2.3))
-        """
         if (len(blues) > 0) and (len(yellows) > 0):
             # I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
             # print(f'center:{center}')
-            agent_target['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
+            agent_act['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
-            agent_target['steer'] = 1 # -1 left, 1 right, 0 neutral
+            agent_act['steer'] = -1 # Rotation in Z axis. - = right
         elif len(yellows) > 0:
-            agent_target['steer'] = -1 # -1 left, 1 right, 0 neutral
+            agent_act['steer'] = +1 # Rotation in Z axis. + = left
         else:
-            agent_target['steer'] = -1 # left to see some cones or go in circles
-
-
-    # Can tests
-    '''
-    def _get_target_real(self, cones):
-   
-        # STEER
-        def take_x(cone): return cone['coords']['x']
-        blues = [cone for cone in cones if (cone['label'] == 'blue_cone')]
-        blues.sort(key=take_x)
-        yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
-        yellows.sort(key=take_x)
-
-        large_oranges = [cone for cone in cones if (cone['label'] == 'large_orange_cone')]
-        large_oranges.sort(key=take_x)
-
-        orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
-        orange.sort(key=take_x)
-
-        brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
-
-        # SPEED
-        if (car_state['speed'] < 5) and (not brake_condition): #si va lento y no ve conos naranjas
-            # send_action_msg(self, throttle, brake, steer)
-            self.can.send_action_msg(0.5, 0, 0.0, 0, 0, 0)
-        elif brake_condition: # da igual la velocidad, si ve conos naranjas
-            self.can.send_action_msg(0, 1, 0.0, 0, 0, 0)
-        else: # If it's fast we stop accelerating
-            self.can.send_action_msg(0, 0, 0.0, 0, 0, 0)
-        
-        # STEER
-        if (len(blues) > 0) and (len(yellows) > 0):
-            #I assume they're sorted from closer to further
-            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2
-            # print(f'center:{center}')
-            self.can.send_action_msg(0, 0, center * 0.5, 0, 0, 0)
-        elif len(blues) > 0:
-            self.can.send_action_msg(0, 0, 1, 0, 0, 0)
-        elif len(yellows) > 0:
-            self.can.send_action_msg(0, 0, -1, 0, 0, 0)
-        else:
-            self.can.send_action_msg(0, 0, 0.0, 0, 0, 0)
-    '''
+            agent_act['steer'] = +1 # Rotation in Z axis. + = left
