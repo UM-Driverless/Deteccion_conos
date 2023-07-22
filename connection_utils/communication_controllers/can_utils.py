@@ -2,6 +2,7 @@ import can
 import math
 import time
 import os
+import struct
 
 from globals.globals import * # Global variables and constants, as if they were here
 
@@ -15,7 +16,7 @@ class CAN():
     '''
     def __init__(self, logger=None):
         super().__init__()
-        self.sleep_between_msg = 0.002
+        self.sleep_between_msg = 0.002 # At least 1e-3s needed
         self.logger = logger
         self.init_can()
         self._init_steering()
@@ -30,13 +31,10 @@ class CAN():
         # os.system("echo 0 | sudo -S ip link set can0 up")
 
         ## Implementamos la clase abstracta Listener (https://python-can.readthedocs.io/en/master/listeners.html)
-        # De momento usamos BufferedReader, que es una implementación por defecto de la librería, con un buffer de mensajes. Si necesitamos que sea async podemos
+        # TODO READ THIS De momento usamos BufferedReader, que es una implementación por defecto de la librería, con un buffer de mensajes. Si necesitamos que sea async podemos
         # usar AsyncBufferedReader.
         self.buffer = can.BufferedReader()
         self.notifier = can.Notifier(self.bus, [self.buffer])
-        # self.logger.write_can_log("CAN listener connected")
-        # TODO: [Sergio] Mover inicialización de la dirección a otra funcción
-        # self._init_steering()
 
     def send_message(self, id, data):
         '''
@@ -53,7 +51,7 @@ class CAN():
         except can.CanError as e:
             print('Error al mandar el msg CAN: \n{e.message}')
 
-    def send_action_msg(self, throttle, brake, steer): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
+    def send_action_msg(self, throttle, brake): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
         """
         Send the actions through CAN message.
 
@@ -61,24 +59,16 @@ class CAN():
         - brake: (float in [0., 1.]) Normalized brake value.
         
         """
-        # Para pasar rango de datos a 0:100
-        throttle = int(throttle * CAN_ACTION_DIMENSION)
+        
+        throttle = int(throttle * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
         brake = int(brake * CAN_ACTION_DIMENSION)
-        # steer = int(((steer * CAN_ACTION_DIMENSION) + CAN_ACTION_DIMENSION)/2)
-        steer = -int(steer * CAN_STEER_DIMENSION)
-        # enviar datos actuadores
-        data = [throttle, brake, 0, 0, 0]
-        # self.logger.write_can_log("Send actions message -> " + str(data))
-        self.send_message(id = CAN_IDS['TRAJ']['ACT'], data=data)
-        time.sleep(self.sleep_between_msg)
-
         self._steering_act()
 
     def send_status_msg(self):
         """
         Send the status of the system through CAN message.
 
-        Params to be defined.
+        Params to be defined. TODO CALCULATE STATUS. CHECK ASF AND DATALOGGER FOR REQUIREMENTS
         """
     def _init_steering(self):
         '''
@@ -118,7 +108,9 @@ class CAN():
         3. TOGGLE_NEW_POS - cansend can0 601#284060000F00
         '''
         
-        self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['SET_TARGET_POS'])
+        target_pos = _float_to_hex_bytes(agent_act['steer'] * MAXON_TOTAL_INCREMENTS)
+        
+        self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['SET_TARGET_POS'] + target_pos)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
         self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['MOVE_RELATIVE_POS'])
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
@@ -229,3 +221,15 @@ class CAN():
         revolutions = revolutions_2 * 16 ** 2 + revolutions_1
 
         return [wheel, analog_1, analog_2, analog_3, digital, speed, revolutions]
+
+def _float_to_hex_bytes(f):
+    # Pack the 32-bit float as binary data
+    packed_data = struct.pack('f', f)
+
+    # Unpack the binary data as individual bytes
+    bytes_list = struct.unpack('4B', packed_data)
+
+    # Convert each byte to a hexadecimal string
+    hex_strings = [format(byte, '02x') for byte in bytes_list]
+
+    return hex_strings
