@@ -4,7 +4,7 @@ Script dedicated to the recording of images received by the server
 import cv2, os, shutil
 import numpy as np
 from PIL import Image
-from connection_utils.my_client import bind2server
+from can.my_client import bind2server
 
 def recordImages(images, count, path1, path2, format="JPEG"):
     '''Save the images in the specified path and format, with an index by name'''

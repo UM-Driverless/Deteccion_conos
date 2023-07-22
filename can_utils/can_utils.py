@@ -25,16 +25,15 @@ class CAN():
         """
         Initialize CAN.
         """
-        self.bus = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)  # bustype = 'kvaser'
-        # self.logger.write_can_log(self.bus.channel_info)
-        # os.system("echo 0 | sudo -S ip link set down can0")
-        # os.system("echo 0 | sudo -S ip link set can0 up")
-
+        self.bus = can.interface.Bus(bustype='socketcan', channel='can0', bitrate=1000000)
+        self.buffer = can.BufferedReader()
+        self.notifier = can.Notifier(self.bus, [self.buffer])
         ## Implementamos la clase abstracta Listener (https://python-can.readthedocs.io/en/master/listeners.html)
         # TODO READ THIS De momento usamos BufferedReader, que es una implementación por defecto de la librería, con un buffer de mensajes. Si necesitamos que sea async podemos
         # usar AsyncBufferedReader.
-        self.buffer = can.BufferedReader()
-        self.notifier = can.Notifier(self.bus, [self.buffer])
+        
+        # os.system("echo 0 | sudo -S ip link set down can0")
+        # os.system("echo 0 | sudo -S ip link set can0 up")
 
     def send_message(self, id, data):
         '''
@@ -53,17 +52,17 @@ class CAN():
 
     def send_action_msg(self, throttle, brake): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
         """
-        Send the actions through CAN message.
+        Send the actions of agent_act through CAN
 
         - throttle: (float in [0., 1.]) Normalized throttle value.
         - brake: (float in [0., 1.]) Normalized brake value.
         
         """
         
+        self._steering_act()
         throttle = int(throttle * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
         brake = int(brake * CAN_ACTION_DIMENSION)
-        self._steering_act()
-
+        
     def send_status_msg(self):
         """
         Send the status of the system through CAN message.
@@ -126,19 +125,10 @@ class CAN():
         SteerH  = ( slSteer & 0xFF000000 )
         dataSteer = [0x22, 0x40, 0x60, 0, SteerL, SteerCL, SteerCH, SteerH]
         '''
-    def decode_message(self, msg):
-        message = msg.data.hex() # Extrae los datos del mensaje CAN y los convierte a hexadecimal
-        message = [int(message[index:index + 2], 16) for index in
-                   range(0, len(message), 2)] # Divide el mensaje can en 8 bytes y los convierte a decimal
-        msg_id = int(hex(msg.arbitration_id), 16) # ID del mensaje CAN en string hexadecimal # TODO WTF
-        
-        return msg_id, message
-
-    def route_msg(self, msg_id):
+    def interpret_message(self, msg_id):
         '''
-        
+        Do something with the message received
         '''
-        
         if msg_id == CAN_IDS['SENFL']['IMU']:
             pass
         elif msg_id == CAN_IDS['SENFL']['SIG']:
@@ -190,8 +180,17 @@ class CAN():
         elif msg_id == CAN_IDS['ASSIS']['LEFT']:
             pass
         
+    # def decode_message(self, msg):
+    #     '''
+    #     Takes msg (string with hex)
+    #     '''
+    #     message = msg.data.hex() # Extrae los datos del mensaje CAN y los convierte a hexadecimal
+    #     message = [int(message[index:index + 2], 16) for index in
+    #                range(0, len(message), 2)] # Divide el mensaje can en 8 bytes y los convierte a decimal
+    #     msg_id = int(hex(msg.arbitration_id), 16) # ID del mensaje CAN en string hexadecimal # TODO WTF
         
-
+    #     return msg_id, message
+    
     def get_sen_imu(self, wheel, data):
         acceleration_X = data[0]
         acceleration_Y = data[1]

@@ -13,7 +13,7 @@ MAIN script to run all the others. Shall contain the main classes, top level fun
 
 - CHECK THIS:
     - Weights in yolov5/weights/yolov5_models
-    - Active bash folder is ~/Deteccion_conos/
+    - Active bash folder is ~/Deteccion_conos/ (Otherwise hubconf.py error)
     - Check requirements{*}.txt, ZED API and gcc compiler up to date (12.1.0), etc.
 
 - For CAN to work first run setup_can0.sh
@@ -82,9 +82,9 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     from globals.globals import * # Global variables and constants, as if they were here
 
     if (CAN_MODE == 1):
-        from connection_utils.can_kvaser import CanKvaser
+        from can_utils.can_utils import CAN
     elif (CAN_MODE == 2):
-        from connection_utils.can_xavier import CanJetson
+        from can_utils.can_kvaser import CanKvaser
 
     from cone_detection.yolo_detector import ConeDetector
     from visualization_utils.visualizer_yolo_det import Visualizer
@@ -252,6 +252,10 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
 
     ## Connections
     if (CAN_MODE == 1):
+        # CAN with Jetson
+        can0 = CAN()
+        print('CAN (python-can, socketcan, Jetson) initialized')
+    elif (CAN_MODE == 2):
         # CAN with Kvaser
 
         can_receive = CanKvaser()
@@ -262,11 +266,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         can_send_worker.start()
         
         print('CAN (Kvaser) initialized')
-    elif (CAN_MODE == 2):
-        # CAN with Jetson
-        can_send = CanJetson()
-        can_send.send_message()
-        print('CAN (python-can, Jetson) initialized')
 
     ## Agent selection
     if (MISSION_SELECTED == 0): # Generic
@@ -336,10 +335,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             cones = detector.detect_cones(image)
             recorded_times[2] = time.time()
             
-            # Update car values from CAN
-            if (CAN_MODE == 1):
-                car_state = can_queue.get() # TODO there are much more CAN things to do this.
-            
             # Get actions from agent
             if (CAMERA_MODE == 4):
                 agent.act_sim(cones,
@@ -353,7 +348,9 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
 
             # Send actions - CAN
             if (CAN_MODE == 1):
-                # Send target values from agent
+                can0.send_action_msg()
+            elif (CAN_MODE == 2):
+                # Send agent_act through CAN
                 can_send.send_frame()
             
             # VISUALIZE

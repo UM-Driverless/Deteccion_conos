@@ -6,19 +6,12 @@ from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessing
 #from simple_pid import PID
 
 from globals.globals import * # Global variables and constants, as if they were here
-import connection_utils.communication_controllers.can_utils as can_utils
-
-# TODO SIMPLE AGENT THAT INHERITS FROM GENERAL
 
 class Agent():
     '''
-    Main Agent class, with all the common actions between agents.
-    Each different test will inherit from this class and implement the specific actions for the test.
+    Main Agent class, with basic features. All other agents inherit from this one, adding specific functions.
+    
     '''
-    
-    if (CAN_MODE != 0):
-        can = can_utils.CAN()
-    
     
     def __init__(self):
         self.cone_processing = ConeProcessing()
