@@ -107,4 +107,4 @@ class Agent():
         elif len(yellows) > 0:
             agent_act['steer'] = +1 # Rotation in Z axis. + = left
         else:
-            agent_act['steer'] = +1 # Rotation in Z axis. + = left
+            agent_act['steer'] = 0.0 # Rotation in Z axis. + = left
