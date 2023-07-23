@@ -12,7 +12,7 @@ class Skidpad_Mission(Agent):
         super().act_sim(cones, sim_client2, simulator_car_controls)
 
     # SUPERCHARGED METHODS
-    def _get_target(self, cones):
+    def get_target(self, cones):
         '''
         Update agent_act, calculated from the cones and car_state.
         '''

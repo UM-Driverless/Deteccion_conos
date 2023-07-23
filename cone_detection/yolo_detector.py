@@ -8,13 +8,12 @@ import torch
 import cv2
 print(f'IS CUDA AVAILABLE? : {torch.cuda.is_available()}')
 
-from cone_detection.detector_base import ConeDetectorInterface
 from globals.globals import * # Global variables and constants, as if they were here
 # import tools.tools as tools
 
 
 
-class ConeDetector(ConeDetectorInterface):
+class ConeDetector():
     def __init__(self, checkpoint_path="yolov5/weights/yolov5_models/best.pt"):
         self.checkpoint_path = checkpoint_path
         print(f'Using weights in: {checkpoint_path}')
@@ -86,7 +85,7 @@ class ConeDetector(ConeDetectorInterface):
                 cones.append({
                     'label': str(row['name'].split('class')[-1]),
                     'bbox': [[row['xmin'], row['ymin']],[row['xmax'], row['ymax']]],
-                    'coords': { # TODO DO THE RIGHT CALCULATION HERE
+                    'coords': {
                         # 'x': (row['xmax']+row['xmin'])/2, #x_coords[i], # X_world[i,0],
                         # 'y': row['ymax'] #ymax_coords[i] #X_world[i,1]
                         'x': longit, # m

@@ -1,5 +1,6 @@
 import cv2
 import multiprocessing
+import time
 
 cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None. Global variable
 

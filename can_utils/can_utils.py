@@ -10,9 +10,7 @@ from globals.globals import * # Global variables and constants, as if they were 
 
 class CAN():
     '''
-    __init__ initializes steering and can. Sets startup values
-    
-    
+    __init__ initializes general can and steering module. Sets the startup values.
     '''
     def __init__(self, logger=None):
         super().__init__()

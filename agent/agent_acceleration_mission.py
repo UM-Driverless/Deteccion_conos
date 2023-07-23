@@ -9,14 +9,8 @@ class Acceleration_Mission(Agent):
     def act_sim(self, cones, sim_client2, simulator_car_controls):
         super().act_sim(cones, sim_client2, simulator_car_controls)
 
-    def act(self, cones):
-        '''
-        
-        '''
-        self._get_target(cones)
-
     # SUPERCHARGED METHODS
-    def _get_target(self, cones):
+    def get_target(self, cones):
         '''
         Update agent_act, calculated from the cones and car_state.
         '''

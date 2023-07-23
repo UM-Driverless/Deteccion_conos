@@ -4,7 +4,7 @@ CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME require
 
 FLIP_IMAGE = 0
 
-CAM_INDEX = 1 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
+CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
 VISUALIZE = 1
 VISUALIZER_CENITAL_MAP_SIZE_PERC = 0.5
 
@@ -24,6 +24,7 @@ CAM_HORIZON_POS = 0.5 # per 1 of image from top
 # Simulator camera (cam1) pos: (-.3,-.16,.8)
 
 
+# WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 # WEIGHTS_PATH = 'yolov5/weights/yolov5_models/280.engine'
 # WEIGHTS_PATH = 'yolov5/weights/yolov5_models/280_adri.pt'
