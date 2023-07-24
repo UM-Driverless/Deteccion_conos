@@ -51,12 +51,12 @@ class CAN():
             pass
             # print(f'Message sent ({self.bus.channel_info}): {hex(id)[2:]}#{data}')
 
-    def send_action_msg(self): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
+    def send_action_msg(self,agent_act): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
         """
         Send the actions of agent_act through CAN
         """
         
-        self._steering_act()
+        self._steering_act(agent_act)
         # self.send_message(601,int(agent_act['throttle'] * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
         # self.send_message(601,int(agent_act['brake'] * CAN_ACTION_DIMENSION)
         
@@ -95,7 +95,7 @@ class CAN():
 
         # TODO MOVE CAN TO A THREAD.
 
-    def _steering_act(self):
+    def _steering_act(self, agent_act):
         '''
         Sends the steering messages needed to move after _init_steering() has been run
         

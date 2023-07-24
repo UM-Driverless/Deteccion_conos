@@ -32,14 +32,6 @@ IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels of the image given to 
 
 CONFIDENCE_THRESHOLD = 0.5 # 0.5
 
-# Target values obtained from agent.get_action()
-agent_act = {
-    'acc': 0., # Acceleration. From -1.0 to 1.0. TODO Then translates into throttle and brake
-    'steer': 0., # -1.0 (right) to 1.0 (left)
-    'throttle': 0., # float in [0., 1.)
-    'brake': 0., # float in [0., 1.)
-}
-
 # Neural net detections [{bounding boxes},{labels}] = [ [[[x1,y1],[x2,y2]], ...], [[{class name}, {confidence}], ...] ]
 detections = []
 

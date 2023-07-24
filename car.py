@@ -426,7 +426,7 @@ class Car:
             self.sim_client2.setCarControls(self.simulator_car_controls)
         
         if (CAN_MODE == 1):
-            self.can0.send_action_msg()
+            self.can0.send_action_msg(self.actuation)
         elif (CAN_MODE == 2):
             self.can_send.send_frame()
     
