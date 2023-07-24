@@ -23,8 +23,6 @@ CAM_HEIGHT = 0.75 # m
 CAM_HORIZON_POS = 0.5 # per 1 of image from top
 # Simulator camera (cam1) pos: (-.3,-.16,.8)
 
-
-# WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 # WEIGHTS_PATH = 'yolov5/weights/yolov5_models/280.engine'
 # WEIGHTS_PATH = 'yolov5/weights/yolov5_models/280_adri.pt'
@@ -33,15 +31,6 @@ WEIGHTS_PATH = 'yolov5/weights/yolov5_models/best_adri.pt'
 IMAGE_RESOLUTION = (640, 640) # (width, height) in pixels of the image given to net. Default yolo_v5 resolution is 640x640
 
 CONFIDENCE_THRESHOLD = 0.5 # 0.5
-
-# Actual state values of the car, from sensors
-car_state = {
-    'speed': -1., # m/s, can be calculated from speed_senfl mixed with other sensors.
-    'rpm': -1.,
-    'speed_senfl': -1., # speed according to SEN front left sensor
-    'fps': -1.0,
-    'orientation_y_rad': 0., # By default consider 0.
-}
 
 # Target values obtained from agent.get_action()
 agent_act = {

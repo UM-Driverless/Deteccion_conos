@@ -39,6 +39,7 @@ class Car:
             'brake': 0., # float in [0., 1.)
         }
 
+        self.loop_counter: int = 0
         # Neural net detections [{bounding boxes},{labels}] = [ [[[x1,y1],[x2,y2]], ...], [[{class name}, {confidence}], ...] ]
         self.detections = []
         
@@ -49,7 +50,6 @@ class Car:
         self._init_can()
         self._init_agent()
         
-        # self.detector = ConeDetector(checkpoint_path=WEIGHTS_PATH)
         self.detector = ConeDetector(checkpoint_path=WEIGHTS_PATH)
         self.cones = []
 
@@ -285,7 +285,7 @@ class Car:
             if (FLIP_IMAGE):
                 image = cv2.flip(image, flipCode=1) # For testing purposes
             
-            self.self.cam_queue.put(image)
+            self.cam_queue.put(image)
             # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
             
             ########## ZED SENSORS
@@ -387,15 +387,6 @@ class Car:
             car_state_local = self.can_receive.new_state(car_state)
             # print(car_state_local)
             self.can_queue.put(car_state_local)
-    
-    def send_action_msg(self):
-        '''
-        Message that tells the actuators what to do.
-        '''
-        if (CAN_MODE == 1):
-            self.can0.send_action_msg()
-        elif (CAN_MODE == 2):
-            self.can_send.send_frame()
     def _init_agent(self):
         '''
         Initialize the agent thread according to the MISSION_SELECTED settings
@@ -435,4 +426,7 @@ class Car:
 
             self.sim_client2.setCarControls(self.simulator_car_controls)
         
-        # TODO SEND VIA CAN HERE
+        if (CAN_MODE == 1):
+            self.can0.send_action_msg()
+        elif (CAN_MODE == 2):
+            self.can_send.send_frame()

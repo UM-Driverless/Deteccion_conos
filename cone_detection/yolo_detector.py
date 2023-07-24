@@ -14,13 +14,13 @@ from globals.globals import * # Global variables and constants, as if they were 
 
 
 class ConeDetector():
-    def __init__(self, checkpoint_path="yolov5/weights/yolov5_models/best.pt"):
+    def __init__(self, checkpoint_path="~/Deteccion_conos/yolov5/weights/yolov5_models/best_adri.pt"):
         self.checkpoint_path = checkpoint_path
         print(f'Using weights in: {checkpoint_path}')
         self.detection_model = torch.hub.load('yolov5/', 'custom', path=checkpoint_path, source='local', force_reload=True)
         self.detection_model.conf = 0.3
 
-    def detect_cones(self, image):
+    def detect_cones(self, image, car_state):
         """
         Takes image as array [[ [b,g,r],...],...], and returns an array with the bounding boxes (corners) and labels of the detected cones, and the cone_centers separately
         

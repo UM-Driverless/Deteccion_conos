@@ -78,6 +78,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     import multiprocessing
     import matplotlib.pyplot as plt # For representation of time consumed
     import sys
+    from tools.time_counter import Time_Counter
     print(f'Python version: {sys.version}')
     
     from car import Car
@@ -91,12 +92,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     dv_car = Car()
 
     # READ TIMES
-    TIMES_TO_MEASURE = 4
-    recorded_times = np.array([0.]*(TIMES_TO_MEASURE+2)) # Timetags at different points in code
-    integrated_time_taken = np.array([0.]*TIMES_TO_MEASURE)
-    average_time_taken = np.array([0.]*TIMES_TO_MEASURE)
-    integrated_fps = 0.
-    loop_counter = 0
+    timer = Time_Counter()
 
     ## Data visualization
     if (VISUALIZE == 1):
@@ -107,10 +103,11 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     try:
         print(f'Starting main loop...')
         while True:
-            recorded_times[0] = time.time()
+            timer.add_time()
 
             dv_car.get_data()
             
+            timer.add_time()
             # cv2.imshow('im',dv_car.image)
             # cv2.waitKey(1)
             
@@ -124,50 +121,46 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             dv_car.image = cv2.resize(dv_car.image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             
-            recorded_times[1] = time.time()
-
             # Detect cones
-            dv_car.cones = dv_car.detector.detect_cones(dv_car.image)
-            recorded_times[2] = time.time()
-            
+            timer.add_time()
+            dv_car.cones = dv_car.detector.detect_cones(dv_car.image, dv_car.state)
+            timer.add_time()
             dv_car.calculate_actuation()
+            timer.add_time()
             dv_car.send_actuation()
-            
-            recorded_times[3] = time.time()
-
-            dv_car.send_action_msg()
-            
             # VISUALIZE
             # TODO add parameters to class
+            timer.add_time()
             if (VISUALIZE == 1):
                 in_speed = 0
                 in_rpm = 0
 
-                visualizer.visualize(agent_act,
-                                    car_state,
+                visualizer.visualize(dv_car.actuation,
+                                    dv_car.state,
                                     dv_car.image,
                                     dv_car.cones,
                                     save_frames=False)
-            
-            recorded_times[4] = time.time()
 
             # END OF LOOP
-            loop_counter += 1
-            car_state['fps'] = 1/(recorded_times[TIMES_TO_MEASURE] - recorded_times[0])
-            integrated_fps += car_state['fps']
-            integrated_time_taken += np.array([(recorded_times[i+1]-recorded_times[i]) for i in range(TIMES_TO_MEASURE)])
+            dv_car.loop_counter += 1
+            dv_car.state['fps'] = 1 / (timer.recorded_times[-1] - timer.recorded_times[0])
+            timer.add_time()
+            timer.new_iter()
     finally: # TODO MOVE TO CAR CLASS
         # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
 
         # TIMES
+        # TODO RESET CAR STATE, ACTUATION, AND TIMER
         # cam.release()
-        if loop_counter != 0:
-            average_time_taken = integrated_time_taken/loop_counter
-            car_state['fps'] = integrated_fps/loop_counter
+        if dv_car.loop_counter != 0: # It ran OK for some time
+            print(f'CAR STATE: \n{dv_car.state}')
+            print(f'CAR ACTUATION: \n{dv_car.actuation}')
+            print(f'')
+            
             print(f'\n\n\n------------ RESULTS ------------\n',end='')
+            print(f'dv_car.state: {dv_car.state}')
             print(f'FPS: {car_state["fps"]}')
-            print(f'LOOPS: {loop_counter}')
-            print(f'AVERAGE TIMES: {average_time_taken}')
+            print(f'LOOPS: {dv_car.loop_counter}')
             print(f'---------------------------------\n',end='')
             
             ## Plot the times
@@ -177,7 +170,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             plt.figtext(.8,.8,f'{car_state["fps"]:.2f}Hz')
             plt.title("Execution time per section of main loop")
             plt.savefig("logs/times.png")
-        else:
+        else: # It failed somewhere
             average_time_taken = -1
             car_state['fps'] = -1
             print("-------- ERROR, NO RESULTS --------")
