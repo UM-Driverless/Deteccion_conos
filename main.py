@@ -23,6 +23,7 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 vulture . --min-confidence 100
 
 # TODO
+- TODO RECOVER SIMULATOR CONTROL
 - SEND CAN HEARTBEAT
 - CAN in threads, steering with PDO instead of SDO (faster)
 - Solve TORNADO.PLATFORM.AUTO ERROR, WHEN USING SIMULATOR
@@ -107,7 +108,6 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
 
             dv_car.get_data()
             
-            timer.add_time()
             # cv2.imshow('im',dv_car.image)
             # cv2.waitKey(1)
             
@@ -121,8 +121,8 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             dv_car.image = cv2.resize(dv_car.image, IMAGE_RESOLUTION, interpolation=cv2.INTER_AREA)
             
-            # Detect cones
             timer.add_time()
+            # Detect cones
             dv_car.cones = dv_car.detector.detect_cones(dv_car.image, dv_car.state)
             timer.add_time()
             dv_car.calculate_actuation()
@@ -146,45 +146,33 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             dv_car.state['fps'] = 1 / (timer.recorded_times[-1] - timer.recorded_times[0])
             timer.add_time()
             timer.new_iter()
-    finally: # TODO MOVE TO CAR CLASS
+    finally:
         # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
-
-        # TIMES
-        # TODO RESET CAR STATE, ACTUATION, AND TIMER
-        # cam.release()
-        if dv_car.loop_counter != 0: # It ran OK for some time
+        # RELEASE CAM, SIMULATOR, CAN...
+        if dv_car.loop_counter > 0: # It ran OK for some time
             print(f'CAR STATE: \n{dv_car.state}')
             print(f'CAR ACTUATION: \n{dv_car.actuation}')
-            print(f'')
-            
-            print(f'\n\n\n------------ RESULTS ------------\n',end='')
-            print(f'dv_car.state: {dv_car.state}')
-            print(f'FPS: {car_state["fps"]}')
+            print(f'AVERAGE FPS: {1/(timer.times_integrated[-1] - timer.times_integrated[0])}')
             print(f'LOOPS: {dv_car.loop_counter}')
             print(f'---------------------------------\n',end='')
             
             ## Plot the times
             fig = plt.figure(figsize=(12, 4))
-            plt.bar(['cam.read()','detect_cones()','agent.act()','visualize'],average_time_taken)
+            plt.bar(['get_data()','detect_cones()','calculate_actuation()','send_actuation'],timer.times_integrated / timer.loop_counter)
             plt.ylabel("Average time taken [s]")
-            plt.figtext(.8,.8,f'{car_state["fps"]:.2f}Hz')
+            plt.figtext(.8,.8,f'{1/(timer.times_integrated[-1] - timer.times_integrated[0]):.2f}Hz')
             plt.title("Execution time per section of main loop")
             plt.savefig("logs/times.png")
         else: # It failed somewhere
-            average_time_taken = -1
-            car_state['fps'] = -1
-            print("-------- ERROR, NO RESULTS --------")
+            print("-------- ERROR, 0 MAIN LOOPS COMPLETED --------")
         
         # Close processes and windows
-        # cam_worker.terminate()
         cv2.destroyAllWindows()
         
-        agent_act = {
+        dv_car.actuation = {
             "throttle": 0.,
-            "brake": 0.,
+            "brake": 1.,
             "steer": 0.,
         }
         
-        # Give sim control back
-        if (CAMERA_MODE == 4):
-            dv_car.sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
+

@@ -33,7 +33,7 @@ class Car:
         }
         
         self.actuation = {
-            'acc': 0., # Acceleration. From -1.0 to 1.0. TODO Then translates into throttle and brake
+            'acc_normalized': 0., # Acceleration. From -1.0 to 1.0. TODO Then translates into throttle and brake
             'steer': 0., # -1.0 (right) to 1.0 (left)
             'throttle': 0., # float in [0., 1.)
             'brake': 0., # float in [0., 1.)
@@ -230,7 +230,6 @@ class Car:
         '''
         Read the ZED camera - https://www.stereolabs.com/docs/video/camera-controls/
         '''
-
         print(f'Starting read_image_zed (opencv) thread...')
 
         cam = cv2.VideoCapture(CAM_INDEX)
@@ -430,3 +429,15 @@ class Car:
             self.can0.send_action_msg()
         elif (CAN_MODE == 2):
             self.can_send.send_frame()
+    
+    def terminate(self):
+        # Give sim control back
+        if (CAMERA_MODE == 4):
+            self.sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
+
+        self.actuation = {
+            'acc': 0., # Acceleration. From -1.0 to 1.0.
+            'steer': 0., # -1.0 (right) to 1.0 (left)
+            'throttle': 0., # float in [0., 1.)
+            'brake': 0., # float in [0., 1.)
+        }
