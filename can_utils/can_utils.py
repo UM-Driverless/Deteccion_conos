@@ -14,7 +14,7 @@ class CAN():
     '''
     def __init__(self, logger=None):
         super().__init__()
-        self.sleep_between_msg = 0.002 # At least 1e-3s needed
+        self.sleep_between_msg = 0.003 # At least 1e-3s needed
         self.logger = logger
         self.init_can()
         self._init_steering()
@@ -71,26 +71,27 @@ class CAN():
         Set maxon board prepared to move
         
         1. DISABLE_POWER - cansend can0 601#2B40600600
-        2. PROFILE_POSITION - cansend can0 601#2F60600001
-        3. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
-        4. ENABLE_POWER - cansend can0 601#2B40600F00
+        2. ENABLE_POWER - cansend can0 601#2B40600F00
+        3. PROFILE_POSITION - cansend can0 601#2F60600001
+        4. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
         '''
-        print('')
+
         # 1. DISABLE_POWER - cansend can0 601#2B40600600
         self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['DISABLE_POWER'])
         time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
-        # 2. PROFILE_POSITION - cansend can0 601#2F60600001
+        # 2. ENABLE_POWER - cansend can0 601#2B40600F00
+        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['ENABLE_POWER'])
+        time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
+
+        # 3. PROFILE_POSITION - cansend can0 601#2F60600001
         self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['PROFILE_POSITION'])
         time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
-        # 3. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
+        # 4. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
         # self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['SET_PARAMETERS'])
         # time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
-        # 4. ENABLE_POWER - cansend can0 601#2B40600F00
-        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['ENABLE_POWER'])
-        time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
 
         # TODO MOVE CAN TO A THREAD.
