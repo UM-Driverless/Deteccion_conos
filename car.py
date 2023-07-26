@@ -65,6 +65,16 @@ class Car:
         elif (CAMERA_MODE == 3): self.cam_worker = multiprocessing.Process(target=self._read_image_zed,    args=(), daemon=False)
         elif (CAMERA_MODE == 4): self.cam_worker = multiprocessing.Process(target=self._read_image_simulator, args=(), daemon=False)
         elif (CAMERA_MODE == 5): self.cam_worker = multiprocessing.Process(target=self._read_image_simulator, args=(), daemon=False)
+        
+        if (CAMERA_MODE == 3):
+            ### ZED_IMU
+            import pyzed.sl as sl
+            self.zed = sl.Camera()
+            self.zed_sensors = sl.SensorsData()
+            zed_params = sl.InitParameters()
+            zed_params.coordinate_units = sl.UNIT.METER
+            zed_params.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Z_UP_X_FWD
+
 
         if (CAMERA_MODE == 4):
             # With https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator cloned in the home directory:
@@ -241,19 +251,16 @@ class Car:
         cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
         # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
         
-        if (cam.isOpened() == False): 
-            print("Error opening webcam")
-        
+        try:
+            if (cam.isOpened() == False): 
+                # print("ErrStarting read_image_zed (opencv) threador opening webcam")
+                raise Exception("ErrStarting read_image_zed (opencv) threador opening webcam")
+        except Exception as e:
+            print(e)
+            self.terminate()
+            return
+
         ######## ZED SENSORS
-        # import pyzed.sl as sl
-        # zed = sl.Camera()
-        # sensors = sl.SensorsData()
-        # zed_params = sl.InitParameters()
-        # zed_params.coordinate_units = sl.UNIT.METER
-        # zed_params.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Z_UP_X_FWD
-        
-        
-        
         # OPEN THE CAMERA
         # status = zed.open(zed_params)
         # while status != sl.ERROR_CODE.SUCCESS:
@@ -291,8 +298,6 @@ class Car:
             # zed.get_sensors_data(sensors,sl.TIME_REFERENCE.IMAGE)
             # quaternions = sensors.get_imu_data().get_pose().get_orientation().get()
             # car_state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
-        
-        
         
         '''
         import pyzed.sl as sl
@@ -386,6 +391,8 @@ class Car:
             car_state_local = self.can_receive.new_state(car_state)
             # print(car_state_local)
             self.can_queue.put(car_state_local)
+
+
     def _init_agent(self):
         '''
         Initialize the agent thread according to the MISSION_SELECTED settings
@@ -406,12 +413,16 @@ class Car:
 
         self.agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
         self.agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
+
+
     def calculate_actuation(self):
         '''
         Method that calculates the trajectory and writes it to self.actuation
         '''
         
         self.agent.get_target(self.cones, self.state, self.actuation)
+
+
     def send_actuation(self):
         '''
         Sends the self.actuation values to move the car.
@@ -430,6 +441,8 @@ class Car:
     
     def terminate(self):
         # Give sim control back
+        if (CAMERA_MODE == 3):
+            self.zed.close()
         if (CAMERA_MODE == 4):
             self.sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
 
@@ -439,3 +452,4 @@ class Car:
             'throttle': 0., # float in [0., 1.)
             'brake': 0., # float in [0., 1.)
         }
+        
