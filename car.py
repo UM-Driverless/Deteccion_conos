@@ -427,8 +427,6 @@ class Car:
         
         if (CAN_MODE == 1):
             self.can0.send_action_msg(self.actuation)
-        elif (CAN_MODE == 2):
-            self.can_send.send_frame()
     
     def terminate(self):
         # Give sim control back

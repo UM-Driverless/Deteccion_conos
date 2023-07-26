@@ -142,10 +142,10 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                                     save_frames=False)
 
             # END OF LOOP
-            dv_car.loop_counter += 1
-            dv_car.state['fps'] = 1 / (timer.recorded_times[-1] - timer.recorded_times[0])
             timer.add_time()
+            dv_car.state['fps'] = 1 / (timer.recorded_times[-1] - timer.recorded_times[0])
             timer.new_iter()
+            dv_car.loop_counter += 1
     finally:
         # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
         # RELEASE CAM, SIMULATOR, CAN...
