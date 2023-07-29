@@ -41,7 +41,7 @@ class Car:
         # Neural net detections [{bounding boxes},{labels}] = [ [[[x1,y1],[x2,y2]], ...], [[{class name}, {confidence}], ...] ]
         self.detections = []
         
-        self.logger = Logger("Logger initialized")
+        self.logger = Logger()
         
         self._init_cam()
         self._init_can()
@@ -437,7 +437,7 @@ class Car:
             
             # Send to Simulator
             self.simulator_car_controls.steering = -self.actuation['steer'] # + rotation is left for us, right for simulator
-            self.simulator_car_controls.throttle = self.actuation['acc']
+            self.simulator_car_controls.throttle = self.actuation['acc_normalized']
             self.simulator_car_controls.brake = self.actuation['brake']
 
             self.sim_client2.setCarControls(self.simulator_car_controls)
@@ -446,14 +446,18 @@ class Car:
             self.can0.send_action_msg(self.actuation)
     
     def terminate(self):
-        # Give sim control back
-        if (CAMERA_MODE == 3):
+        if (CAMERA_MODE == 2): # Webcam
+            cv2.destroyAllWindows()
+        if (CAMERA_MODE == 3): # ZED
+            # Close cameras
             self.zed.close()
-        if (CAMERA_MODE == 4):
+            cv2.destroyAllWindows()
+        if (CAMERA_MODE == 4): # Simulator autonomous
+            # Give sim control back
             self.sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
 
         self.actuation = {
-            'acc': 0., # Acceleration. From -1.0 to 1.0.
+            'acc_normalized': 0., # Acceleration. From -1.0 to 1.0.
             'steer': 0., # -1.0 (right) to 1.0 (left)
             'throttle': 0., # float in [0., 1.)
             'brake': 0., # float in [0., 1.)

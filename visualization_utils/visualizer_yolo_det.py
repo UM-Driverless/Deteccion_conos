@@ -92,7 +92,7 @@ class Visualizer():
             f'    fps: {int(car_state["fps"]):.2f}',
             f'    Cones: {len(cones)}',
             f'AGENT TARGET:',
-            f'    acc: {agent_act["acc"]:.2f}',
+            f'    acc: {agent_act["acc_normalized"]:.2f}',
             f'    steer: {agent_act["steer"]:.5f}',
             f'    throttle: {agent_act["throttle"]}',
             f'    brake: {agent_act["brake"]:.2f}',

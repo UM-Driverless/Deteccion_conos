@@ -32,13 +32,13 @@ class Acceleration_Mission(Agent):
 
         # SPEED
         if (car_state['speed'] < 5) and (not brake_condition): #si va lento y no ve conos naranjas
-            agent_act['acc'] = 0.5
+            agent_act['acc_normalized'] = 0.5
         elif brake_condition: # da igual la velocidad, si ve conos naranjas
             agent_act['steer'] = 0 # -1 left, 1 right, 0 neutral
-            agent_act['acc'] = 0.0
+            agent_act['acc_normalized'] = 0.0
             agent_act['brake'] = 1.0
         else: # If it's fast we stop accelerating
-            agent_act['acc'] = 0.0
+            agent_act['acc_normalized'] = 0.0
         
         # STEER
         if (len(blues) > 0) and (len(yellows) > 0):

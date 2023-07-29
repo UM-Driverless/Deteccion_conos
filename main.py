@@ -23,6 +23,7 @@ https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
 vulture . --min-confidence 100
 
 # TODO
+TODO with open to camera and threads, simulator control? So it can close when stopped.
 - TODO RECOVER SIMULATOR CONTROL
 - SEND CAN HEARTBEAT
 - CAN in threads, steering with PDO instead of SDO (faster)
@@ -90,7 +91,10 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     import cv2 # Webcam
 
     # INITIALIZE things
-    dv_car = Car()
+    dv_car = Car('dv_car')
+    
+    if LOGGER:
+        dv_car.logger.write(f'CONFIG: CAN_MODE = {CAN_MODE}, CAMERA_MODE = {CAMERA_MODE}, CAM_INDEX = {CAM_INDEX}, VISUALIZE = {VISUALIZE}, MISSION_SELECTED = {MISSION_SELECTED}')
 
     # READ TIMES
     timer = Time_Counter()
@@ -141,38 +145,25 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
                                     dv_car.cones,
                                     save_frames=False)
 
-            # END OF LOOP
+            if LOGGER:
+                dv_car.logger.write(f'Iter {dv_car.loop_counter}, FPS: {dv_car.state["fps"]:.1f}, STATE: {dv_car.state}, ACTUATION: {dv_car.actuation}')
+            # Save times
             timer.add_time()
             dv_car.state['fps'] = 1 / (timer.recorded_times[-1] - timer.recorded_times[0])
             timer.new_iter()
             dv_car.loop_counter += 1
     finally:
-        # When main loop stops, due to no image, error, Ctrl+C on terminal, this calculates performance metrics and closes everything.
-        # RELEASE CAM, SIMULATOR, CAN...
-        if dv_car.loop_counter > 0: # It ran OK for some time
-            print(f'CAR STATE: \n{dv_car.state}')
-            print(f'CAR ACTUATION: \n{dv_car.actuation}')
-            print(f'AVERAGE FPS: {1/(timer.times_integrated[-1] - timer.times_integrated[0])}')
-            print(f'LOOPS: {dv_car.loop_counter}')
-            print(f'---------------------------------\n',end='')
-            
-            ## Plot the times
-            fig = plt.figure(figsize=(12, 4))
-            plt.bar(['get_data()','detect_cones()','calculate_actuation()','send_actuation'],timer.times_integrated / timer.loop_counter)
-            plt.ylabel("Average time taken [s]")
-            plt.figtext(.8,.8,f'{1/(timer.times_integrated[-1] - timer.times_integrated[0]):.2f}Hz')
-            plt.title("Execution time per section of main loop")
-            plt.savefig("logs/times.png")
-        else: # It failed somewhere
-            print("-------- ERROR, 0 MAIN LOOPS COMPLETED --------")
+        print(f'------------')
+        if LOGGER:
+            dv_car.logger.write(f'{np.array(timer.times_integrated) / timer.loop_counter}')
+        ## Plot the times
+        fig = plt.figure(figsize=(12, 4))
+        plt.bar(['get_data()','detect_cones()','calculate_actuation()','send_actuation'],np.array(timer.times_integrated) / timer.loop_counter)
+        plt.ylabel("Average time taken [s]")
+        plt.figtext(.8,.8,f'{1/(timer.times_integrated[-1] - timer.times_integrated[0]):.2f}Hz')
+        plt.title("Execution time per section of main loop")
+        plt.savefig("logs/times.png")
         
         # Close processes and windows
-        cv2.destroyAllWindows()
-        
-        dv_car.actuation = {
-            "throttle": 0.,
-            "brake": 1.,
-            "steer": 0.,
-        }
-        
+        dv_car.terminate()
 

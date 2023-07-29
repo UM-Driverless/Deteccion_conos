@@ -61,9 +61,9 @@ class Agent():
 
         # SPEED CONTROL - agent_act ----- Take (target speed - current speed) -> PID
         if (car_state['speed'] < 5):
-            agent_act['acc'] = 1.0
+            agent_act['acc_normalized'] = 1.0
         else:
-            agent_act['acc'] = 0.0
+            agent_act['acc_normalized'] = 0.0
         
         # STEER CONTROL
         if (len(blues) > 0) and (len(yellows) > 0):
