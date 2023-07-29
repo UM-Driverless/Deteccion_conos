@@ -170,15 +170,7 @@ class Agent():
 
 
 
-
-
-
-
-
-
-
-
-'''
+        '''
         if (len(blues) > 0) and (len(yellows) > 0):
             # I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
