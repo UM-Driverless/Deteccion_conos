@@ -71,7 +71,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     # IMPORTS
     import os
     print(f'Current working directory: {os.getcwd()}') # The terminal should be in this directory
-    
+
     import time
     import numpy as np
     import multiprocessing
@@ -103,7 +103,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     # SIMULATOR
     if (CAMERA_MODE == 4):
         # With https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator cloned in the home directory:
-        fsds_lib_path = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python") # os.getcwd()
+        fsds_lib_path = os.path.join(os.path.expanduser("~/Documents/UM"), "Formula-Student-Driverless-Simulator", "python") # os.getcwd()
         sys.path.insert(0, fsds_lib_path)
         print(f'FSDS simulator path: {fsds_lib_path}')
         import fsds # TODO why not recognized when debugging
@@ -334,13 +334,14 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             # Detect cones
             cones = detector.detect_cones(image)
             recorded_times[2] = time.time()
-            
+            ifps[0] = integrated_fps/loop_counter if loop_counter!=0 else integrated_fps
             # Get actions from agent
             if (CAMERA_MODE == 4):
                 agent.act_sim(cones,
                               sim_client2 = sim_client2,
                               simulator_car_controls = simulator_car_controls
                               )
+                print(loop_counter)
             else:
                 agent.act(cones)
 

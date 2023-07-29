@@ -1,8 +1,15 @@
-fps = -1.0
+ifps = [-1]
+maxSpeed = 7
+tauP = 0.4#    0.6*Ku    0.4    0.2    0.09
+tauD = 2.2#    2*Kp/Pu    2.4   3.0     1.40625
+tauI = 0.004#    Kp*Pu/8    0.009   0.004   0.00144
+lastAngle = [0]
 
+
+fps = -1.0
 # CONSTANTS FOR SETTINGS
-CAN_MODE = 1 # 0 -> CAN OFF, default values to test without CAN, 1 -> Jetson (Embedded, socketcan python-can), 2 -> KVaser
-CAMERA_MODE = 1 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR, 5 -> Simulator (manual control)
+CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> Jetson (Embedded, socketcan python-can), 2 -> KVaser
+CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam, 3 -> ZED, 4 -> SIMULATOR, 5 -> Simulator (manual control)
 # Choose webcam
 CAM_INDEX = 0 # `ls /dev/video*` to check number. With ZED: one opens both, the other doesn't work.
 
