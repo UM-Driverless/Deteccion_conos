@@ -43,7 +43,6 @@ class Car:
         
         self.logger = Logger("Logger initialized")
         
-        
         self._init_cam()
         self._init_can()
         self._init_agent()
