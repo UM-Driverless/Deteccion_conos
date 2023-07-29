@@ -10,13 +10,11 @@ from globals.globals import * # Global variables and constants, as if they were 
 
 class CAN():
     '''
-    __init__ initializes steering and can. Sets startup values
-    
-    
+    __init__ initializes general can and steering module. Sets the startup values.
     '''
     def __init__(self, logger=None):
         super().__init__()
-        self.sleep_between_msg = 0.002 # At least 1e-3s needed
+        self.sleep_between_msg = 0.003 # At least 1e-3s needed
         self.logger = logger
         self.init_can()
         self._init_steering()
@@ -50,16 +48,17 @@ class CAN():
         except can.CanError as e:
             print('Error al mandar el msg CAN: \n{e.message}')
         else:
-            print(f'Message sent ({self.bus.channel_info}): {hex(id)[2:]}#{data}')
+            pass
+            # print(f'Message sent ({self.bus.channel_info}): {hex(id)[2:]}#{data}')
 
-    def send_action_msg(self): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
+    def send_action_msg(self,agent_act): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
         """
         Send the actions of agent_act through CAN
         """
         
-        self._steering_act()
-        # self.send_message = int(agent_act['throttle'] * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
-        # self.send_message = int(agent_act['brake'] * CAN_ACTION_DIMENSION)
+        self._steering_act(agent_act)
+        # self.send_message(601,int(agent_act['throttle'] * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
+        # self.send_message(601,int(agent_act['brake'] * CAN_ACTION_DIMENSION)
         
     def send_status_msg(self):
         """
@@ -72,31 +71,32 @@ class CAN():
         Set maxon board prepared to move
         
         1. DISABLE_POWER - cansend can0 601#2B40600600
-        2. PROFILE_POSITION - cansend can0 601#2F60600001
-        3. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
-        4. ENABLE_POWER - cansend can0 601#2B40600F00
+        2. ENABLE_POWER - cansend can0 601#2B40600F00
+        3. PROFILE_POSITION - cansend can0 601#2F60600001
+        4. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
         '''
-        print('')
+
         # 1. DISABLE_POWER - cansend can0 601#2B40600600
         self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['DISABLE_POWER'])
         time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
-        # 2. PROFILE_POSITION - cansend can0 601#2F60600001
+        # 2. ENABLE_POWER - cansend can0 601#2B40600F00
+        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['ENABLE_POWER'])
+        time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
+
+        # 3. PROFILE_POSITION - cansend can0 601#2F60600001
         self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['PROFILE_POSITION'])
         time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
-        # 3. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
+        # 4. [OPTIONAL] SET_PARAMETERS - cansend can0 601#2360600001000000
         # self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['SET_PARAMETERS'])
         # time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
-        # 4. ENABLE_POWER - cansend can0 601#2B40600F00
-        self.send_message(CAN_IDS['STEER']['MAXON_ID'],CAN_MSG['STEER']['ENABLE_POWER'])
-        time.sleep(self.sleep_between_msg)  # Steering controller needs 1ms between messages
         
 
         # TODO MOVE CAN TO A THREAD.
 
-    def _steering_act(self):
+    def _steering_act(self, agent_act):
         '''
         Sends the steering messages needed to move after _init_steering() has been run
         
@@ -105,12 +105,14 @@ class CAN():
         3. TOGGLE_NEW_POS - cansend can0 601#284060000F00
         '''
         
+        target_pos_bytes = self._s32_to_4_bytes(int(agent_act['steer'] * MAXON_TOTAL_INCREMENTS))
+        # print(f'target_pos: {target_pos_bytes}')
+        print(f"agen_act(steer): {agent_act['steer']}")
+        print(f"Target value increments: {agent_act['steer']*MAXON_TOTAL_INCREMENTS}\n")
 
-        target_pos = self._float_to_bytes(agent_act['steer'] * MAXON_TOTAL_INCREMENTS)
-        # print(f'target_pos: {target_pos}')
-        self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['SET_TARGET_POS'] + target_pos)
+        self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['SET_TARGET_POS'] + target_pos_bytes)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
-        self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['MOVE_RELATIVE_POS'])
+        self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['MOVE_ABSOLUTE_POS'])
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
         self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['TOGGLE_NEW_POS'])
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
@@ -220,15 +222,15 @@ class CAN():
 
         return [wheel, analog_1, analog_2, analog_3, digital, speed, revolutions]
 
-    def _float_to_bytes(self, f):
+    def _s32_to_4_bytes(self, signed_int):
         '''
-        Takes a float f, separates it into bytes, and returns an array of ints with the bytes
+        Takes a signed integer of 32 bits f, separates it (with float-32 representation) into bytes, and returns an array of ints with the bytes
 
         '''
-        # Use the 'f' format specifier to pack the float as a 32-bit float
-        # Use '<' for little-endian byte order (change to '>' for big-endian)
-        binary_representation = struct.pack('<f', f)
+        binary_representation = struct.pack('i', signed_int)
+        # print(f'binary rep: {binary_representation}')
 
         int_array = [byte for byte in binary_representation]
+        # print(f'int array: {int_array}')
 
         return int_array

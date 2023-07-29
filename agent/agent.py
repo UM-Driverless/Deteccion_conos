@@ -47,38 +47,7 @@ class Agent():
         return kp, ki, kd, throttle_kp, throttle_ki, throttle_kd, brake_kp, brake_ki, brake_kd
     """
 
-    def act_sim(self, cones, sim_client2, simulator_car_controls):
-        '''
-        Control the simulator. Runs _get_target with more stuff. Higher level function
-
-        1. Read speed from simulator
-        2. Calculate next move with _get_target()
-        3. Send the next move to the simulator
-        '''
-        sim_client2.enableApiControl(True) # Take control of the simulator, not mouse but 
-        
-        # Read Simulator
-        sim_state = sim_client2.getCarState()
-        car_state['speed'] = sim_state.speed
-        
-        # Calculate agent_act
-        self._get_target(cones)
-        
-        # Update Simulator
-        simulator_car_controls.steering = -agent_act['steer'] # Positive z rotation is left, simulator + is right
-        simulator_car_controls.throttle = agent_act['acc']
-        simulator_car_controls.brake = agent_act['brake']
-
-        sim_client2.setCarControls(simulator_car_controls)
-
-    def act(self, cones):
-        '''
-        
-        '''
-        self._get_target(cones)
-        # self._get_target_real(cones)
-        
-    def _get_target(self, cones):
+    def get_target(self, cones, car_state, agent_act):
         '''
         Update agent_act, calculated from the cones and car_state.
         '''
