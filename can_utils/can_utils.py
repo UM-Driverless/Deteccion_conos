@@ -46,7 +46,7 @@ class CAN():
         try:
             self.bus.send(msg, timeout=CAN_SEND_TIMEOUT)
         except can.CanError as e:
-            print('Error al mandar el msg CAN: \n{e.message}')
+            print(f'Error al mandar el msg CAN: \n{e}')
         else:
             pass
             # print(f'Message sent ({self.bus.channel_info}): {hex(id)[2:]}#{data}')

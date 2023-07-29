@@ -1,7 +1,6 @@
 import os
 print(f'Current working directory: {os.getcwd()}') # The terminal should be in this directory
 import sys
-print(f'Python version: {sys.version}')
 
 import time
 import math

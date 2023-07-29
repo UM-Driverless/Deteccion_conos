@@ -65,12 +65,5 @@ class CAN():
         try:
             self.bus.send(msg, timeout=can_constants.CAN_SEND_MSG_TIMEOUT)
         except can.CanError as e:
-            print('Error al mandare msg CAN')
-            error = e
-            if hasattr(e, 'message'):
-                error = e.message
-            #self.logger.write_can_log("Sending ERROR: " + str(error))
-
-if __name__ == "__main__":
-    buscan = CAN()
+            print(f'Error al mandar msg CAN {e}')
 
