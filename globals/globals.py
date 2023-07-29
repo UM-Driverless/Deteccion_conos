@@ -1,6 +1,6 @@
 # CONSTANTS FOR SETTINGS
-CAN_MODE = 1 # 0 -> CAN OFF, default values to test without CAN, 1 -> Jetson (Embedded, socketcan python-can), 2 -> KVaser
-CAMERA_MODE = 3 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam (CAM_INDEX to choose), 3 -> ZED, 4 -> SIMULATOR autonomous, 5 -> Simulator manual control
+CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> Jetson (Embedded, socketcan python-can), 2 -> KVaser
+CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam (CAM_INDEX to choose), 3 -> ZED, 4 -> SIMULATOR autonomous, 5 -> Simulator manual control
 
 FLIP_IMAGE = 0
 

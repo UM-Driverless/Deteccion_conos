@@ -1,7 +1,5 @@
 import os
-print(f'Current working directory: {os.getcwd()}') # The terminal should be in this directory
 import sys
-print(f'Python version: {sys.version}')
 
 import time
 import math
@@ -173,16 +171,21 @@ class Car:
         cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
         # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
         
-        if (cam.isOpened() == False): 
-            print('Error opening video file')
+                
+        try:
+            if (cam.isOpened() == False): 
+                # print("ErrStarting read_image_zed (opencv) threador opening webcam")
+                raise Exception("ERROR: Can't open video")
+        except Exception as e:
+            print(e)
+            self.terminate()
+            return
         
         while True:
             # recorded_times_0 = time.time()
-            result, image = cam.read() # TODO also check CHECK cam.isOpened()?
             while result == False:
                 result, image = cam.read()
             
-            # print(f'isOpened: {cam.isOpened()}')
             # cv2.imshow('image',image)
             # cv2.waitKey(10)
             
@@ -207,14 +210,19 @@ class Car:
         cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
         # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
         
-        if (cam.isOpened() == False):
-            print('Error opening webcam')
+        try:
+            if (cam.isOpened() == False): 
+                # print("ErrStarting read_image_zed (opencv) threador opening webcam")
+                raise Exception("ERROR: Can't open webcam")
+        except Exception as e:
+            print(e)
+            self.terminate()
+            return
         
         while True:
             # recorded_times_0 = time.time()
             
             # Read image from webcam
-            # TODO also check CHECK cam.isOpened()?
             # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
             result, image = cam.read()
             while result == False:
@@ -254,7 +262,7 @@ class Car:
         try:
             if (cam.isOpened() == False): 
                 # print("ErrStarting read_image_zed (opencv) threador opening webcam")
-                raise Exception("ErrStarting read_image_zed (opencv) threador opening webcam")
+                raise Exception("ERROR: Can't open ZED as webcam")
         except Exception as e:
             print(e)
             self.terminate()
@@ -274,7 +282,6 @@ class Car:
             # recorded_times_0 = time.time()
             
             # Read image from webcam
-            # TODO also check CHECK cam.isOpened()?
             # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
             result, image = cam.read()
             while result == False:
