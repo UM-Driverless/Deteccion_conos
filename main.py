@@ -17,6 +17,7 @@ MAIN script to run all the others. Shall contain the main classes, top level fun
     - Check requirements{*}.txt, ZED API and gcc compiler up to date (12.1.0), etc.
 
 - For CAN to work first run setup_can0.sh
+    - To run on startup, add to /etc/profile.d/
 
 # REFERENCES
 https://github.com/UM-Driverless/Deteccion_conos/tree/Test_Portatil
@@ -91,7 +92,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     import cv2 # Webcam
 
     # INITIALIZE things
-    dv_car = Car('dv_car')
+    dv_car = Car()
     
     if LOGGER:
         dv_car.logger.write(f'CONFIG: CAN_MODE = {CAN_MODE}, CAMERA_MODE = {CAMERA_MODE}, CAM_INDEX = {CAM_INDEX}, VISUALIZE = {VISUALIZE}, MISSION_SELECTED = {MISSION_SELECTED}')
