@@ -1,6 +1,13 @@
+ifps = []
+maxSpeed = 7
+tauP = 0.4#    0.6*Ku    0.2    0.09
+tauD = 2.4#    2*Kp/Pu    3.0     1.40625
+tauI = 0.009#    Kp*Pu/8    0.004   0.00144
+lastAngle = [0]
+
 # CONSTANTS FOR SETTINGS
 CAN_MODE = 0 # 0 -> CAN OFF, default values to test without CAN, 1 -> Jetson (Embedded, socketcan python-can), 2 -> KVaser
-CAMERA_MODE = 0 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam (CAM_INDEX to choose), 3 -> ZED, 4 -> SIMULATOR autonomous, 5 -> Simulator manual control
+CAMERA_MODE = 4 # 0 -> Image file, 1 -> Read video file (VIDEO_FILE_NAME required), 2 -> Webcam (CAM_INDEX to choose), 3 -> ZED, 4 -> SIMULATOR autonomous, 5 -> Simulator manual control
 
 LOGGER = 1
 FLIP_IMAGE = 0
@@ -10,7 +17,7 @@ VISUALIZE = 1
 VISUALIZER_CENITAL_MAP_SIZE_PERC = 0.5
 
 # MISSION SELECTION CONSTANTS
-MISSION_SELECTED = 0 # 0 -> Generic: Runs continuously, 1 -> Acceleration, 2 -> Skidpad, 3 -> Autocross, 4 -> Trackdrive, 5 -> EBS Test, ... (Using the example of the begginers guide)
+MISSION_SELECTED = 13 # 0 -> Generic: Runs continuously, 1 -> Acceleration, 2 -> Skidpad, 3 -> Autocross, 4 -> Trackdrive, 5 -> EBS Test, ... (Using the example of the begginers guide)
 
 # Test media addresses
 # VIDEO_FILE_NAME = 'test_media/videosim.mp4'

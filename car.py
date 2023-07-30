@@ -414,6 +414,9 @@ class Car:
         elif (MISSION_SELECTED == 2): # Skidpad
             from agent.agent_skidpad_mission import Skidpad_Mission
             self.agent = Skidpad_Mission()
+        elif (MISSION_SELECTED == 13): # Skidpad
+            from agent.agent_pablo import Agent
+            self.agent = Agent()
         else: # The default Agent is the class of which other agents inherit from
             raise Exception(f'ERROR: WRONG MISSION_SELECTED VALUE. Got {MISSION_SELECTED} but expected integer from 0 to 2')
 

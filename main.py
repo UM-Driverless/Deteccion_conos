@@ -91,7 +91,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     import cv2 # Webcam
 
     # INITIALIZE things
-    dv_car = Car('dv_car')
+    dv_car = Car()
     
     if LOGGER:
         dv_car.logger.write(f'CONFIG: CAN_MODE = {CAN_MODE}, CAMERA_MODE = {CAMERA_MODE}, CAM_INDEX = {CAM_INDEX}, VISUALIZE = {VISUALIZE}, MISSION_SELECTED = {MISSION_SELECTED}')
@@ -150,6 +150,9 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             # Save times
             timer.add_time()
             dv_car.state['fps'] = 1 / (timer.recorded_times[-1] - timer.recorded_times[0])
+            if len(ifps)>20:
+                ifps.pop(0)
+            ifps.append(1 / (timer.recorded_times[-1] - timer.recorded_times[0]))
             timer.new_iter()
             dv_car.loop_counter += 1
     finally:
