@@ -3,7 +3,7 @@ import numpy as np
 import re
 
 # Read data from the file
-file_path = "2023_07_29__22_19.txt"
+file_path = "2023_07_30__15_54.txt"
 iterations = []
 fps_values = []
 steer_values = []
@@ -27,8 +27,8 @@ with open(file_path, 'r') as file:
 
 # Plot the data as a scatter plot
 plt.figure(figsize=(10, 6))
-plt.scatter(iterations, fps_values, s=4)
-# plt.plot(speed_values, steer_values, linestyle='-')
+# plt.scatter(speed_values, steer_values, s=4)
+plt.plot(speed_values, steer_values, linestyle='-')
 
 # plt.scatter(iterations, fps_values, s=4)
 # plt.plot(iterations, fps_values, linestyle='-')

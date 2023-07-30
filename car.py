@@ -181,17 +181,10 @@ class Car:
             return
         
         while True:
-            # recorded_times_0 = time.time()
+            result, image = cam.read()
             while result == False:
                 result, image = cam.read()
-            
-            # cv2.imshow('image',image)
-            # cv2.waitKey(10)
-            
-            # recorded_times_1 = time.time()
-            
             self.cam_queue.put(image)
-            # print(f'Video read time: {recorded_times_1-recorded_times_0}')
 
     def _read_image_webcam(self):
         '''
@@ -219,21 +212,16 @@ class Car:
             return
         
         while True:
-            # recorded_times_0 = time.time()
-            
             # Read image from webcam
             # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
             result, image = cam.read()
             while result == False:
                 result, image = cam.read()
             
-            # recorded_times_1 = time.time()
-            
             if FLIP_IMAGE:
                 image = cv2.flip(image, flipCode=1) # For testing purposes
             
             self.cam_queue.put(image)
-            # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
 
     def _read_image_simulator(self):    
         import fsds
@@ -430,7 +418,6 @@ class Car:
         '''
         
         self.agent.get_target(self.cones, self.state, self.actuation)
-
 
     def send_actuation(self):
         '''

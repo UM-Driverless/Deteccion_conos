@@ -9,11 +9,11 @@ class Visualizer():
         
         # Color values of each cone type, in bgr
         self.colors = {
-            'blue_cone': (255, 0, 0),
-            'yellow_cone': (0, 255, 255),
-            'orange_cone': (40, 50, 200), #(40, 50, 200)
-            'large_orange_cone': (40, 100, 255), #(40, 100, 255)
-            'unknown_cone': (0,0,0)
+            'blue_cone': (255, 0, 0), #blue
+            'yellow_cone': (0, 255, 255), #yellow
+            'orange_cone': (40, 50, 200), #(40, 50, 200) #orange
+            'large_orange_cone': (150, 100, 255), #(40, 100, 255) #pink
+            'unknown_cone': (0,0,0) #black
         }
 
     def visualize(self, agent_act, car_state, image, cones, save_frames=False):
