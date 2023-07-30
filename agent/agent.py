@@ -1,7 +1,7 @@
 from trajectory_estimation.cone_processing import ConeProcessing #ConeProcessingNoWrapped
 #import cv2
 #import simple_pid
-#import numpy as np
+# import numpy as np
 #from visualization_utils.logger import Logger
 #from simple_pid import PID
 
@@ -74,6 +74,6 @@ class Agent():
         elif len(blues) > 0:
             agent_act['steer'] = -1 # Rotation in Z axis. - = right
         elif len(yellows) > 0:
-            agent_act['steer'] = +1 # Rotation in Z axis. + = left
+            agent_act['steer'] = 1 # Rotation in Z axis. + = left
         else:
             agent_act['steer'] = 1.0 # Rotation in Z axis. + = left

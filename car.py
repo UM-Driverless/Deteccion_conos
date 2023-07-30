@@ -394,7 +394,7 @@ class Car:
             self.can_receive.receive_frame() # self.can_receive.frame updated
             # print(f'FRAME RECEIVED: {self.can_receive.frame}')
             # global car_state
-            car_state_local = self.can_receive.new_state(car_state)
+            car_state_local = self.can_receive.new_state(self.state)
             # print(car_state_local)
             self.can_queue.put(car_state_local)
 
@@ -415,8 +415,8 @@ class Car:
             from agent.agent_skidpad_mission import Skidpad_Mission
             self.agent = Skidpad_Mission()
         elif (MISSION_SELECTED == 13): # Skidpad
-            from agent.agent_pablo import Agent
-            self.agent = Agent()
+            from agent.agent_pablo import Agent_Pablo
+            self.agent = Agent_Pablo()
         else: # The default Agent is the class of which other agents inherit from
             raise Exception(f'ERROR: WRONG MISSION_SELECTED VALUE. Got {MISSION_SELECTED} but expected integer from 0 to 2')
 

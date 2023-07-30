@@ -27,6 +27,7 @@ vulture . --min-confidence 100
 TODO with open to camera and threads, simulator control? So it can close when stopped.
 - TODO RECOVER SIMULATOR CONTROL
 - SEND CAN HEARTBEAT
+- TODO THREADED CAN
 - CAN in threads, steering with PDO instead of SDO (faster)
 - Solve TORNADO.PLATFORM.AUTO ERROR, WHEN USING SIMULATOR
 - MAKE ZED WORK AGAIN
