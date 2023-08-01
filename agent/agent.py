@@ -15,7 +15,7 @@ class Agent():
     
     def __init__(self):
         self.cone_processing = ConeProcessing()
-            
+        self.speed_target = 5
     """
     def valTrackbarsPID(self):
         '''
@@ -60,10 +60,18 @@ class Agent():
         yellows.sort(key=take_x)
 
         # SPEED CONTROL - agent_act ----- Take (target speed - current speed) -> PID
+        agent_act['acc'] = (self.speed_target - car_state['speed']) * 0.1
+        
+        # If negative acceleration, brake instead
+        if agent_act['acc'] < 0:
+            agent_act['brake'] = -agent_act['acc']
+            agent_act['acc'] = 0
+        
+        
         if (car_state['speed'] < 5):
-            agent_act['acc_normalized'] = 1.0
+            agent_act['acc'] = 1.0
         else:
-            agent_act['acc_normalized'] = 0.0
+            agent_act['acc'] = 0.0
         
         # STEER CONTROL
         if (len(blues) > 0) and (len(yellows) > 0):

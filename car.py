@@ -31,7 +31,8 @@ class Car:
         }
         
         self.actuation = {
-            'acc_normalized': 0., # Acceleration. From -1.0 to 1.0. TODO Then translates into throttle and brake
+            # 'acc_normalized': 0., # Acceleration. From -1.0 to 1.0. TODO Then translates into throttle and brake
+            'acc': 0., # Acceleration of the car, 0.0 to 1.0
             'steer': 0., # -1.0 (right) to 1.0 (left)
             'throttle': 0., # float in [0., 1.)
             'brake': 0., # float in [0., 1.)
@@ -427,7 +428,7 @@ class Car:
             
             # Send to Simulator
             self.simulator_car_controls.steering = -self.actuation['steer'] # + rotation is left for us, right for simulator
-            self.simulator_car_controls.throttle = self.actuation['acc_normalized']
+            self.simulator_car_controls.throttle = self.actuation['acc']
             self.simulator_car_controls.brake = self.actuation['brake']
 
             self.sim_client2.setCarControls(self.simulator_car_controls)
@@ -447,7 +448,7 @@ class Car:
             self.sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
 
         self.actuation = {
-            'acc_normalized': 0., # Acceleration. From -1.0 to 1.0.
+            'acc': 0., # Acceleration. From -1.0 to 1.0.
             'steer': 0., # -1.0 (right) to 1.0 (left)
             'throttle': 0., # float in [0., 1.)
             'brake': 0., # float in [0., 1.)

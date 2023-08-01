@@ -27,9 +27,9 @@ class Agent_Pablo(Agent):
 
         # SPEED CONTROL - agent_act ----- Take (target speed - current speed) -> PID
         if (car_state['speed'] < maxSpeed):
-            agent_act['acc_normalized'] = 1.0
+            agent_act['acc'] = 1.0
         else:
-            agent_act['acc_normalized'] = 0.0
+            agent_act['acc'] = 0.0
 
         # STEER CONTROL
 
@@ -90,12 +90,12 @@ class Agent_Pablo(Agent):
             lastAngle[0] = angle
 
             if (0 < angleDegrees < 70 or -270 < angleDegrees < -250) and maxSpeed > car_state['speed'] > (maxSpeed / 2):
-                agent_act['acc_normalized'] = 0.5
+                agent_act['acc'] = 0.5
             # if (50>abs(angle)>0 and (blues[0]['coords']['x']<yellows[0]['coords']['x'] or blues[0]['coords']['y']<yellows[0]['coords']['y'])):
             agent_act['steer'] = angle / 25.0
         else:
             if maxSpeed > car_state['speed'] > (maxSpeed / 2):
-                agent_act['acc_normalized'] = 0.2
+                agent_act['acc'] = 0.2
             agent_act['steer'] = 1 if len(yellows) > len(blues) else lastAngle[0] / 60 if (
                     len(yellows) == 0 and len(yellows) == len(blues)) else 0 if len(yellows) == len(blues) else -1
             print(lastAngle)  # lastAngle[0]/75#

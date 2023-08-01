@@ -1,94 +1,135 @@
 from agent.agent import Agent
 from globals.globals import * # Global variables and constants, as if they were here
 
-# TODO por que heredar varios agentes en vez de meter metodos en uno.
+# TODO USAR COORDS CONOS GRANDES NARANJAS CUANDO CERCA?
 
 class Skidpad_Mission(Agent):
     
     def __init__(self):
         super().__init__()
-        self.hysteresis = 0 # 0 means you can go straight
-        self.intersection_trigger = False
+        self.hysteresis = 0 # Blocks self.intersection_state from changing temporarily. When < 1 allows change.
+        self.intersection_state = 0 # 0 = Normal track, 1 = Load trigger, 2 = Turn when stopped seeing large orange cones
         self.laps: int = 0 # Variable that keeps track of the number of times that the car has crossed the intersection
-    # SUPERCHARGED METHODS
+        self.speed_target = 4
     def get_target(self, cones, car_state, agent_act):
         '''
         Update agent_act, calculated from the cones and car_state.
         '''
         
+        self._sort_cones(cones)
+        
+        # TODO x amount of frames in a row to consider change of state, not just two.
+        # TODO USE BIG ORANGE CONES AS TARGET WHEN SEEN. IGNORE THE REST.
+        
+        self._intersection_state_machine()
+        self.steering_control(car_state, agent_act)
+        self.speed_control(car_state, agent_act)
+        
+        print(f'lap {self.laps}, steer: {agent_act["steer"]:6.3f}, acc: {agent_act["acc"]:6.3f}, brake: {agent_act["brake"]:6.3f}, INTERSECTION STATE: {self.intersection_state}')
+    def _intersection_state_machine(self):
+        if self.hysteresis < 1:
+            # Consider the intersection - Change state
+            if self.intersection_state == 0: # No intersection before
+                if (self.large_orange_position() > 0 and self.large_orange_position() < 3.0):
+                    self.intersection_state = 1 # Intersection now
+            elif self.intersection_state == 1: # Intersection before
+                if self.large_orange_position() < 0.:
+                    self.intersection_state = 2 # Out of intersection now
+                    self.hysteresis = 10
+                    print('INTERSECTION TRIGGER ------------------------')
+                    self.laps += 1 # Add one to the counter
+            elif self.intersection_state == 2:
+                if self.large_orange_position() < 0:
+                    self.intersection_state = 0 # Out of intersection now
+        else:
+            # Just turn without thinking
+            self.hysteresis -= 1
+            print(f'hysteresis (>0): {self.hysteresis}')
+    def steering_control(self, car_state, agent_act):
+        '''
+        Depending on the values of the state machine, act
+        '''
+        if self.intersection_state == 2:
+            # Found intersection. Turn to one side
+            print('Steering intersection...')
+            if(self.laps == 1 or self.laps == 2): # laps 1 and 2 to the right
+                agent_act['steer'] = -.25 # + = left
+            elif(self.laps == 3 or self.laps == 4): # The last 2 laps must be to the left
+                agent_act['steer'] = .25 # + = left
+            else: # If it has accomplished all 4 turns, then it's time to exit
+                agent_act['steer'] = 0 # + = left
+        else:
+            # Just steer normally
+            print('Steering normally...')
+            if (len(self.blues) > 0) and (len(self.yellows) > 0):
+                #I assume they're sorted from closer to further
+                center = (self.blues[0]['coords']['y'] + self.yellows[0]['coords']['y']) / 2
+                # print(f'center:{center}')
+                agent_act['steer'] = center * 0.5 # + = left
+            elif len(self.blues) > 0:
+                agent_act['steer'] = -1.8 # + = left
+            elif len(self.yellows) > 0:
+                agent_act['steer'] = 1.8 # + = left
+            else:
+                agent_act['steer'] = 0.
+            
+            # FORCE GOOD DIRECTION OF TURN WHEN CLOSE TO THE MESS
+            if (self.large_orange_position() > 0. and self.large_orange_position() < 4.):
+                if (self.laps == 1 or self.laps == 2):
+                    agent_act['steer'] = -abs(agent_act['steer'])
+                elif (self.laps == 3 or self.laps == 4):
+                    agent_act['steer'] = abs(agent_act['steer'])
+                elif self.laps >= 5:
+                    # Go to braking zone
+                    if len(self.oranges) >= 2:
+                        agent_act['steer'] = 0.5 * (self.oranges[0]['coords']['y'] + self.oranges[1]['coords']['y']) / 2
+                    else:
+                        agent_act['steer'] = 0
+        
+    def speed_control(self, car_state, agent_act):
+        '''
+        Default speed control, ignoring braking condition.
+        '''
+        # Adjust target speed
+        if self.large_orange_position() > 0. and self.large_orange_position() < 3.5:
+            self.speed_target = 4.
+        else:
+            self.speed_target = 5.
+        
+        # Speed control
+        if (len(self.oranges) >= 6) and (self.oranges[0]['coords']['y'] < 0.5) and len(self.blues) < 2 and len(self.yellows) < 2:
+            # Braking region
+            print('Braking...')
+            agent_act['acc'] = 0.0
+            agent_act['brake'] = 1.0
+        else:
+            # Accelerate normally
+            agent_act['acc'] = (self.speed_target - car_state['speed']) * 0.1
+        
+        # If negative acceleration, brake instead
+        if agent_act['acc'] < 0:
+            agent_act['brake'] = -agent_act['acc']
+            agent_act['acc'] = 0
+    def _sort_cones(self, cones):
         def take_x(cone): return cone['coords']['x']
         
         self.blues = [cone for cone in cones if (cone['label'] == 'blue_cone')]
         self.blues.sort(key=take_x)
         self.yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
         self.yellows.sort(key=take_x)
-
+ 
         self.large_oranges = [cone for cone in cones if (cone['label'] == 'large_orange_cone')]
         self.large_oranges.sort(key=take_x)
 
         self.oranges = [cone for cone in cones if (cone['label'] == 'orange_cone')]
         self.oranges.sort(key=take_x)
-        
-        self.brake_condition = (len(self.oranges) >= 6) and (self.oranges[0]['coords']['y'] < 1) and (len(self.blues) == 0 and len(self.yellows) == 0)
-        
-        # Intersection trigger with hysteresis
-        self._intersection_trigger()
-        
-
-        # Default behavior, overwritten if turning
-        if (len(self.blues) > 0) and (len(self.yellows) > 0):
-            #I assume they're sorted from closer to further
-            center = (self.blues[0]['coords']['y'] + self.yellows[0]['coords']['y']) / 2
-            # print(f'center:{center}')
-            agent_act['steer'] = center * 0.5 # 1 left, -1 right, 0 neutral TODO HACER CON MAS SENTIDO
-        elif len(self.blues) > 0:
-            agent_act['steer'] = -1 # 1 left, -1 right, 0 neutral
-        elif len(self.yellows) > 0:
-            agent_act['steer'] = 1 # 1 left, -1 right, 0 neutral
+    def large_orange_position(self):
+        '''
+        Returns the longitudinal position of the closest big orange cone visible, relative to the car camera.
+        If there are less than cone_min cones, returns -1.0 (impossible position seen from the camera)
+        '''
+        cone_min = 2
+        if (len(self.large_oranges) > cone_min):
+            return self.large_oranges[0]['coords']['x']
         else:
-            agent_act['steer'] = 0
-        
-        # Now check intersection and turn
-        if self.intersection_trigger:
-            # Found intersection. Turn to one side
-            print('Turning to one side...')
-            agent_act['acc_normalized'] = 0.05 # TODO REPLACE BY TARGET SPEED
-            if(self.laps == 1 or self.laps == 2): # laps 1 and 2 to the right
-                agent_act['steer'] = -.2 # 1 left, -1 right, 0 neutral
-            elif(self.laps == 3 and self.laps == 4): # The last 2 laps must be to the left
-                agent_act['steer'] = .2 # 1 left, -1 right, 0 neutral
-            else: # If it has accomplished all 4 turns then its time to exit
-                agent_act['steer'] = 0 # 1 left, -1 right, 0 neutral
-        elif self.brake_condition: # da igual la velocidad, si ve conos naranjas y no ve la interseccion
-            # Brake
-            print('Braking...')
-            agent_act['acc_normalized'] = 0.0
-            agent_act['brake'] = 1.0
-        elif (car_state['speed'] < 4): #si va lento y no ve conos naranjas
-            # Accelerate
-            print('Accelerating...')
-            agent_act['acc_normalized'] = 0.5
-        else: # si va rapido dejamos de acelerar
-            # Too fast
-            print('Slowing down...')
-            agent_act['acc_normalized'] = 0.0
-        
-        print(f'lap {self.laps}, steer: {agent_act["steer"]}, ')
-    def _intersection_trigger(self):
-        if self.hysteresis < 1:
-            # Consider if straight or turn
-            # self.intersection_trigger = (len(large_oranges) == 4) and (large_oranges[0]['coords']['x'] < 1.2)
-            if (len(self.large_oranges) > 1):
-                print(f'I see big oranges at {self.large_oranges[0]["coords"]["x"]}')
-                self.intersection_trigger = (self.large_oranges[0]['coords']['x'] < 2.5)
-            else:
-                self.intersection_trigger = False
-            
-            if self.intersection_trigger:
-                self.hysteresis = 10
-                print('INTERSECTION TRIGGER ------------------------')
-                self.laps += 1 # Add one to the counter
-        else:
-            # Continue turning
-            self.hysteresis -= 1
-            print(f'hysteresis (>0): {self.hysteresis}')
+            return -1.0
