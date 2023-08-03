@@ -77,8 +77,9 @@ class Agent():
                            (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2]
             middleCone1 = [(blues[1]['coords']['x'] + yellows[1]['coords']['x']) / 2,
                            (blues[1]['coords']['y'] + yellows[1]['coords']['y']) / 2]
-            extra = (middleCone0[0] * (sum(ifps) / (len(ifps)))) / (
-                        car_state['speed'] + 0.01) if ifps else 0  # 8.5 = AVERAGE FPS
+            fpsM = sum(ifps)/len(ifps) if ifps else 0
+            #extra = ((car_state['speed'] + 0.01)/fpsM) + (agent_act['acc_normalized']/(2*(fpsM**2))) if ifps else 0
+            extra = (middleCone0[0] * fpsM) / (car_state['speed'] + 0.01) if fpsM else 0  # 8.5 = AVERAGE FPS
             A = np.array(
                 [[0, 0, 1], [middleCone0[0] ** 2, middleCone0[0], 1], [middleCone1[0] ** 2, middleCone1[0], 1]])
             B = np.array([0, middleCone0[1], middleCone1[1]])
@@ -136,15 +137,3 @@ class Agent():
             agent_act['steer'] = 1 if len(yellows) > len(blues) else lastAngle[0] / 60 if (
                     len(yellows) == 0 and len(yellows) == len(blues)) else 0 if len(yellows) == len(blues) else -1
             print(lastAngle)  # lastAngle[0]/75#
-        """
-        if (len(blues) > 0) and (len(yellows) > 0):
-            # I assume they're sorted from closer to further
-            center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
-            # print(f'center:{center}')
-            agent_act['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
-        elif len(blues) > 0:
-            agent_act['steer'] = -1 # Rotation in Z axis. - = right
-        elif len(yellows) > 0:
-            agent_act['steer'] = +1 # Rotation in Z axis. + = left
-        else:
-            agent_act['steer'] = 1.0 # Rotation in Z axis. + = left"""

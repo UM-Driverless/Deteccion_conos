@@ -1,8 +1,8 @@
 ifps = []
 maxSpeed = 7
-tauP = 0.4#    0.6*Ku    0.2    0.09
-tauD = 2.4#    2*Kp/Pu    3.0     1.40625
-tauI = 0.009#    Kp*Pu/8    0.004   0.00144
+tauP = 0.2#0.4#    0.6*Ku    0.2    0.09
+tauD = 3#2.4#    2*Kp/Pu    3.0     1.40625
+tauI = 0.004#0.009#    Kp*Pu/8    0.004   0.00144
 lastAngle = [0]
 
 # CONSTANTS FOR SETTINGS
