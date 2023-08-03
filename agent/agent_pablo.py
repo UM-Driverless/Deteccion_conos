@@ -32,16 +32,16 @@ class Agent_Pablo(Agent):
             agent_act['acc'] = 0.0
 
         # STEER CONTROL
-
-        print(f'\n{sum(ifps) / (len(ifps)) if ifps else 0}')
+        fpsM = sum(ifps) / len(ifps) if ifps else 0
+        print(f'\nFPS: {fpsM}')
         angleDegrees = -1
         if (len(yellows) > 1 and len(blues) > 1):
             middleCone0 = [(blues[0]['coords']['x'] + yellows[0]['coords']['x']) / 2,
                            (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2]
             middleCone1 = [(blues[1]['coords']['x'] + yellows[1]['coords']['x']) / 2,
                            (blues[1]['coords']['y'] + yellows[1]['coords']['y']) / 2]
-            fpsM = sum(ifps)/len(ifps) if ifps else 0
-            #extra = ((car_state['speed'] + 0.01)/fpsM) + (agent_act['acc_normalized']/(2*(fpsM**2))) if ifps else 0
+
+            #extra = middleCone0[0] *(((car_state['speed'] + 0.01)/fpsM) + (agent_act['acc']/(2*(fpsM**2)))) if ifps else 0
             extra = (middleCone0[0] * fpsM) / (car_state['speed'] + 0.01) if fpsM else 0  # 8.5 = AVERAGE FPS
             A = np.array(
                 [[0, 0, 1], [middleCone0[0] ** 2, middleCone0[0], 1], [middleCone1[0] ** 2, middleCone1[0], 1]])
