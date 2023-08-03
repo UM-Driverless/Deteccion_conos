@@ -3,7 +3,7 @@ import numpy as np
 import re
 
 # Read data from the file
-file_path = "2023_07_29__22_19.txt"
+file_path = "2023_07_30__15_54.txt"
 iterations = []
 fps_values = []
 

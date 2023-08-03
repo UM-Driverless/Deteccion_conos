@@ -31,7 +31,8 @@ class Car:
         }
         
         self.actuation = {
-            'acc_normalized': 0., # Acceleration. From -1.0 to 1.0. TODO Then translates into throttle and brake
+            # 'acc_normalized': 0., # Acceleration. From -1.0 to 1.0. TODO Then translates into throttle and brake
+            'acc': 0., # Acceleration of the car, 0.0 to 1.0
             'steer': 0., # -1.0 (right) to 1.0 (left)
             'throttle': 0., # float in [0., 1.)
             'brake': 0., # float in [0., 1.)
@@ -181,17 +182,10 @@ class Car:
             return
         
         while True:
-            # recorded_times_0 = time.time()
+            result, image = cam.read()
             while result == False:
                 result, image = cam.read()
-            
-            # cv2.imshow('image',image)
-            # cv2.waitKey(10)
-            
-            # recorded_times_1 = time.time()
-            
             self.cam_queue.put(image)
-            # print(f'Video read time: {recorded_times_1-recorded_times_0}')
 
     def _read_image_webcam(self):
         '''
@@ -219,21 +213,16 @@ class Car:
             return
         
         while True:
-            # recorded_times_0 = time.time()
-            
             # Read image from webcam
             # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
             result, image = cam.read()
             while result == False:
                 result, image = cam.read()
             
-            # recorded_times_1 = time.time()
-            
             if FLIP_IMAGE:
                 image = cv2.flip(image, flipCode=1) # For testing purposes
             
             self.cam_queue.put(image)
-            # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
 
     def _read_image_simulator(self):    
         import fsds
@@ -394,7 +383,7 @@ class Car:
             self.can_receive.receive_frame() # self.can_receive.frame updated
             # print(f'FRAME RECEIVED: {self.can_receive.frame}')
             # global car_state
-            car_state_local = self.can_receive.new_state(car_state)
+            car_state_local = self.can_receive.new_state(self.state)
             # print(car_state_local)
             self.can_queue.put(car_state_local)
 
@@ -415,8 +404,8 @@ class Car:
             from agent.agent_skidpad_mission import Skidpad_Mission
             self.agent = Skidpad_Mission()
         elif (MISSION_SELECTED == 13): # Skidpad
-            from agent.agent_pablo import Agent
-            self.agent = Agent()
+            from agent.agent_pablo import Agent_Pablo
+            self.agent = Agent_Pablo()
         else: # The default Agent is the class of which other agents inherit from
             raise Exception(f'ERROR: WRONG MISSION_SELECTED VALUE. Got {MISSION_SELECTED} but expected integer from 0 to 2')
 
@@ -431,7 +420,6 @@ class Car:
         
         self.agent.get_target(self.cones, self.state, self.actuation)
 
-
     def send_actuation(self):
         '''
         Sends the self.actuation values to move the car.
@@ -440,7 +428,7 @@ class Car:
             
             # Send to Simulator
             self.simulator_car_controls.steering = -self.actuation['steer'] # + rotation is left for us, right for simulator
-            self.simulator_car_controls.throttle = self.actuation['acc_normalized']
+            self.simulator_car_controls.throttle = self.actuation['acc']
             self.simulator_car_controls.brake = self.actuation['brake']
 
             self.sim_client2.setCarControls(self.simulator_car_controls)
@@ -460,7 +448,7 @@ class Car:
             self.sim_client2.enableApiControl(False) # Allows mouse control, only API with this code
 
         self.actuation = {
-            'acc_normalized': 0., # Acceleration. From -1.0 to 1.0.
+            'acc': 0., # Acceleration. From -1.0 to 1.0.
             'steer': 0., # -1.0 (right) to 1.0 (left)
             'throttle': 0., # float in [0., 1.)
             'brake': 0., # float in [0., 1.)

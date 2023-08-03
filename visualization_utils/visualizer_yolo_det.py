@@ -9,11 +9,11 @@ class Visualizer():
         
         # Color values of each cone type, in bgr
         self.colors = {
-            'blue_cone': (255, 0, 0),
-            'yellow_cone': (0, 255, 255),
-            'orange_cone': (40, 50, 200), #(40, 50, 200)
-            'large_orange_cone': (40, 100, 255), #(40, 100, 255)
-            'unknown_cone': (0,0,0)
+            'blue_cone': (255, 0, 0), #blue
+            'yellow_cone': (0, 255, 255), #yellow
+            'orange_cone': (40, 50, 200), #(40, 50, 200) #orange
+            'large_orange_cone': (150, 100, 255), #(40, 100, 255) #pink
+            'unknown_cone': (0,0,0) #black
         }
 
     def visualize(self, agent_act, car_state, image, cones, save_frames=False):
@@ -92,7 +92,7 @@ class Visualizer():
             f'    fps: {int(car_state["fps"]):.2f}',
             f'    Cones: {len(cones)}',
             f'AGENT TARGET:',
-            f'    acc: {agent_act["acc_normalized"]:.2f}',
+            f'    acc: {agent_act["acc"]:.2f}',
             f'    steer: {agent_act["steer"]:.5f}',
             f'    throttle: {agent_act["throttle"]}',
             f'    brake: {agent_act["brake"]:.2f}',

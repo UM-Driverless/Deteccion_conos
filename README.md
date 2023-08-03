@@ -62,12 +62,11 @@ We won't use Conda since it's not necessary, and the several python versions hav
 - To install cuda manually: https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=Ubuntu&target_version=22.04&target_type=deb_network
 
 # INSTALL SIMULATOR
-Go to [https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases) and download the latest version. The file has an UNREAL ENGINE file which executes the simulator.
-[Here](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/tree/master/python/examples) you can see Python examples.
+Go to [https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/releases) and download the latest version. This is an executable file that will run the simulator. It can be stored and run from anywhere.
+To connect to the Python code, clone the repo in the same folder as Deteccion_conos. [Here](https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator/tree/master/python/examples) you can see Python examples.
 
-If the test python file is inside `Formula-Student-Driverless-Simulator`, you can use this path to link the simulator: `fsds_lib_path = os.path.join(os.getcwd(),"python")`
-
-<details><summary>Test program</summary>
+<details>
+    <summary>Test program</summary>
 
 ```python
 # This code adds the fsds package to the pyhthon path.
@@ -108,6 +107,10 @@ client.reset()
 </details>
 
 To use, first run the fsds-... file, click "Run simulation", then run the python code
+
+# Notes
+- To use CAN comm with the Nvidia Jetson Orin, the can bus has to be working properly and connected when the Orin turns on. There has to be at least another device to acknowledge messages.
+- 
 
 # NVIDIA JETSON XAVIER NX SETUP
 TODO Testing with Jetpack 5.1
