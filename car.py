@@ -393,7 +393,7 @@ class Car:
         Initialize the agent thread according to the MISSION_SELECTED settings
         '''
         
-        ## Agent selection
+        ## Agent selection - 0 -> Generic Agent: Runs continuously, 1 -> Acceleration, 2 -> Skidpad, 3 -> Autocross, 4 -> Trackdrive, 5 -> EBS Test, 6 -> Inspection, 7 -> Manual Drive
         if (MISSION_SELECTED == 0): # Generic
             from agent.agent import Agent
             self.agent = Agent()
@@ -403,6 +403,16 @@ class Car:
         elif (MISSION_SELECTED == 2): # Skidpad
             from agent.agent_skidpad_mission import Skidpad_Mission
             self.agent = Skidpad_Mission()
+        elif (MISSION_SELECTED == 3): # Autocross
+            self.agent = Agent()
+        elif (MISSION_SELECTED == 4): # Trackdrive
+            self.agent = Agent()
+        elif (MISSION_SELECTED == 5): # EBS Test
+            self.agent = Agent() # TODO CAMBIAR ESTOS ULTIMOS, SON OBLIGATORIOS
+        elif (MISSION_SELECTED == 6): # Inspection
+            self.agent = Agent()
+        elif (MISSION_SELECTED == 7): # Manual Drive
+            return
         elif (MISSION_SELECTED == 13): # Skidpad
             from agent.agent_pablo import Agent_Pablo
             self.agent = Agent_Pablo()
