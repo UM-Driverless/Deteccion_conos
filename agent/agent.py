@@ -59,17 +59,30 @@ class Agent():
         yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
         yellows.sort(key=take_x)
 
+        orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
+        orange.sort(key=take_x)
+
         # SPEED CONTROL - agent_act ----- Take (target speed - current speed) -> PID
         agent_act['acc'] = (self.speed_target - car_state['speed']) * 0.1
+        brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
         
         # If negative acceleration, brake instead
         if agent_act['acc'] < 0:
             agent_act['brake'] = -agent_act['acc']
             agent_act['acc'] = 0
         
-        
-        if (car_state['speed'] < 5):
+
+
+        if (car_state['speed'] < 5) and (not brake_condition):
             agent_act['acc'] = 1.0
+        
+        elif brake_condition: # da igual la velocidad, si ve conos naranjas
+            agent_act['steer'] = 0 # 1 left, -1 right, 0 neutral
+            agent_act['acc'] = 0.0
+            agent_act['brake'] = 1.0
+
+            if(car_state['speed'] < 0.25): #Si se ha parado completamente, AS_Finished
+                return True
         else:
             agent_act['acc'] = 0.0
         
@@ -85,3 +98,5 @@ class Agent():
             agent_act['steer'] = 1 # Rotation in Z axis. + = left
         else:
             agent_act['steer'] = 1.0 # Rotation in Z axis. + = left
+
+        return False

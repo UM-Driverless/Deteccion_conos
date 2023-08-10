@@ -64,6 +64,7 @@ class Car:
         elif (CAMERA_MODE == 4): self.cam_worker = multiprocessing.Process(target=self._read_image_simulator, args=(), daemon=False)
         elif (CAMERA_MODE == 5): self.cam_worker = multiprocessing.Process(target=self._read_image_simulator, args=(), daemon=False)
         
+        
         if (CAMERA_MODE == 3):
             ### ZED_IMU
             import pyzed.sl as sl
@@ -111,6 +112,7 @@ class Car:
             
             # No control. Give to keyboard
             self.sim_client2.enableApiControl(False)
+        
         
         self.cam_worker.start()
     
@@ -364,6 +366,7 @@ class Car:
             # CAN with Jetson
             self.can0 = CAN()
             print('CAN (python-can, socketcan, Jetson) initialized')
+
         elif (CAN_MODE == 2):
             # CAN with Kvaser
 
@@ -394,7 +397,7 @@ class Car:
         '''
         
         ## Agent selection - 0 -> Generic Agent: Runs continuously, 1 -> Acceleration, 2 -> Skidpad, 3 -> Autocross, 4 -> Trackdrive, 5 -> EBS Test, 6 -> Inspection, 7 -> Manual Drive
-        if (MISSION_SELECTED == 0): # Generic
+        if (MISSION_SELECTED == 0): # Generic, we dont use it really
             from agent.agent import Agent
             self.agent = Agent()
         elif (MISSION_SELECTED == 1): # Acceleration
@@ -404,20 +407,24 @@ class Car:
             from agent.agent_skidpad_mission import Skidpad_Mission
             self.agent = Skidpad_Mission()
         elif (MISSION_SELECTED == 3): # Autocross
+            from agent.agent import Agent
             self.agent = Agent()
         elif (MISSION_SELECTED == 4): # Trackdrive
+            from agent.agent import Agent
             self.agent = Agent()
         elif (MISSION_SELECTED == 5): # EBS Test
-            self.agent = Agent() # TODO CAMBIAR ESTOS ULTIMOS, SON OBLIGATORIOS
+            from agent.agent_ebs_test import EBS_Test_Mission
+            self.agent = EBS_Test_Mission(self.can0) 
         elif (MISSION_SELECTED == 6): # Inspection
-            self.agent = Agent()
+            from agent.agent_inspection import Inspection_Mission
+            self.agent = Inspection_Mission()
         elif (MISSION_SELECTED == 7): # Manual Drive
-            return
+            self.terminate() # La orin no necesitar hacer nada mas
         elif (MISSION_SELECTED == 13): # Skidpad
             from agent.agent_pablo import Agent_Pablo
             self.agent = Agent_Pablo()
         else: # The default Agent is the class of which other agents inherit from
-            raise Exception(f'ERROR: WRONG MISSION_SELECTED VALUE. Got {MISSION_SELECTED} but expected integer from 0 to 2')
+            raise Exception(f'ERROR: WRONG MISSION_SELECTED VALUE. Got {MISSION_SELECTED} but expected integer from 0 to 7')
 
         self.agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
         self.agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
@@ -428,7 +435,7 @@ class Car:
         Method that calculates the trajectory and writes it to self.actuation
         '''
         
-        self.agent.get_target(self.cones, self.state, self.actuation)
+        return self.agent.get_target(self.cones, self.state, self.actuation)
 
     def send_actuation(self):
         '''

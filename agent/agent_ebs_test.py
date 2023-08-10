@@ -2,7 +2,7 @@ from agent.agent import Agent
 
 from globals.globals import * # Global variables and constants, as if they were here
 
-class Acceleration_Mission(Agent):
+class EBS_Test_Mission(Agent):
     def __init__(self):
         super().__init__()
 
@@ -32,8 +32,10 @@ class Acceleration_Mission(Agent):
         brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
 
         # SPEED
-        if (car_state['speed'] < 5) and (not brake_condition): #si va lento y no ve conos naranjas
-            agent_act['acc'] = 0.5
+        # Aceleramos hasta minimo 40kmh en 20m, se triggerea RES y debe parar en 10 metros
+        if (car_state['speed'] < 50) and (not brake_condition): #si va lento y no ve conos naranjas
+            agent_act['acc'] = 1
+
         elif brake_condition: # da igual la velocidad, si ve conos naranjas
             agent_act['steer'] = 0 # 1 left, -1 right, 0 neutral
             agent_act['acc'] = 0.0
@@ -56,5 +58,5 @@ class Acceleration_Mission(Agent):
             agent_act['steer'] = 1 # 1 left, -1 right, 0 neutral
         else:
             agent_act['steer'] = 0
-
+        
         return False

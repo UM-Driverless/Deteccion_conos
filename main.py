@@ -101,15 +101,20 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     # READ TIMES
     timer = Time_Counter()
 
+    if (MISSION_SELECTED == 6):
+        VISUALIZE = 0
+
     ## Data visualization
     if (VISUALIZE == 1):
         visualizer = Visualizer()
         # visualize_worker = multiprocessing.Process(target=visualize_thread, args=(), daemon=False)
+    
 
     # Main loop ------------------------
-    try:
+    try:        
         print(f'Starting main loop...')
-        while True:
+        AS_Finished = False
+        while (not AS_Finished):
             timer.add_time()
 
             dv_car.get_data()
@@ -131,7 +136,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             # Detect cones
             dv_car.cones = dv_car.detector.detect_cones(dv_car.image, dv_car.state)
             timer.add_time()
-            dv_car.calculate_actuation()
+            AS_Finished = dv_car.calculate_actuation()
             timer.add_time()
             dv_car.send_actuation()
             # VISUALIZE
