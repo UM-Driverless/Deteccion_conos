@@ -75,6 +75,7 @@ To stop: Ctrl+C in the terminal
 if __name__ == '__main__': # multiprocessing creates child processes that import this file, with __name__ = '__mp_main__'
     # IMPORTS
     import os
+    os.system('clear')
     print(f'Current working directory: {os.getcwd()}') # The terminal should be in this directory
     
     import time
@@ -134,6 +135,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             
             timer.add_time()
             # Detect cones
+            print(f'--------Loop counter:   {dv_car.loop_counter}--------')
             dv_car.cones = dv_car.detector.detect_cones(dv_car.image, dv_car.state)
             timer.add_time()
             AS_Finished = dv_car.calculate_actuation()
@@ -162,6 +164,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             ifps.append(1 / (timer.recorded_times[-1] - timer.recorded_times[0]))
             timer.new_iter()
             dv_car.loop_counter += 1
+            print()
     finally:
         print(f'------------')
         if LOGGER:
