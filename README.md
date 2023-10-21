@@ -16,7 +16,7 @@ We won't use Conda since it's not necessary, and the several python versions hav
     cd ~/Deteccion_conos
     pip install -r {requirements_file_name}.txt #yolo_requirements.txt requirements.txt
     ```
-- [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/g/personal/r_jimenezm_2017_alumnos_urjc_es/Eg8abm1kP9RIsfNfTONUWqUBobIr16Q0yh7uOX4bxaoDfw) in: `"yolov5/weights"`
+- [OPTIONAL] If you want to modify the weights, include the [weights folder](https://urjc-my.sharepoint.com/:f:/g/personal/r_jimenezm_2017_alumnos_urjc_es/EittFtAd_YFBqP0bHJOU4JQBtuxJvhdr0-u1zLMW49b1og?e=DW3dwM) in: `"yolov5/weights"`
 
 - ZED Camera Installation.
     1. Download the SDK according to desired CUDA version and system (Ubuntu, Nvidia jetson xavier jetpack, ...). If it doesn't find the matching CUDA version of the SDK, it will install it. When detected, it will continue with the installation.
