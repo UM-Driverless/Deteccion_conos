@@ -1,0 +1,3 @@
+[submodule "tools/xbox-remote-controller"]
+	path = tools/xbox-remote-controller
+	url = https://github.com/PortiESP/xbox-remote-controller.git
