@@ -1,1 +1,0 @@
-print(f'time_counter package imported')

@@ -1,0 +1,3 @@
+CAMERA_MODE: image # image, video, webcam, zed, sim, sim_view (manual control)
+COMM_MODE: 'off' # off, serial, can_jetson (Embedded, socketcan python-can), can_kvaser
+AGENT_MODE: 0 # 0 -> Generic Agent: Runs continuously, 1 -> Acceleration, 2 -> Skidpad, 3 -> Autocross, 4 -> Trackdrive, 5 -> EBS Test, ... (Using the example of the begginers guide)

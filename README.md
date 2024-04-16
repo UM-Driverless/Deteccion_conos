@@ -1,7 +1,10 @@
 # TODO
-- Move code to src folder, still running
+- test with simulator
+- yaml config file, remove globals
+- move all utils to my_utils
 - config file in yaml? is it worth it? how is it better?
 - rename github project from Deteccion_conos to ``um_driverless``
+- find todos and fix them
 
 # UM-Driverless Contents
 - [TODO](#todo)

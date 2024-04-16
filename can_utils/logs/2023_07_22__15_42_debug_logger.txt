@@ -1,1 +1,0 @@
-[MAIN]: Initialization. Logger initialized [15:42:36.622599]
