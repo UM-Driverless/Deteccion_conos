@@ -1,12 +1,7 @@
-import os
-import sys
-
-import time
-import math
+import os, sys, time, math, cv2
 import numpy as np
 import multiprocessing
 import matplotlib.pyplot as plt # For representation of time consumed
-import cv2
 
 from globals.globals import * # Global variables and constants, as if they were here
 from visualization_utils.logger import Logger

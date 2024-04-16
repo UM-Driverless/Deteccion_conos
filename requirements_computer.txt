@@ -6,8 +6,10 @@
 # If this is used inside a conda environment, you may need to install some libraries with conda, and only use the anaconda pip version.
 # To install all these libraries:
 # pip3 install -r requirements.txt
-opencv-python
 
+# MAIN LIBRARIES
+opencv-python
+scikit-image
 
 # YOLO REQUIREMENTS
 ##  Base
@@ -19,7 +21,7 @@ PyYAML>=5.3.1
 requests>=2.23.0
 scipy>=1.4.1  # Google Colab version
 torch>=2.0.0+nv23.05
-torchvision>=0.15.1
+torchvision>=0.15.1 # https://pytorch.org/, https://developer.nvidia.com/cuda-downloads?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exe_network
 tqdm>=4.41.0
 
 ##  Logging
@@ -27,7 +29,7 @@ tensorboard>=2.4.1
 ##  wandb
 
 ##  Plotting
-pandas>=1.1.4
+pandas>=1.1.4 # fsds windows needs pandas < 1.3.0
 seaborn>=0.11.0
 
 ##  Export

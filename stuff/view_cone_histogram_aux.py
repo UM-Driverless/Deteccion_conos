@@ -1,5 +1,5 @@
 import os, cv2
-from old_and_aux_files import utils
+from stuff import utils
 import matplotlib.pyplot as plt
 # # import PyQt4
 # import matplotlib

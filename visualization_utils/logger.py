@@ -18,9 +18,25 @@ class Logger:
         if not os.path.exists(logs_path):
             os.makedirs(logs_path)
             self.write(f'File created by Logger class at {datetime.datetime.now().strftime("%Y_%m_%d__%H_%M")}')
+            print('LOGGER STARTED')
 
 
-    def write(self, message):
-        # Appends message to the file in self.path, which remains constant during the execution
+    def write(self, message: str, print_msg=False):
+        """
+        Appends a message to the file in self.path and optionally prints it.
+
+        Parameters:
+            message (str): The message to write to the file.
+            print_msg (bool): If True, the message will also be printed.
+
+        Returns:
+            None
+        """
         with open(self.path, 'a', encoding='utf-8') as f:
-            f.write(f'{str(datetime.datetime.now().time())}: {str(message)}\n')
+            # Use the full date
+            timestamp = f'{datetime.datetime.now().strftime("%Y_%m_%d__%H:%M:%S.%f")}'
+            # Now like before, but with microsecond precision
+            formatted_message = f'{timestamp}: {message}\n'
+            f.write(formatted_message)
+            if print_msg:
+                print(formatted_message)

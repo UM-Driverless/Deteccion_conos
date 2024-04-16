@@ -1,4 +1,20 @@
-# How to install and use the scripts in linux (Tested with Ubuntu 22)
+# TODO
+- Polymorphism to get rid of if-elses
+    - Define a class for each type of camera
+    - Move code to src folder, still running
+
+# UM-Driverless Contents
+- [TODO](#todo)
+- [UM-Driverless Contents](#um-driverless-contents)
+- [INSTALL SIMULATOR](#install-simulator)
+- [Notes](#notes)
+- [NVIDIA JETSON XAVIER NX SETUP](#nvidia-jetson-xavier-nx-setup)
+- [KVASER Setup in Ubuntu](#kvaser-setup-in-ubuntu)
+- [conda](#conda)
+- [Cliente para realizar la detección de conos en el simulador](#cliente-para-realizar-la-detección-de-conos-en-el-simulador)
+    - [To test](#to-test)
+    - [To install any driver (canlib and kvcommon must be installed first):](#to-install-any-driver-canlib-and-kvcommon-must-be-installed-first)
+- [Old stuff](#old-stuff)
 We won't use Conda since it's not necessary, and the several python versions have caused problems. Also conda can't install all the packages we need, so there would be some packages installed with pip and others with conda. It also caused problems with docker.
 
 - First apt installs

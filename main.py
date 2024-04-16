@@ -75,8 +75,10 @@ To stop: Ctrl+C in the terminal
 if __name__ == '__main__': # multiprocessing creates child processes that import this file, with __name__ = '__mp_main__'
     # IMPORTS
     import os
-    os.system('clear')
-    print(f'Current working directory: {os.getcwd()}') # The terminal should be in this directory
+    # os.system('clear')
+    # print(f'Current working directory: {os.getcwd()}') # The terminal should be in this directory
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    os.system('cls')
     
     import time
     import numpy as np

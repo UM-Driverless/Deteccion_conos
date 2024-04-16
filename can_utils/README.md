@@ -22,3 +22,8 @@ sh ./<path_to_Deteccion_conos>/run_can_on_startup.sh
 ```
 
 Finalmente, el archivo enable_CAN_no_sudo solo funcionará en la Jetson Xavier.
+
+# Activar y Desactivar
+- Desactivar
+    - `sudo ip link set can0 down`
+    - `systemctl stop can-interface`
