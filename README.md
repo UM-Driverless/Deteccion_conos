@@ -1,10 +1,11 @@
 # TODO
-- test with simulator
 - yaml config file, remove globals
 - move all utils to my_utils
-- config file in yaml? is it worth it? how is it better?
+- the agent should have all the conditionals and control the vehicle when in a mission. Should have the while True loop?
 - rename github project from Deteccion_conos to ``um_driverless``
 - find todos and fix them
+- check delays between simulator and processed image, response time
+- knowing the pickling error, try to visualize to a thread
 
 # UM-Driverless Contents
 - [TODO](#todo)
@@ -18,6 +19,8 @@
     - [To test](#to-test)
     - [To install any driver (canlib and kvcommon must be installed first):](#to-install-any-driver-canlib-and-kvcommon-must-be-installed-first)
 - [Old stuff](#old-stuff)
+
+
 We won't use Conda since it's not necessary, and the several python versions have caused problems. Also conda can't install all the packages we need, so there would be some packages installed with pip and others with conda. It also caused problems with docker.
 
 - First apt installs

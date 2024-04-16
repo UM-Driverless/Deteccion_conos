@@ -1,7 +1,5 @@
-import cv2
+import cv2, time
 import numpy as np
-import time # Measure time taken
-from globals.globals import * # Global variables and constants, as if they were here
 
 class Visualizer():
     def __init__(self):
@@ -15,8 +13,10 @@ class Visualizer():
             'large_orange_cone': (150, 100, 255), #(40, 100, 255) #pink
             'unknown_cone': (0,0,0) #black
         }
+        
+        self.VISUALIZER_CENITAL_MAP_SIZE_PERC = 0.5
 
-    def visualize(self, agent_act, car_state, image, cones, save_frames=False):
+    def visualize(self, agent_act, car_state, image, cones, save_frames=False, visualize = True):
         """
         Generates the visualization
         
@@ -25,6 +25,8 @@ class Visualizer():
         
         
         """
+        if not visualize:
+            return
         image = self.make_image(agent_act, car_state, image, cones)
         
         # Show and save image
@@ -123,7 +125,7 @@ class Visualizer():
         '''
         img_size = image.shape[1] # vertical size in pixels
         
-        cenit_perc = VISUALIZER_CENITAL_MAP_SIZE_PERC
+        cenit_perc = self.VISUALIZER_CENITAL_MAP_SIZE_PERC
         cenital_size = int(img_size * cenit_perc)
         cenital_img = np.zeros((img_size, img_size, 3))
         

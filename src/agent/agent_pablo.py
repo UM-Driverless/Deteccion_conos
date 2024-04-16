@@ -1,6 +1,5 @@
 from agent.agent import Agent
 import numpy as np
-from globals.globals import * # Global variables and constants, as if they were here
 import math
 
 
@@ -196,3 +195,16 @@ class Agent_Pablo(Agent):
             agent_act['steer'] = 1 if len(yellows) > len(blues) else lastAngle[0] / 60 if (
                     len(yellows) == 0 and len(yellows) == len(blues)) else 0 if len(yellows) == len(blues) else -1
             print(lastAngle)  # lastAngle[0]/75#
+
+
+"""
+ifps = []
+maxSpeed = 7
+tauP = 1.0#0.4#    0.6*Ku    0.2    0.09
+tauD = 0.2#2.4#    2*Kp/Pu    3.0     1.40625
+tauI = 0.1#0.009#    Kp*Pu/8    0.004   0.00144
+lastAngle = [0]
+
+prev_integral=[0,0]
+fallo=[False]
+"""

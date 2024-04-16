@@ -4,6 +4,11 @@ import multiprocessing
 from abc import ABC, abstractmethod
 
 class CarCommunicator(ABC):
+    def __init__(self):
+        # FSDS_LIB_PATH = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python") # os.getcwd()
+        self.SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+        self.ROOT_DIR = os.path.dirname(self.SRC_DIR)
+
     @abstractmethod
     def send_actuation(self, actuation):
         """Sends actuation commands (steering, throttle, etc.) to the car."""
@@ -25,6 +30,8 @@ class CarCommunicator(ABC):
             return CanJetson('can0')
         elif mode == 'can_kvaser':
             return CanKvaser('kvaser')
+        elif mode == 'sim':
+            return SimulatorComm()
         else:
             raise ValueError(f'Unknown comm mode: {mode}')
         
@@ -37,6 +44,36 @@ class NullCarCommunicator(CarCommunicator):
         # Return empty state data (no data received)
         return {}
 
+class SimulatorComm(CarCommunicator):
+    def __init__(self):
+        super().__init__()
+        FSDS_LIB_PATH = os.path.join(os.path.dirname(self.ROOT_DIR), "Formula-Student-Driverless-Simulator", "python")
+        sys.path.insert(0, FSDS_LIB_PATH)
+        print(f'FSDS simulator path: {FSDS_LIB_PATH}')
+        global fsds
+        import fsds
+        
+        self.client = fsds.FSDSClient() # To control the car
+        # Check network connection, exit if not connected
+        self.client.confirmConnection()
+        # Control the Car
+        self.client.enableApiControl(True) # Disconnects mouse control, only API with this code
+        self.controls = fsds.CarControls()
+        
+    def receive_state(self, state):
+        """Receives sensor data (speed, RPM, etc.) from the simulator.
+        """
+        # Read speed from simulator
+        sim_state = self.client.getCarState()
+        state['speed'] = sim_state.speed
+        
+    def send_actuation(self, actuation):
+        # Send to Simulator
+        self.controls.steering = -actuation['steer'] # + rotation is left for us, right for simulator
+        self.controls.throttle = actuation['acc']
+        self.controls.brake = actuation['brake']
+
+        self.client.setCarControls(self.controls)
 
 class SerialCommunicator(CarCommunicator):
     """
@@ -65,7 +102,7 @@ class CanJetson(CarCommunicator):
     def send_actuation(self, actuation):
         # Convert actuation data to a CAN message
         # ... (implementation specific to CAN bus protocol)
-        self.can_bus.send(can_message)
+        self.can0.send_action_msg(actuation)
 
     def receive_state(self, state):
         # Listen for CAN messages containing sensor data
@@ -94,26 +131,3 @@ class CanKvaser(CarCommunicator):
         # Listen for CAN messages containing sensor data
         # ... (implementation specific to Kvaser CAN bus protocol)
         return kvaser_receive_message()
-
-class SimulatorComm(CarCommunicator):
-    def __init__(self):
-        FSDS_LIB_PATH = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python")
-        sys.path.insert(0, FSDS_LIB_PATH)
-        print(f"Simulator Comm initialized with FSDS_LIB_PATH: {FSDS_LIB_PATH}")
-        import fsds
-        self.sim_client2 = fsds.FSDSClient() # To control the car
-        # Check network connection, exit if not connected
-        self.sim_client2.confirmConnection()
-        # Control the Car
-        self.sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
-        self.simulator_car_controls = fsds.CarControls()
-        
-    def receive_state(self, state):
-        """Receives sensor data (speed, RPM, etc.) from the simulator.
-        """
-        # Read speed from simulator
-        sim_state = self.sim_client2.getCarState()
-        state['speed'] = sim_state.speed
-        
-    def send_actuation(self, actuation):
-        pass

@@ -7,9 +7,6 @@ from simple_pid import PID
 # from visualization_utils.logger import Logger
 # from simple_pid import PID
 
-from globals.globals import *  # Global variables and constants, as if they were here
-
-
 class Agent:
     """
     Main Agent class, with basic features. All other agents inherit from this one, adding specific functions.

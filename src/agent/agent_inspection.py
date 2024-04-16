@@ -1,7 +1,5 @@
 from agent.agent import Agent
 
-from globals.globals import * # Global variables and constants, as if they were here
-
 class Acceleration_Mission(Agent):
     def __init__(self):
         super().__init__()

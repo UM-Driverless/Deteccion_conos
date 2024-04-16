@@ -1,0 +1,1 @@
+2024_04_16__20:13:15.091745: CONFIG: VISUALIZE: True, CAMERA_MODE: sim, COMM_MODE: off, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 

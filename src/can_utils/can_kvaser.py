@@ -1,6 +1,5 @@
 # TODO is this a module, a library, package or what? should we create an init file?
 
-from globals.globals import * # Global variables and constants, as if they were here
 # import numpy as np
 from canlib import canlib, Frame # CanKvaser
 

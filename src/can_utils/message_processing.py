@@ -1,6 +1,3 @@
-from globals.globals import * # Global variables and constants, as if they were here
-
-
 class MessageProcessing():
     """
     Manage interpretation of CAN messages to update state variables

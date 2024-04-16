@@ -1,6 +1,5 @@
 import time
 import numpy as np
-from globals.globals import * # Global variables and constants, as if they were here
 
 class Time_Counter:
     def __init__(self):

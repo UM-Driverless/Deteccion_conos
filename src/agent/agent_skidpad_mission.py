@@ -1,5 +1,4 @@
 from agent.agent import Agent
-from globals.globals import * # Global variables and constants, as if they were here
 
 # TODO USAR COORDS CONOS GRANDES NARANJAS CUANDO CERCA?
 

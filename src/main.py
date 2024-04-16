@@ -2,7 +2,7 @@
 MAIN script to run all the others. Shall contain the main classes, top level functions etc.
 
 
-# HOW TO USE
+# HOW TO USE # TODO UPDATE EXPLANATION
 - Configuration variables in globals.py
 - If CAMERA_MODE = 4, start the simulator first, running fsds-v2.2.0-linux/FSDS.sh (This program can be located anywhere)
     - Make sure there's a camera called 'cam1'
@@ -88,28 +88,17 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     print(f'Python version: {sys.version}')
     
     from car import Car
-    
-    from globals.globals import * # Global variables and constants, as if they were here
 
     from visualization_utils.visualizer_yolo_det import Visualizer
 
     # INITIALIZE things
-    dv_car = Car()
+    dv_car = Car('config.yaml')
     
-    if LOGGER:
-        dv_car.logger.write(f'CONFIG: CAN_MODE = {CAN_MODE}, CAMERA_MODE = {CAMERA_MODE}, CAM_INDEX = {CAM_INDEX}, VISUALIZE = {VISUALIZE}, MISSION_SELECTED = {MISSION_SELECTED}')
-
     # READ TIMES
     timer = Time_Counter()
 
-    if (MISSION_SELECTED == 6):
-        VISUALIZE = 0
-
     ## Data visualization
-    if (VISUALIZE == 1):
-        visualizer = Visualizer()
-        # visualize_worker = multiprocessing.Process(target=visualize_thread, args=(), daemon=False)
-    
+    visualizer = Visualizer()
 
     # Main loop ------------------------
     try:
@@ -127,34 +116,28 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             timer.add_time()
             AS_Finished = dv_car.agent.get_target(dv_car.cones, dv_car.state, dv_car.actuation) # TODO MOVE AS_FINISHED to state machine
             timer.add_time()
-            dv_car.send_actuation()
+            dv_car.comm.send_actuation(dv_car.actuation)
             # VISUALIZE
             # TODO add parameters to class
             timer.add_time()
-            if (VISUALIZE == 1):
-                in_speed = 0
-                in_rpm = 0
+            visualizer.visualize(dv_car.actuation,
+                                dv_car.state,
+                                dv_car.image,
+                                dv_car.cones,
+                                save_frames=False,
+                                visualize=dv_car.config['VISUALIZE'])
 
-                visualizer.visualize(dv_car.actuation,
-                                    dv_car.state,
-                                    dv_car.image,
-                                    dv_car.cones,
-                                    save_frames=False)
-
-            if LOGGER:
+            if dv_car.config['LOGGER']:
                 dv_car.logger.write(f'Iter {dv_car.loop_counter}, FPS: {dv_car.state["fps"]:.1f}, STATE: {dv_car.state}, ACTUATION: {dv_car.actuation}')
             # Save times
             timer.add_time()
             dv_car.state['fps'] = 1 / (timer.recorded_times[-1] - timer.recorded_times[0])
-            if len(ifps)>20:
-                ifps.pop(0)
-            ifps.append(1 / (timer.recorded_times[-1] - timer.recorded_times[0]))
             timer.new_iter()
             dv_car.loop_counter += 1
             print()
     finally:
         print(f'------------')
-        if LOGGER:
+        if dv_car.config['LOGGER']:
             dv_car.logger.write(f'{np.array(timer.times_integrated) / timer.loop_counter}')
         ## Plot the times
         fig = plt.figure(figsize=(12, 4))
@@ -165,5 +148,5 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
         plt.savefig("logs/times.png")
         
         # Close processes and windows
-        dv_car.terminate()
+        dv_car.stop()
 

@@ -1,10 +1,6 @@
-import can
-import math
-import time
-import os
-import struct
+import os, sys, can, math, time, struct
 
-from globals.globals import * # Global variables and constants, as if they were here
+from can_utils.can_constants import *
 
 # TODO LOGGER
 
@@ -18,6 +14,9 @@ class CAN():
         self.logger = logger
         self.init_can()
         self._init_steering()
+        self.CAN_SEND_TIMEOUT = 0.005
+        self.CAN_ACTION_DIMENSION = 100.
+        self.MAXON_TOTAL_INCREMENTS = 122880. # 122880. Increments of maxon motor, from center, to get to the mechanical limit of the steering system at one side.
 
     def init_can(self):
         """
@@ -44,7 +43,7 @@ class CAN():
         msg = can.Message(arbitration_id=id, data=data, is_extended_id=False) # 11 bits of ID, instead of 29
 
         try:
-            self.bus.send(msg, timeout=CAN_SEND_TIMEOUT)
+            self.bus.send(msg, timeout=self.CAN_SEND_TIMEOUT)
         except can.CanError as e:
             print('Error al mandar el msg CAN: \n{e.message}')
         else:
@@ -105,10 +104,10 @@ class CAN():
         3. TOGGLE_NEW_POS - cansend can0 601#284060000F00
         '''
         
-        target_pos_bytes = self._s32_to_4_bytes(int(agent_act['steer'] * MAXON_TOTAL_INCREMENTS))
+        target_pos_bytes = self._s32_to_4_bytes(int(agent_act['steer'] * self.MAXON_TOTAL_INCREMENTS))
         # print(f'target_pos: {target_pos_bytes}')
         print(f"agen_act(steer): {agent_act['steer']}")
-        print(f"Target value increments: {agent_act['steer']*MAXON_TOTAL_INCREMENTS}\n")
+        print(f"Target value increments: {agent_act['steer']*self.MAXON_TOTAL_INCREMENTS}\n")
 
         self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['SET_TARGET_POS'] + target_pos_bytes)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes

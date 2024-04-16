@@ -1,14 +1,10 @@
-import os
+import os, sys, math, cv2, yaml
 import numpy as np
-import math
 from skimage.io import imread, imshow
 from skimage import transform
 import matplotlib.pyplot as plt
 import torch
-import cv2
 print(f'IS CUDA AVAILABLE? : {torch.cuda.is_available()}')
-
-from globals.globals import * # Global variables and constants, as if they were here
 
 class ConeDetector():
     def __init__(self, checkpoint_path="~/Deteccion_conos/yolov5/weights/yolov5_models/best_adri.pt"):
@@ -29,6 +25,13 @@ class ConeDetector():
         :return: [[ndarray, ndarray], list] ndarray with detected bounding boxes and classification of each cone, list of auxiliar
                                 data, in this case segmentations.
         """
+        # CAM CONSTANTS
+        CAMERA_VERTICAL_FOV_DEG = 90 # ZED horizontal FOV: 120
+        CAM_HEIGHT = 0.75 # m
+        CAM_HORIZON_POS = 0.5 # per 1 of image from top
+        # Simulator camera (cam1) pos: (-.3,-.16,.8)
+        CONFIDENCE_THRESHOLD = 0.5 # 0.5
+        
         
         # NEURAL NETWORK DETECTION
         results = self.detection_model(image) # If there are no cones, results will be empty
@@ -58,10 +61,7 @@ class ConeDetector():
         # MAIN CONFIGURATION DATA
         XZ_FOV_Rad = CAMERA_VERTICAL_FOV_DEG * math.pi / 180
         
-        if (CAMERA_MODE == 3):
-            horizon_px_from_top = image_height_px * (CAM_HORIZON_POS + f * math.tan(car_state['orientation_y_rad'])) # horizon at 50% from top. HUGE EFFECT.
-        else:
-            horizon_px_from_top = image_height_px * CAM_HORIZON_POS # horizon at 50% from top. HUGE EFFECT.
+        horizon_px_from_top = image_height_px * CAM_HORIZON_POS # horizon at 50% from top. HUGE EFFECT.
         
         vertical_pix_to_rad = XZ_FOV_Rad / image_height_px
         pixel_size = f * math.tan(XZ_FOV_Rad/2) * 2 / image_height_px# m

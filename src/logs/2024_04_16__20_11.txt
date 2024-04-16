@@ -1,0 +1,4 @@
+2024_04_16__20:11:03.750262: CONFIG: VISUALIZE: True, CAMERA_MODE: sim, COMM_MODE: sim, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 
+2024_04_16__20:11:31.159070: CONFIG: VISUALIZE: True, CAMERA_MODE: sim, COMM_MODE: sim, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 
+2024_04_16__20:11:43.775096: CONFIG: VISUALIZE: True, CAMERA_MODE: sim, COMM_MODE: off, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 
+2024_04_16__20:11:54.263133: [        nan]
