@@ -7,6 +7,10 @@ from globals.globals import * # Global variables and constants, as if they were 
 from visualization_utils.logger import Logger
 from cone_detection.yolo_detector import ConeDetector
 
+from camera import Camera
+from camera import ImageFileCamera
+from camera import VideoFileCamera
+
 class Car:
     # Possible config constants here. In the future in yaml file
     '''
@@ -33,6 +37,9 @@ class Car:
             'brake': 0., # float in [0., 1.)
         }
 
+        self.ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+        os.chdir(self.ROOT_DIR)
+        
         self.loop_counter: int = 0
         # Neural net detections [{bounding boxes},{labels}] = [ [[[x1,y1],[x2,y2]], ...], [[{class name}, {confidence}], ...] ]
         self.detections = []
@@ -52,64 +59,8 @@ class Car:
         '''
         self.cam_queue  = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
         
-        if (CAMERA_MODE == 0):   self.cam_worker = multiprocessing.Process(target=self._read_image_file,   args=(), daemon=False)
-        elif (CAMERA_MODE == 1): self.cam_worker = multiprocessing.Process(target=self._read_image_video,  args=(), daemon=False)
-        elif (CAMERA_MODE == 2): self.cam_worker = multiprocessing.Process(target=self._read_image_webcam, args=(), daemon=False)
-        elif (CAMERA_MODE == 3): self.cam_worker = multiprocessing.Process(target=self._read_image_zed,    args=(), daemon=False)
-        elif (CAMERA_MODE == 4): self.cam_worker = multiprocessing.Process(target=self._read_image_simulator, args=(), daemon=False)
-        elif (CAMERA_MODE == 5): self.cam_worker = multiprocessing.Process(target=self._read_image_simulator, args=(), daemon=False)
-        
-        
-        if (CAMERA_MODE == 3):
-            ### ZED_IMU
-            import pyzed.sl as sl
-            self.zed = sl.Camera()
-            self.zed_sensors = sl.SensorsData()
-            zed_params = sl.InitParameters()
-            zed_params.coordinate_units = sl.UNIT.METER
-            zed_params.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Z_UP_X_FWD
-
-
-        if (CAMERA_MODE == 4):
-            # With https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator cloned in the home directory:
-            fsds_lib_path = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python") # os.getcwd()
-            sys.path.insert(0, fsds_lib_path)
-            print(f'FSDS simulator path: {fsds_lib_path}')
-            import fsds # TODO why not recognized when debugging
-            
-            # connect to the simulator
-            self.sim_client1 = fsds.FSDSClient() # To get the image
-            self.sim_client2 = fsds.FSDSClient() # To control the car
-            # TODO TRY THIRD CLIENT SO THE SIMULATOR AND MOUSE CAN WORK TOGETHER
-
-            # Check network connection, exit if not connected
-            self.sim_client1.confirmConnection()
-            self.sim_client2.confirmConnection()
-            
-            # Control the Car
-            self.sim_client2.enableApiControl(True) # Disconnects mouse control, only API with this code
-            self.simulator_car_controls = fsds.CarControls()
-
-        elif (CAMERA_MODE == 5):
-            # With https://github.com/FS-Driverless/Formula-Student-Driverless-Simulator cloned in the home directory:
-            fsds_lib_path = os.path.join(os.path.expanduser("~"), "Formula-Student-Driverless-Simulator", "python")
-            sys.path.insert(0, fsds_lib_path)
-            print(f'FSDS simulator path: {fsds_lib_path}')
-            import fsds # TODO why not recognized when debugging
-            
-            # connect to the simulator
-            self.sim_client1 = fsds.FSDSClient() # To get the image
-            self.sim_client2 = fsds.FSDSClient() # To control the car
-
-            # Check network connection, exit if not connected
-            self.sim_client1.confirmConnection()
-            self.sim_client2.confirmConnection()
-            
-            # No control. Give to keyboard
-            self.sim_client2.enableApiControl(False)
-        
-        
-        self.cam_worker.start()
+        self.camera = Camera.create(CAMERA_MODE, self.cam_queue)
+        self.camera.start()
     
     def get_data(self):
         '''
@@ -136,218 +87,6 @@ class Car:
         '''
         self.image = self.cam_queue.get(timeout=4)
     
-    def _read_image_file(self):
-        '''
-        Reads an image file
-        '''
-        
-        print(f'Starting _read_image_file thread...')
-        
-        while True:
-            image = cv2.imread(IMAGE_FILE_NAME)
-            
-            self.cam_queue.put(image)
-            
-            # cv2.imshow('im',image)
-            # cv2.waitKey(1)
-    
-    def _read_image_video(self):
-        '''
-        Reads a video file
-        '''
-        import cv2
-        
-        print(f'Starting read_image_video thread...')
-
-        cam = cv2.VideoCapture(VIDEO_FILE_NAME)
-        
-        # SETTINGS
-        # cam.set(cv2.CAP_PROP_FPS, 60)
-        cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640) #1280 640 default
-        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
-        # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
-        
-                
-        try:
-            if (cam.isOpened() == False): 
-                # print("ErrStarting read_image_zed (opencv) threador opening webcam")
-                raise Exception("ERROR: Can't open video")
-        except Exception as e:
-            print(e)
-            self.terminate()
-            return
-        
-        while True:
-            result, image = cam.read()
-            while result == False:
-                result, image = cam.read()
-            self.cam_queue.put(image)
-
-    def _read_image_webcam(self):
-        '''
-        Reads the webcam
-        It usually takes about 35e-3 s to read an image, but in parallel it doesn't matter.
-        '''
-        print(f'Starting _read_image_webcam thread...')
-
-        cam = cv2.VideoCapture(CAM_INDEX)
-        
-        # SETTINGS
-        # cam.set(cv2.CAP_PROP_FPS, 60)
-        cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640) #1280 640 default
-        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
-        # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
-        
-        try:
-            if (cam.isOpened() == False): 
-                # print("ErrStarting read_image_zed (opencv) threador opening webcam")
-                raise Exception("ERROR: Can't open webcam")
-        except Exception as e:
-            print(e)
-            self.terminate()
-            return
-        
-        while True:
-            # Read image from webcam
-            # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
-            result, image = cam.read()
-            while result == False:
-                result, image = cam.read()
-            
-            if FLIP_IMAGE:
-                image = cv2.flip(image, flipCode=1) # For testing purposes
-            
-            self.cam_queue.put(image)
-
-    def _read_image_simulator(self):    
-        import fsds
-        while True:
-            [img] = self.sim_client1.simGetImages([fsds.ImageRequest(camera_name = 'cam1', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
-            img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)
-            image = img_buffer.reshape(img.height, img.width, 3)
-            self.cam_queue.put(image)
-    
-    def _read_image_zed(self):
-        '''
-        Read the ZED camera - https://www.stereolabs.com/docs/video/camera-controls/
-        '''
-        print(f'Starting read_image_zed (opencv) thread...')
-
-        cam = cv2.VideoCapture(CAM_INDEX)
-        
-        # SETTINGS
-        # cam.set(cv2.CAP_PROP_FPS, 60)
-        cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-        cam.set(cv2.CAP_PROP_FRAME_WIDTH,  640*2) #1280 640 default
-        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 640) #720  480 default
-        # cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # 5% speed increase
-        
-        try:
-            if (cam.isOpened() == False): 
-                # print("ErrStarting read_image_zed (opencv) threador opening webcam")
-                raise Exception("ERROR: Can't open ZED as webcam")
-        except Exception as e:
-            print(e)
-            self.terminate()
-            return
-
-        ######## ZED SENSORS
-        # OPEN THE CAMERA
-        # status = zed.open(zed_params)
-        # while status != sl.ERROR_CODE.SUCCESS:
-        #     print(f'ZED ERROR: {status}')
-        #     status = zed.open(zed_params)
-        # print('SUCESS, ZED opened')
-        
-        
-        
-        while True:
-            # recorded_times_0 = time.time()
-            
-            # Read image from webcam
-            # It's 3 times faster if there are cones being detected. Nothing to do with visualize.
-            result, image = cam.read()
-            while result == False:
-                result, image = cam.read()
-            
-            # recorded_times_1 = time.time()
-            
-            # cv2.imshow('image',image)
-            # cv2.waitKey(1)
-            
-            image = cv2.resize(image, (640*2,640), interpolation=cv2.INTER_AREA)
-            image = np.array(image)[:,0:640,:]
-            
-            if (FLIP_IMAGE):
-                image = cv2.flip(image, flipCode=1) # For testing purposes
-            
-            self.cam_queue.put(image)
-            # print(f'Webcam read time: {recorded_times_1 - recorded_times_0}')
-            
-            ########## ZED SENSORS
-            # zed.get_sensors_data(sensors,sl.TIME_REFERENCE.IMAGE)
-            # quaternions = sensors.get_imu_data().get_pose().get_orientation().get()
-            # car_state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
-        
-        '''
-        import pyzed.sl as sl
-        
-        print(f'Starting read_image_zed thread...', end='')
-        zed = sl.Camera()
-        print(f' (ZED SDK version: {zed.get_sdk_version()})')
-        
-        # Init parameters: https://www.stereolabs.com/docs/api/structsl_1_1InitParameters.html
-        zed_params = sl.InitParameters()
-        sensors = sl.SensorsData() # TODO MOVE TO THREAD FOR HIGHER FREQUENCY? LINKED TO IMAGE SEEMS OK.
-        # zed_params.camera_fps = 100 # Not necessary. By default does max fps
-        
-        # OPEN THE CAMERA
-        status = zed.open(zed_params)
-        while status != sl.ERROR_CODE.SUCCESS:
-            print(f'ZED ERROR: {status}')
-            status = zed.open(zed_params)
-        print('SUCESS, ZED opened')
-        
-        # Camera settings
-        zed.set_camera_settings(sl.VIDEO_SETTINGS.GAIN, 100) # We don't want blurry photos, we don't care about noise. The exposure time will still be adjusted automatically to compensate lighting conditions
-        zed.set_camera_settings(sl.VIDEO_SETTINGS.SATURATION, 8) # Maximum so it recognizes the color of the cones better. 0 to 8
-        # cam.set_camera_settings(sl.VIDEO_SETTINGS.SHARPNESS, 0) # Doesn't seem to make much difference. 0 to 8
-        #cam.set_camera_settings(sl.VIDEO_SETTINGS.EXPOSURE, -1) # We have fixed gain, so this is automatic. % of camera framerate (period)
-        
-        # RESOLUTION: HD1080 (3840x1080), HD720 (1280x720), VGA (VGA=1344x376)
-        # yolov5 uses 640x640. VGA is much faster, up to 100Hz
-        zed_params.camera_resolution = sl.RESOLUTION.HD720
-        zed_params.coordinate_units = sl.UNIT.METER
-        zed_params.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Z_UP_X_FWD
-        print(f'ZED ORIENTATION VALUE: {sensors.get_imu_data().get_pose().get_orientation().get()}')
-        # car_state['orientation_y'] = sensors.get_imu_data().get_pose().get_orientation().get()
-        #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
-        
-        runtime = sl.RuntimeParameters()
-        runtime.enable_depth = False # Deactivates depth map calculation. We don't need it.
-        zed_params.depth_mode = sl.DEPTH_MODE.NONE
-        
-        # Create an RGBA sl.Mat object
-        mat_img = sl.Mat()
-        
-        while True:
-            # Read ZED camera
-            if (zed.grab(runtime) == sl.ERROR_CODE.SUCCESS): # Grab gets the new frame
-                print('.')
-                # recorded_times_0 = time.time()
-                
-                zed.retrieve_image(mat_img, sl.VIEW.LEFT) # Retrieve receives it and lets choose views and colormodes
-                image = mat_img.get_data() # Creates np.array()
-                self.cam_queue.put(image)
-                
-                # recorded_times_1 = time.time()
-                # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
-                zed.get_sensors_data(sensors,sl.TIME_REFERENCE.IMAGE)
-                quaternions = sensors.get_imu_data().get_pose().get_orientation().get()
-                car_state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
-        '''
     def _init_can(self):
         '''
         Initialize the CAN communications according the the CAN_MODE settings.

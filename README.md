@@ -1,7 +1,7 @@
 # TODO
-- Polymorphism to get rid of if-elses
-    - Define a class for each type of camera
-    - Move code to src folder, still running
+- Move code to src folder, still running
+- config file in yaml? is it worth it? how is it better?
+- rename github project from Deteccion_conos to ``um_driverless``
 
 # UM-Driverless Contents
 - [TODO](#todo)
