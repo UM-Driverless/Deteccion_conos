@@ -70,19 +70,8 @@ class Camera(ABC):
             return SimulatorCamera()
         else:
             raise ValueError(f"Unknown camera type: {mode}")
-
-class CameraFactory:
-    @staticmethod
-    def get_camera(camera_type: int):
-        if camera_type == 0:
-            # From Image file
-            return ImageFileCamera()
-        elif camera_type == 1:
-            # From Video file
-            return VideoFileCamera()
-        else:
-            raise ValueError("Unknown camera type")
-
+    
+    
 class ImageFileCamera(Camera):
     def __init__(self, IMG_PATH = 'test_media/cones_image.png'):
         super().__init__()
