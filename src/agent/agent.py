@@ -20,6 +20,7 @@ class Agent():
         
         self.agent_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
         self.agent_in_queue = multiprocessing.Queue(maxsize=1) #block=True, timeout=None
+        
     """
     def valTrackbarsPID(self):
         '''
@@ -49,10 +50,14 @@ class Agent():
         return kp, ki, kd, throttle_kp, throttle_ki, throttle_kd, brake_kp, brake_ki, brake_kd
     """
 
-    def get_target(self, cones, car_state, agent_act):
+    def get_target(self, cones, state, actuation) -> None:
         '''
-        Update agent_act, calculated from the cones and car_state.
+        Update actuation, calculated from the cones and state.
         '''
+        
+        # In these cases, do nothing
+        if state['status'] == 'as_finished' or state['status'] == 'as_emergency' or state['status'] == 'as_off':
+            return
         
         # SORT CONES FROM CLOSEST TO FURTHEST
         def take_x(cone): return cone['coords']['x']
@@ -66,44 +71,45 @@ class Agent():
         orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
         orange.sort(key=take_x)
 
-        # SPEED CONTROL - agent_act ----- Take (target speed - current speed) -> PID
-        agent_act['acc'] = (self.speed_target - car_state['speed']) * 0.1
+        # SPEED CONTROL - actuation ----- Take (target speed - current speed) -> PID
+        actuation['acc'] = (self.speed_target - state['speed']) * 0.1
         brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
         
-        # If negative acceleration, brake instead
-        if agent_act['acc'] < 0:
-            agent_act['brake'] = -agent_act['acc']
-            agent_act['acc'] = 0
-        
+        if brake_condition: # If it sees enough ending orange cones, speed doesn't matter
+            # Brake to finish
+            actuation['steer'] = 0 # 1 left, -1 right, 0 neutral
+            actuation['acc'] = 0.0
+            actuation['brake'] = 1.0
 
-
-        if (car_state['speed'] < 5) and (not brake_condition):
-            agent_act['acc'] = 1.0
-        
-        elif brake_condition: # da igual la velocidad, si ve conos naranjas
-            agent_act['steer'] = 0 # 1 left, -1 right, 0 neutral
-            agent_act['acc'] = 0.0
-            agent_act['brake'] = 1.0
-
-            if(car_state['speed'] < 0.25): #Si se ha parado completamente, AS_Finished
-                return True
+            if(state['speed'] < 0.25): #Si se ha parado completamente, AS_Finished
+                state['status'] = 'as_finished'
+        elif actuation['acc'] < 0: # If negative acceleration
+            # Brake instead
+            actuation['brake'] = -actuation['acc']
+            actuation['acc'] = 0
         else:
-            agent_act['acc'] = 0.0
-        
+            # Normal speed regulation
+            if state['speed'] < 5: # If going slow
+                # Accelerate
+                actuation['acc'] = 1.0
+            else: # If going fast
+                # Stop accelerating
+                actuation['acc'] = 0.0
+
         # STEER CONTROL
         if (len(blues) > 0) and (len(yellows) > 0):
             # I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
             # print(f'center:{center}')
-            agent_act['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
+            actuation['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
-            agent_act['steer'] = -1 # Rotation in Z axis. - = right
+            actuation['steer'] = -1 # Rotation in Z axis. - = right
         elif len(yellows) > 0:
-            agent_act['steer'] = 1 # Rotation in Z axis. + = left
+            actuation['steer'] = 1 # Rotation in Z axis. + = left
         else:
-            agent_act['steer'] = 1.0 # Rotation in Z axis. + = left
+            actuation['steer'] = 1.0 # Rotation in Z axis. + = left
 
-        return False
+        state['status'] = 'as_driving'
     
     @staticmethod
     def create(mode):

@@ -10,9 +10,9 @@ class Skidpad_Mission(Agent):
         self.intersection_state = 0 # 0 = Normal track, 1 = Load trigger, 2 = Turn when stopped seeing large orange cones
         self.laps: int = 0 # Variable that keeps track of the number of times that the car has crossed the intersection
         self.speed_target = 4
-    def get_target(self, cones, car_state, agent_act):
+    def get_target(self, cones, car_state, actuation):
         '''
-        Update agent_act, calculated from the cones and car_state.
+        Update actuation, calculated from the cones and car_state.
         '''
         
         self._sort_cones(cones)
@@ -21,10 +21,10 @@ class Skidpad_Mission(Agent):
         # TODO USE BIG ORANGE CONES AS TARGET WHEN SEEN. IGNORE THE REST.
         
         self._intersection_state_machine()
-        self.steering_control(car_state, agent_act)
-        self.speed_control(car_state, agent_act)
+        self.steering_control(car_state, actuation)
+        self.speed_control(car_state, actuation)
         
-        print(f'lap {self.laps}, steer: {agent_act["steer"]:6.3f}, acc: {agent_act["acc"]:6.3f}, brake: {agent_act["brake"]:6.3f}, INTERSECTION STATE: {self.intersection_state}')
+        print(f'lap {self.laps}, steer: {actuation["steer"]:6.3f}, acc: {actuation["acc"]:6.3f}, brake: {actuation["brake"]:6.3f}, INTERSECTION STATE: {self.intersection_state}')
     def _intersection_state_machine(self):
         if self.hysteresis < 1:
             # Consider the intersection - Change state
@@ -44,7 +44,7 @@ class Skidpad_Mission(Agent):
             # Just turn without thinking
             self.hysteresis -= 1
             print(f'hysteresis (>0): {self.hysteresis}')
-    def steering_control(self, car_state, agent_act):
+    def steering_control(self, car_state, actuation):
         '''
         Depending on the values of the state machine, act
         '''
@@ -52,11 +52,11 @@ class Skidpad_Mission(Agent):
             # Found intersection. Turn to one side
             print('Steering intersection...')
             if(self.laps == 1 or self.laps == 2): # laps 1 and 2 to the right
-                agent_act['steer'] = -.25 # + = left
+                actuation['steer'] = -.25 # + = left
             elif(self.laps == 3 or self.laps == 4): # The last 2 laps must be to the left
-                agent_act['steer'] = .25 # + = left
+                actuation['steer'] = .25 # + = left
             else: # If it has accomplished all 4 turns, then it's time to exit
-                agent_act['steer'] = 0 # + = left
+                actuation['steer'] = 0 # + = left
         else:
             # Just steer normally
             print('Steering normally...')
@@ -64,28 +64,28 @@ class Skidpad_Mission(Agent):
                 #I assume they're sorted from closer to further
                 center = (self.blues[0]['coords']['y'] + self.yellows[0]['coords']['y']) / 2
                 # print(f'center:{center}')
-                agent_act['steer'] = center * 0.5 # + = left
+                actuation['steer'] = center * 0.5 # + = left
             elif len(self.blues) > 0:
-                agent_act['steer'] = -1.8 # + = left
+                actuation['steer'] = -1.8 # + = left
             elif len(self.yellows) > 0:
-                agent_act['steer'] = 1.8 # + = left
+                actuation['steer'] = 1.8 # + = left
             else:
-                agent_act['steer'] = 0.
+                actuation['steer'] = 0.
             
             # FORCE GOOD DIRECTION OF TURN WHEN CLOSE TO THE MESS
             if (self.large_orange_position() > 0. and self.large_orange_position() < 4.):
                 if (self.laps == 1 or self.laps == 2):
-                    agent_act['steer'] = -abs(agent_act['steer'])
+                    actuation['steer'] = -abs(actuation['steer'])
                 elif (self.laps == 3 or self.laps == 4):
-                    agent_act['steer'] = abs(agent_act['steer'])
+                    actuation['steer'] = abs(actuation['steer'])
                 elif self.laps >= 5:
                     # Go to braking zone
                     if len(self.oranges) >= 2:
-                        agent_act['steer'] = 0.5 * (self.oranges[0]['coords']['y'] + self.oranges[1]['coords']['y']) / 2
+                        actuation['steer'] = 0.5 * (self.oranges[0]['coords']['y'] + self.oranges[1]['coords']['y']) / 2
                     else:
-                        agent_act['steer'] = 0
+                        actuation['steer'] = 0
         
-    def speed_control(self, car_state, agent_act):
+    def speed_control(self, car_state, actuation):
         '''
         Default speed control, ignoring braking condition.
         '''
@@ -99,16 +99,16 @@ class Skidpad_Mission(Agent):
         if (len(self.oranges) >= 6) and (self.oranges[0]['coords']['y'] < 0.5) and len(self.blues) < 2 and len(self.yellows) < 2:
             # Braking region
             print('Braking...')
-            agent_act['acc'] = 0.0
-            agent_act['brake'] = 1.0
+            actuation['acc'] = 0.0
+            actuation['brake'] = 1.0
         else:
             # Accelerate normally
-            agent_act['acc'] = (self.speed_target - car_state['speed']) * 0.1
+            actuation['acc'] = (self.speed_target - car_state['speed']) * 0.1
         
         # If negative acceleration, brake instead
-        if agent_act['acc'] < 0:
-            agent_act['brake'] = -agent_act['acc']
-            agent_act['acc'] = 0
+        if actuation['acc'] < 0:
+            actuation['brake'] = -actuation['acc']
+            actuation['acc'] = 0
     def _sort_cones(self, cones):
         def take_x(cone): return cone['coords']['x']
         

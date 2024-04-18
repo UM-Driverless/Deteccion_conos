@@ -44,9 +44,9 @@ class Agent_Pablo(Agent):
         plt.savefig('/home/hydra/Documents/UM/image.png')
 
 
-    def get_target(self, cones, car_state, agent_act):
+    def get_target(self, cones, car_state, actuation):
         '''
-        Update agent_act, calculated from the cones and car_state.
+        Update actuation, calculated from the cones and car_state.
         '''
 
         # SORT CONES FROM CLOSEST TO FURTHEST
@@ -59,11 +59,11 @@ class Agent_Pablo(Agent):
         yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
         yellows.sort(key=lambda c:((c['coords']['x']**2+c['coords']['y']**2)**1/2))
 
-        # SPEED CONTROL - agent_act ----- Take (target speed - current speed) -> PID
+        # SPEED CONTROL - actuation ----- Take (target speed - current speed) -> PID
         if car_state['speed'] < maxSpeed:
-            agent_act['acc'] = 1.0
+            actuation['acc'] = 1.0
         else:
-            agent_act['acc'] = 0.0
+            actuation['acc'] = 0.0
 
         # STEER CONTROL
         fpsM = sum(ifps) / len(ifps) if ifps else 0
@@ -78,7 +78,7 @@ class Agent_Pablo(Agent):
         #if (len(yellows) > 1 and len(blues) > 1 and ((middleCone0[0]>0 and middleCone1[0]>0)or(middleCone0[0]<0 and middleCone1[0]<0))):
             print(middleCone0)
             print(middleCone1)
-            k = (car_state['speed']/(fpsM))  if ifps else 0 # + (agent_act['acc']/(2*(fpsM**2))) #modulo recta a intersectar
+            k = (car_state['speed']/(fpsM))  if ifps else 0 # + (actuation['acc']/(2*(fpsM**2))) #modulo recta a intersectar
             extra = 0
             A = np.array([[0, 0, 1], [middleCone0[0] ** 2, middleCone0[0], 1], [middleCone1[0] ** 2, middleCone1[0], 1]])
             B = np.array([0, middleCone0[1], middleCone1[1]])
@@ -186,13 +186,13 @@ class Agent_Pablo(Agent):
             lastAngle[0] = angle
 
             if (abs(angle)>30) and maxSpeed > car_state['speed'] > (maxSpeed / 2):
-                agent_act['acc'] = 0.5
+                actuation['acc'] = 0.5
             # if (50>abs(angle)>0 and (blues[0]['coords']['x']<yellows[0]['coords']['x'] or blues[0]['coords']['y']<yellows[0]['coords']['y'])):
-            agent_act['steer'] = angle / 25.0
+            actuation['steer'] = angle / 25.0
         else:
             if maxSpeed > car_state['speed'] > (maxSpeed / 2):
-                agent_act['acc'] = 0.2
-            agent_act['steer'] = 1 if len(yellows) > len(blues) else lastAngle[0] / 60 if (
+                actuation['acc'] = 0.2
+            actuation['steer'] = 1 if len(yellows) > len(blues) else lastAngle[0] / 60 if (
                     len(yellows) == 0 and len(yellows) == len(blues)) else 0 if len(yellows) == len(blues) else -1
             print(lastAngle)  # lastAngle[0]/75#
 

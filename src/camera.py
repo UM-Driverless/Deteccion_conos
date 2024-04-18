@@ -205,7 +205,7 @@ class ZedOpenCVCamera(Camera): # TODO TEST
             ########## ZED SENSORS
             # zed.get_sensors_data(sensors,sl.TIME_REFERENCE.IMAGE)
             # quaternions = sensors.get_imu_data().get_pose().get_orientation().get()
-            # car_state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
+            # state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
     def stop(self):
         """Stop the process safely, ensuring all resources are cleaned up."""
         self.zed.close()
@@ -271,7 +271,7 @@ class SimulatorCamera(Camera):
 ########## ZED SENSORS
 # zed.get_sensors_data(sensors,sl.TIME_REFERENCE.IMAGE)
 # quaternions = sensors.get_imu_data().get_pose().get_orientation().get()
-# car_state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
+# state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
 
 '''
 import pyzed.sl as sl
@@ -304,7 +304,7 @@ zed_params.camera_resolution = sl.RESOLUTION.HD720
 zed_params.coordinate_units = sl.UNIT.METER
 zed_params.coordinate_system = sl.COORDINATE_SYSTEM.RIGHT_HANDED_Z_UP_X_FWD
 print(f'ZED ORIENTATION VALUE: {sensors.get_imu_data().get_pose().get_orientation().get()}')
-# car_state['orientation_y'] = sensors.get_imu_data().get_pose().get_orientation().get()
+# state['orientation_y'] = sensors.get_imu_data().get_pose().get_orientation().get()
 #zed_params.sdk_gpu_id = -1 # Select which GPU to use. By default (-1) chooses most powerful NVidia
 
 runtime = sl.RuntimeParameters()
@@ -328,7 +328,7 @@ self.cam_queue.put(image)
 # print(f'ZED read time: {recorded_times_1-recorded_times_0}')
 zed.get_sensors_data(sensors,sl.TIME_REFERENCE.IMAGE)
 quaternions = sensors.get_imu_data().get_pose().get_orientation().get()
-car_state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
+state['orientation_y_rad'] = math.atan2(2*quaternions[1]*quaternions[3] - 2*quaternions[0]*quaternions[2], 1 - 2*quaternions[1]**2 - 2 * quaternions[2]**2)
 '''
 
 

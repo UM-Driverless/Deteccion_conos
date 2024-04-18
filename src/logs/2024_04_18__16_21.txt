@@ -1,0 +1,3 @@
+2024_04_18__16:21:14.779942: CONFIG: VISUALIZE: True, CAMERA_MODE: image, COMM_MODE: off, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 
+2024_04_18__16:21:22.550358: Iter 0, FPS: -1.0, STATE: {'status': 'as_driving', 'speed': -1.0, 'rpm': -1.0, 'speed_senfl': -1.0, 'fps': -1.0, 'orientation_y_rad': 0.0}, ACTUATION: {'acc': 1.0, 'steer': 2.7851961935888094, 'throttle': 0.0, 'brake': 0.0}
+2024_04_18__16:21:22.551356: [  0.0029476      1.5404           0           0     0.03391]

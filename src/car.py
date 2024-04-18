@@ -23,6 +23,7 @@ class Car:
             self.config = yaml.safe_load(f)
         
         self.state = {
+            'status': 'default', # as_off, as_ready, as_driving, as_emergency, as_finished TODO GOOD STATE MACHINE OR RECEIVE FROM PMC. THIS DOES SOME CHANGES. THE CURRENT IDEA IS TO HAVE THE STATE MACHINE IN PMC, TRANSMIT TO ORIN, WHEN ORIN DETECTS END OF TEST, SEND TO PMC SO THAT IT CHANGES THE STATE MACHINE.
             'speed': -1., # m/s, can be calculated from speed_senfl mixed with other sensors.
             'rpm': -1.,
             'speed_senfl': -1., # speed according to SEN front left sensor
@@ -57,10 +58,10 @@ class Car:
         self.camera.start()
         self.comm = CarCommunicator.create(self.config['COMM_MODE'])
         
+        self.cones = []
         self.agent = Agent.create(self.config['AGENT_MODE'])
         
         self.detector = ConeDetector(checkpoint_path=self.config['WEIGHTS_PATH'])
-        self.cones = []
     
     def get_data(self):
         '''

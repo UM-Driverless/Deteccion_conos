@@ -46,9 +46,9 @@ class Agent:
         return kp, ki, kd, throttle_kp, throttle_ki, throttle_kd, brake_kp, brake_ki, brake_kd
     """
 
-    def get_target(self, cones, car_state, agent_act):
+    def get_target(self, cones, car_state, actuation):
         """"
-        Update agent_act, calculated from the cones and car_state.
+        Update actuation, calculated from the cones and car_state.
         """
 
         # SORT CONES FROM CLOSEST TO FURTHEST
@@ -67,27 +67,27 @@ class Agent:
             orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
             orange.sort(key=take_x)
 
-            # SPEED CONTROL - agent_act ----- Take (target speed - current speed) -> PID
-            agent_act['acc'] = (self.speed_target - car_state['speed']) * 0.1
+            # SPEED CONTROL - actuation ----- Take (target speed - current speed) -> PID
+            actuation['acc'] = (self.speed_target - car_state['speed']) * 0.1
             brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
 
             # If negative acceleration, brake instead
-            if agent_act['acc'] < 0:
-                agent_act['brake'] = -agent_act['acc']
-                agent_act['acc'] = 0
+            if actuation['acc'] < 0:
+                actuation['brake'] = -actuation['acc']
+                actuation['acc'] = 0
 
             if (car_state['speed'] < maxSpeed) and (not brake_condition):
-                agent_act['acc'] = 1.0
+                actuation['acc'] = 1.0
 
             elif brake_condition:  # da igual la velocidad, si ve conos naranjas
-                agent_act['steer'] = 0  # 1 left, -1 right, 0 neutral
-                agent_act['acc'] = 0.0
-                agent_act['brake'] = 1.0
+                actuation['steer'] = 0  # 1 left, -1 right, 0 neutral
+                actuation['acc'] = 0.0
+                actuation['brake'] = 1.0
 
                 if car_state['speed'] < 0.25:  # Si se ha parado completamente, AS_Finished
                     return True
             else:
-                agent_act['acc'] = 0.0
+                actuation['acc'] = 0.0
 
             # STEER CONTROL
             if (len(blues) > 0) and (len(yellows) > 0):
@@ -105,23 +105,23 @@ class Agent:
                 print(f'error:         {error:.4f}\tdegrees')
                 print(f'steer angle:   {angle:.4f}\tdegrees')
 
-                agent_act['steer'] = angle/25  # /25, en simulador 1.0 corresponde a 25º
+                actuation['steer'] = angle/25  # /25, en simulador 1.0 corresponde a 25º
 
             elif len(blues) > 0:
                 print("Bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
-                agent_act['steer'] = -1  # Rotation in Z axis. - = right
+                actuation['steer'] = -1  # Rotation in Z axis. - = right
 
             elif len(yellows) > 0:
                 print("Yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy")
-                agent_act['steer'] = 1  # Rotation in Z axis. + = left
+                actuation['steer'] = 1  # Rotation in Z axis. + = left
 
             else:
                 fallo[0] = True
-                agent_act['acc'] = 0.0
-                agent_act['brake']=1.0
-                agent_act['steer'] = 0.0
+                actuation['acc'] = 0.0
+                actuation['brake']=1.0
+                actuation['steer'] = 0.0
 
         else:
-            agent_act['acc'] = 0.0
-            agent_act['brake'] = 1.0
-            agent_act['steer'] = 0.0
+            actuation['acc'] = 0.0
+            actuation['brake'] = 1.0
+            actuation['steer'] = 0.0

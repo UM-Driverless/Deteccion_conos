@@ -1,6 +1,6 @@
 VISUALIZE: yes # yes, no (True, False)
 CAMERA_MODE: sim # image, video, webcam, zed, sim
-COMM_MODE: 'serial' # off, serial, can_jetson (Embedded, socketcan python-can), can_kvaser, sim
+COMM_MODE: 'sim' # off, serial, can_jetson (Embedded, socketcan python-can), can_kvaser, sim
 AGENT_MODE: 0 # 0 -> Generic Agent: Runs continuously, 1 -> Acceleration, 2 -> Skidpad, 3 -> Autocross, 4 -> Trackdrive, 5 -> EBS Test, ... (Using the example of the begginers guide)
 MISSION: 0 # 0 -> Generic Mission: Runs continuously, 1 -> Acceleration, 2 -> Skidpad, 3 -> Autocross, 4 -> Trackdrive, 5 -> EBS Test, ... (Using the example of the begginers guide)
 LOGGER: yes # yes, no (True, False)

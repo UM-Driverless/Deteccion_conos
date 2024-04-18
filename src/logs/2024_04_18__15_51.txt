@@ -1,0 +1,2 @@
+2024_04_18__15:51:13.776141: CONFIG: VISUALIZE: True, CAMERA_MODE: video, COMM_MODE: off, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 
+2024_04_18__15:51:57.608109: CONFIG: VISUALIZE: True, CAMERA_MODE: video, COMM_MODE: off, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 

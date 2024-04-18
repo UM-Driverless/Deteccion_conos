@@ -103,8 +103,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
     # Main loop ------------------------
     try:
         print(f'Starting main loop...')
-        AS_Finished = False
-        while (not AS_Finished):
+        while True:
             timer.add_time()
 
             dv_car.get_data()
@@ -114,7 +113,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             print(f'--------Loop counter:   {dv_car.loop_counter}--------')
             dv_car.cones = dv_car.detector.detect_cones(dv_car.image, dv_car.state)
             timer.add_time()
-            AS_Finished = dv_car.agent.get_target(dv_car.cones, dv_car.state, dv_car.actuation) # TODO MOVE AS_FINISHED to state machine
+            dv_car.agent.get_target(dv_car.cones, dv_car.state, dv_car.actuation)
             timer.add_time()
             dv_car.comm.send_actuation(dv_car.actuation)
             # VISUALIZE
@@ -136,8 +135,7 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             dv_car.loop_counter += 1
             
             # TESTING
-            print(f"STEER: {dv_car.actuation['steer']} -> {int((dv_car.actuation['steer'] + 1) / 2 * 90)}")
-            
+            # print(f"STEER: {dv_car.actuation['steer']} -> {int((dv_car.actuation['steer'] + 1) / 2 * 90)}")
     finally:
         print(f'------------')
         if dv_car.config['LOGGER']:

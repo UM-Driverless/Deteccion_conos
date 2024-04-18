@@ -36,11 +36,11 @@ car_controls.brake = 0
 
 while (True):
     # Get the car state
-    car_state = client.getCarState()
+    state = client.getCarState()
     
-    print('car speed (m/s): {0}'.format(car_state.speed))
+    print('car speed (m/s): {0}'.format(state.speed))
     
-    if (car_state.speed < 5):
+    if (state.speed < 5):
         car_controls.throttle = 0.5
     else:
         car_controls.throttle = 0.0

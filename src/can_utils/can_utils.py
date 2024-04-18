@@ -50,14 +50,14 @@ class CAN():
             pass
             # print(f'Message sent ({self.bus.channel_info}): {hex(id)[2:]}#{data}')
 
-    def send_action_msg(self,agent_act): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
+    def send_action_msg(self,actuation): # TODO FIX, MANY MODIFICATIONS, VARIABLES REMOVED
         """
-        Send the actions of agent_act through CAN
+        Send the actions of actuation through CAN
         """
         
-        self._steering_act(agent_act)
-        # self.send_message(601,int(agent_act['throttle'] * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
-        # self.send_message(601,int(agent_act['brake'] * CAN_ACTION_DIMENSION)
+        self._steering_act(actuation)
+        # self.send_message(601,int(actuation['throttle'] * CAN_ACTION_DIMENSION) # Para pasar rango de datos a 0:100
+        # self.send_message(601,int(actuation['brake'] * CAN_ACTION_DIMENSION)
         
     def send_status_msg(self):
         """
@@ -95,7 +95,7 @@ class CAN():
 
         # TODO MOVE CAN TO A THREAD.
 
-    def _steering_act(self, agent_act):
+    def _steering_act(self, actuation):
         '''
         Sends the steering messages needed to move after _init_steering() has been run
         
@@ -104,10 +104,10 @@ class CAN():
         3. TOGGLE_NEW_POS - cansend can0 601#284060000F00
         '''
         
-        target_pos_bytes = self._s32_to_4_bytes(int(agent_act['steer'] * self.MAXON_TOTAL_INCREMENTS))
+        target_pos_bytes = self._s32_to_4_bytes(int(actuation['steer'] * self.MAXON_TOTAL_INCREMENTS))
         # print(f'target_pos: {target_pos_bytes}')
-        print(f"agen_act(steer): {agent_act['steer']}")
-        print(f"Target value increments: {agent_act['steer']*self.MAXON_TOTAL_INCREMENTS}\n")
+        print(f"agen_act(steer): {actuation['steer']}")
+        print(f"Target value increments: {actuation['steer']*self.MAXON_TOTAL_INCREMENTS}\n")
 
         self.send_message(CAN_IDS['STEER']['MAXON_ID'], CAN_MSG['STEER']['SET_TARGET_POS'] + target_pos_bytes)
         time.sleep(self.sleep_between_msg)  # Controlador dirección necesita 0.001 seg entre mensajes
