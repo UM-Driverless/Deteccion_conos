@@ -49,31 +49,11 @@ class Agent():
 
         return kp, ki, kd, throttle_kp, throttle_ki, throttle_kd, brake_kp, brake_ki, brake_kd
     """
-
-    def get_target(self, cones, state, actuation) -> None:
-        '''
-        Update actuation, calculated from the cones and state.
-        '''
-        
-        # In these cases, do nothing
-        if state['status'] == 'as_finished' or state['status'] == 'as_emergency' or state['status'] == 'as_off':
-            return
-        
-        # SORT CONES FROM CLOSEST TO FURTHEST
-        def take_x(cone): return cone['coords']['x']
-        
-        blues = [cone for cone in cones if (cone['label'] == 'blue_cone')]
-        blues.sort(key=take_x)
-        
-        yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
-        yellows.sort(key=take_x)
-
-        orange = [cone for cone in cones if (cone['label'] == 'orange_cone')]
-        orange.sort(key=take_x)
+    def _speed_control(self, cones, state, actuation, blues, yellows, oranges) -> None:
 
         # SPEED CONTROL - actuation ----- Take (target speed - current speed) -> PID
         actuation['acc'] = (self.speed_target - state['speed']) * 0.1
-        brake_condition = (len(orange) >= 6) and (orange[0]['coords']['y'] < 1)
+        brake_condition = (len(oranges) >= 6) and (oranges[0]['coords']['y'] < 1)
         
         if brake_condition: # If it sees enough ending orange cones, speed doesn't matter
             # Brake to finish
@@ -95,8 +75,8 @@ class Agent():
             else: # If going fast
                 # Stop accelerating
                 actuation['acc'] = 0.0
-
-        # STEER CONTROL
+    
+    def _steer_control(self, cones, state, actuation, blues, yellows, oranges) -> None:
         if (len(blues) > 0) and (len(yellows) > 0):
             # I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
@@ -108,6 +88,32 @@ class Agent():
             actuation['steer'] = 1 # Rotation in Z axis. + = left
         else:
             actuation['steer'] = 1.0 # Rotation in Z axis. + = left
+    
+    def get_target(self, cones, state, actuation) -> None:
+        '''
+        Update actuation, calculated from the cones and state.
+        '''
+        
+        # Sort cones from closest to furthest
+        def take_x(cone): return cone['coords']['x']
+    
+        blues = [cone for cone in cones if (cone['label'] == 'blue_cone')]
+        blues.sort(key=take_x)
+        
+        yellows = [cone for cone in cones if (cone['label'] == 'yellow_cone')]
+        yellows.sort(key=take_x)
+
+        oranges = [cone for cone in cones if (cone['label'] == 'orange_cone')]
+        oranges.sort(key=take_x)
+        
+        # In these cases, do nothing
+        if state['status'] == 'as_finished' or state['status'] == 'as_emergency' or state['status'] == 'as_off':
+            return
+        
+        self._speed_control(cones, state, actuation, blues, yellows, oranges)
+
+        # STEER CONTROL
+        self._steer_control(cones, state, actuation, blues, yellows, oranges)
 
         state['status'] = 'as_driving'
     
