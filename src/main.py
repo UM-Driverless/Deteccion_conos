@@ -134,7 +134,10 @@ if __name__ == '__main__': # multiprocessing creates child processes that import
             dv_car.state['fps'] = 1 / (timer.recorded_times[-1] - timer.recorded_times[0])
             timer.new_iter()
             dv_car.loop_counter += 1
-            print()
+            
+            # TESTING
+            print(f"STEER: {dv_car.actuation['steer']} -> {int((dv_car.actuation['steer'] + 1) / 2 * 90)}")
+            
     finally:
         print(f'------------')
         if dv_car.config['LOGGER']:

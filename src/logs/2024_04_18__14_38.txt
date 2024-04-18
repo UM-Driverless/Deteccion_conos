@@ -1,0 +1,4 @@
+2024_04_18__14:38:21.400239: CONFIG: VISUALIZE: True, CAMERA_MODE: sim, COMM_MODE: serial, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 
+2024_04_18__14:38:31.936637: [        nan]
+2024_04_18__14:38:40.657188: CONFIG: VISUALIZE: True, CAMERA_MODE: sim, COMM_MODE: off, AGENT_MODE: 0, MISSION: 0, LOGGER: True, WEIGHTS_PATH: yolov5/weights/yolov5_models/best_adri.pt, 
+2024_04_18__14:38:51.234456: [        nan]

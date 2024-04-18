@@ -52,6 +52,9 @@ pyopengl
 tornado # ZED and pytorch dependency
 # numpy
 
+# More
+serial
+
 # STUFF
 
 #  coremltools>=4.1  # CoreML export

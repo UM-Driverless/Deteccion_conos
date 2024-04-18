@@ -255,8 +255,6 @@ class SimulatorCamera(Camera):
         # Check network connection, exit if not connected
         client.confirmConnection()
         
-        controls = fsds.CarControls()
-        
         while True:
             [img] = client.simGetImages([fsds.ImageRequest(camera_name = 'cam1', image_type = fsds.ImageType.Scene, pixels_as_float = False, compress = False)], vehicle_name = 'FSCar')
             img_buffer = np.frombuffer(img.image_data_uint8, dtype=np.uint8)

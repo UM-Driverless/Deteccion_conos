@@ -1,4 +1,4 @@
-import os, sys, cv2, time
+import os, sys, cv2, time, serial
 import numpy as np
 import multiprocessing
 from abc import ABC, abstractmethod
@@ -77,20 +77,33 @@ class SimulatorComm(CarCommunicator):
 
 class SerialCommunicator(CarCommunicator):
     """
+    Communicator for the testing Robot, that will connect to the Arduino via serial port (USB-B). The Arduino has the shield with the motor drivers.
     TODO IMPLEMENT THIS FOR ROBOT
     """
     def __init__(self, port):
-        self.serial_port = serial.Serial(port)  # Initialize serial connection
+        # self.serial_port = serial.Serial(port)  # Initialize serial connection
+        self.arduino = serial.Serial(port='COM6', baudrate=9600, timeout=.1)
+        
+    # def test(self):
+    #     self.arduino.write(bytes('1', 'utf-8'))
+    #     self.arduino.write(bytes('2', 'utf-8'))
+    #     self.arduino.write(bytes('3', 'utf-8'))
+    #     self.arduino.write(bytes('1', 'utf-8'))
+    #     self.arduino.write(bytes('2', 'utf-8'))
+    #     self.arduino.write(bytes('3', 'utf-8'))
 
     def send_actuation(self, actuation):
-        # Convert actuation data to a format suitable for serial communication
-        # ... (implementation specific to serial protocol)
-        self.serial_port.write(data_to_send)
+        # The arduino needs to receive the angle in degrees, from 0 to 180deg
+        # Map from (-90, 90) to (0, 180), and convert to int
+        
+        angle = int((actuation['steer'] + 1) / 2 * 90)
+        data = bytes(str(angle), 'utf-8') # + rotation is left for us, right for simulator
+        self.arduino.write(data)
 
     def receive_state(self, state):
         # Read data from serial port and parse it into sensor data
         # ... (implementation specific to serial protocol)
-        return sensor_data
+        return 0
 
 class CanJetson(CarCommunicator):
     def __init__(self, can_bus):
