@@ -81,6 +81,8 @@ class Agent():
             # I assume they're sorted from closer to further
             center = (blues[0]['coords']['y'] + yellows[0]['coords']['y']) / 2 # positive means left
             # print(f'center:{center}')
+            # Limit the value of 'center' between -1 and 1
+            center = max(-1, min(1, center))
             actuation['steer'] = center * 0.5 # -1 left, 1 right, 0 neutral TODO HACER CON MAS SENTIDO
         elif len(blues) > 0:
             actuation['steer'] = -1 # Rotation in Z axis. - = right
